@@ -1,0 +1,32 @@
+baseURL = "http://www.foo.de/blog"
+title = "Sample Blog"
+subtitle = "Es musste mal gesagt werden..."
+theme = "wp"
+defaultContentLanguage = "de"
+languageCode = "de-de"
+canonifyURLs = true 
+relativeURLs = true
+#disqusShortname = "sample-de"
+
+[permalinks]
+  post = "/:year/:month/:day/:title/"
+
+[params]
+	locale = "de-DE"
+
+[urls]
+	itemsPerPage = 4
+	
+[urls.paging]
+	monthly = 10
+	
+[urls.paths]
+	posts = "/:year/:month/:day/:title/"
+	monthly = "/:year/:month/"
+	year = "/:year/"
+	paged-year = "/:year/:page"
+	
+[urls.mapping]
+	year = "published.year"
+	month = "published.month"
+	day = "published.day"

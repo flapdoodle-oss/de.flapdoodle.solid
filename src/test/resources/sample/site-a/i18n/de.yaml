@@ -1,0 +1,38 @@
+# Content
+- id: dateFormat
+  translation: "January 2, 2006"
+- id: postedOnDate
+  translation: "Geschrieben am {{ .Count }}"
+- id: translationsLabel
+  translation: "Other languages: "
+- id: translationsSeparator
+  translation: ", "
+- id: readMore
+  translation: "Mehr"
+- id: olderPosts
+  translation: "Ältere Artikel"
+- id: newerPosts
+  translation: "Neuere Artikel"
+- id: previousPost
+  translation: "Vorheriger Artikel"
+- id: nextPost
+  translation: "Nächster Artikel"
+- id: readingTime
+  translation:
+    one: "Eine Minute Lesezeit"
+    other: "{{ .Count }} minutes read"
+
+# 404 page
+- id: pageNotFound
+  translation: "Whoops, this page doesn't exist. Move along. (404 error)"
+
+# Navigation
+- id: languageSwitcherLabel
+  translation: "Sprache"
+- id: gcseLabelShort
+  translation: "Suche"
+- id: gcseLabelLong
+  translation: "Suche {{ .Site.Title }}"
+- id: gcseClose
+  translation: "Schließen"
+
