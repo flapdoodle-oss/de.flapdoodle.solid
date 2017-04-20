@@ -17,6 +17,7 @@
 package de.flapdoodle.solid.site;
 
 import org.immutables.value.Value;
+import org.immutables.value.Value.Default;
 
 import com.google.common.base.Optional;
 import com.google.common.collect.ImmutableMap;
@@ -27,6 +28,16 @@ public interface SiteConfig {
 	String filename();
 	
 	String baseUrl();
+	
+	@Default
+	default String contentDirectory() {
+		return "content";
+	}
+	
+	@Default
+	default String staticDirectory() {
+		return "static";
+	}
 	
 	Optional<String> theme();
 	

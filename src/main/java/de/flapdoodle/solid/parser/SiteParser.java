@@ -29,16 +29,31 @@ import de.flapdoodle.solid.exceptions.NotASolidSite;
 import de.flapdoodle.solid.exceptions.SomethingWentWrong;
 import de.flapdoodle.solid.parser.config.FilenamePatterns;
 import de.flapdoodle.solid.parser.config.PathAsSiteConfig;
+import de.flapdoodle.solid.parser.content.Site;
 import de.flapdoodle.solid.site.SiteConfig;
 import de.flapdoodle.types.Either;
 import de.flapdoodle.types.Try;
 
 public class SiteParser {
 	
+	private final Path siteRoot;
 	private final SiteConfig siteConfig;
 
-	public SiteParser(SiteConfig siteConfig) {
+	public SiteParser(Path siteRoot, SiteConfig siteConfig) {
+		this.siteRoot = Preconditions.checkNotNull(siteRoot);
 		this.siteConfig = Preconditions.checkNotNull(siteConfig);
+	}
+	
+	public Site collect() {
+		Try.runable(() ->	Files.walk(siteRoot.resolve(siteConfig.contentDirectory())).forEach(path -> {
+			System.out.println(" -> "+path);
+		}))
+		.mapCheckedException(SomethingWentWrong::new)
+		.run();
+		return Site.builder()
+				.config(siteConfig)
+				
+				.build();
 	}
 	
 	@Override
@@ -70,6 +85,6 @@ public class SiteParser {
 			throw new NotASolidSite(siteRoot, triedPatterns);
 		}
 		
-		return new SiteParser(configs.get(0));
+		return new SiteParser(siteRoot, configs.get(0));
 	}
 }

@@ -23,6 +23,8 @@ import java.nio.file.Paths;
 
 import org.junit.Test;
 
+import de.flapdoodle.solid.parser.content.Site;
+
 public class SiteParserTest {
 
 	@Test
@@ -31,5 +33,7 @@ public class SiteParserTest {
 		SiteParser parser = SiteParser.parse(siteARoot);
 		assertNotNull(parser);
 		System.out.println(" -> "+parser);
+		Site site = parser.collect();
+		System.out.println(" -> "+site);
 	}
 }
