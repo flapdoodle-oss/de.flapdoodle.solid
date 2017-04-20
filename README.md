@@ -1,0 +1,2 @@
+# solid
+static site generator
