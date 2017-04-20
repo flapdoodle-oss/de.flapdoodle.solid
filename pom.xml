@@ -178,7 +178,7 @@
 					<!-- <mapping> <jwc>XML_STYLE</jwc> <application>XML_STYLE</application> 
 						<myFileExtension>JAVADOC_STYLE</myFileExtension> </mapping> <useDefaultMapping>true</useDefaultMapping> -->
 					<properties>
-						<lic.year>2016</lic.year>
+						<lic.year>2017</lic.year>
 						<lic.email>michael@mosmann.de</lic.email>
 						<lic.username>Michael Mosmann</lic.username>
 						<lic.email2 />
