@@ -18,8 +18,8 @@ package de.flapdoodle.solid.parser.config;
 
 import java.nio.file.Path;
 import java.util.Map;
+import java.util.Optional;
 
-import com.google.common.base.Optional;
 import com.google.common.base.Strings;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.ImmutableMap.Builder;
@@ -32,6 +32,7 @@ import de.flapdoodle.solid.site.SiteConfig;
 import de.flapdoodle.types.Either;
 import de.flapdoodle.types.Try;
 
+@Deprecated
 public class TomlAsSiteConfig implements PathAsSiteConfig {
 
 	private static final String SOLID_CONFIG = "solid.toml";
@@ -57,7 +58,7 @@ public class TomlAsSiteConfig implements PathAsSiteConfig {
 		return Either.left(SiteConfig.builder()
 				.filename(filename)
 				.baseUrl(config.getString("baseURL"))
-				.theme(Optional.fromNullable(config.getString("theme", null)))
+				.theme(Optional.ofNullable(config.getString("theme", null)))
 				.putAllProperties(commonPropertiesOf(config))
 				.build());
 	}

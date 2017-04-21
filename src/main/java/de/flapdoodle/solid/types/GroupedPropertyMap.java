@@ -16,15 +16,17 @@
  */
 package de.flapdoodle.solid.types;
 
+import java.util.Optional;
+
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.ImmutableSet;
 
 public interface GroupedPropertyMap {
 
-	Maybe<Object> find(String ... key);
+	Optional<Object> find(String ... key);
 	
-	default <T> Maybe<T> find(Class<T> type, String ... key) {
-		return find(key).flatmap(Types.isInstance(type));
+	default <T> Optional<T> find(Class<T> type, String ... key) {
+		return find(key).flatMap(Types.isInstance(type));
 	}
 
 	ImmutableMap<String, Object> propertiesOf(String ... group);

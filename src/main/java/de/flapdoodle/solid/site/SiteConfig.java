@@ -16,10 +16,11 @@
  */
 package de.flapdoodle.solid.site;
 
+import java.util.Optional;
+
 import org.immutables.value.Value;
 import org.immutables.value.Value.Default;
 
-import com.google.common.base.Optional;
 import com.google.common.collect.ImmutableMap;
 
 import de.flapdoodle.solid.site.ImmutableSiteConfig.Builder;
@@ -54,7 +55,7 @@ public interface SiteConfig {
 		Builder builder = builder()
 				.filename(filename)
 				.baseUrl(map.find(String.class, "baseURL").get())
-				.theme(map.find(String.class, "theme").asGuava());
+				.theme(map.find(String.class, "theme"));
 		
 		map.find(String.class, "title")
 			.ifPresent(v -> builder.putProperties("title", v));
