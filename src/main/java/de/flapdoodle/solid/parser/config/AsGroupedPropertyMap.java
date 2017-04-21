@@ -14,23 +14,10 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package de.flapdoodle.solid.types;
+package de.flapdoodle.solid.parser.config;
 
-import java.util.function.BiConsumer;
+import de.flapdoodle.solid.types.GroupedPropertyMap;
 
-import com.google.common.base.Optional;
-import com.google.common.base.Preconditions;
-
-public interface PropertyTreeMap {
-	
-	<T> Optional<T> find(String key, Class<T> type);
-	
-	void forEach(BiConsumer<String, Object> consumer);
-	
-	default <T> T get(String key, Class<T> type) {
-		Optional<T> ret = find(key, type);
-		Preconditions.checkArgument(ret.isPresent(),"could not get %s(%s) in %s",key,type,this);
-		return ret.get();
-	}
-	
+public interface AsGroupedPropertyMap<T> {
+	GroupedPropertyMap asGroupedPropertyMap(T source);
 }

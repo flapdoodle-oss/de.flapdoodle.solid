@@ -22,6 +22,9 @@ import org.immutables.value.Value.Default;
 import com.google.common.base.Optional;
 import com.google.common.collect.ImmutableMap;
 
+import de.flapdoodle.solid.site.ImmutableSiteConfig.Builder;
+import de.flapdoodle.solid.types.PropertyTreeMap;
+
 @Value.Immutable
 public interface SiteConfig {
 	
@@ -45,5 +48,19 @@ public interface SiteConfig {
 	
 	public static ImmutableSiteConfig.Builder builder() {
 		return ImmutableSiteConfig.builder();
+	}
+	
+	public static SiteConfig of(String filename, PropertyTreeMap map) {
+		Builder builder = builder()
+				.filename(filename)
+				.baseUrl(map.get("baseURL", String.class))
+				.theme(map.find("theme", String.class));
+		
+		map.find("title", String.class).toJavaUtil()
+			.ifPresent(v -> builder.putProperties("title", v));
+		map.find("subtitle", String.class).toJavaUtil()
+			.ifPresent(v -> builder.putProperties("subtitle", v));
+		
+		return builder.build();
 	}
 }

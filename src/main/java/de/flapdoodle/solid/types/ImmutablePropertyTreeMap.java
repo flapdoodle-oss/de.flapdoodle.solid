@@ -18,8 +18,10 @@ package de.flapdoodle.solid.types;
 
 import java.util.Date;
 import java.util.Map;
+import java.util.function.BiConsumer;
 
 import com.google.common.base.MoreObjects;
+import com.google.common.base.Optional;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.FluentIterable;
 import com.google.common.collect.ImmutableMap;
@@ -43,14 +45,17 @@ public final class ImmutablePropertyTreeMap implements PropertyTreeMap {
 	}
 	
 	@Override
-	public Object get(String key, String... keys) {
-		Object ret = map.get(key);
-		for (String k : keys) {
-			if (ret instanceof Map) {
-				ret=((Map) ret).get(k);
-			}
+	public <T> Optional<T> find(String key, Class<T> type) {
+		Object value = map.get(key);
+		if (type.isInstance(value)) {
+			return Optional.of((T) value);
 		}
-		return ret;
+		return Optional.absent();
+	}
+	
+	@Override
+	public void forEach(BiConsumer<String, Object> consumer) {
+		map.forEach(consumer);
 	}
 	
 	@Override

@@ -18,8 +18,15 @@ package de.flapdoodle.solid.parser.content;
 
 import org.immutables.value.Value;
 
+import com.google.common.collect.ImmutableSet;
+
+import de.flapdoodle.solid.types.PropertyTreeMap;
+
 @Value.Immutable
 public interface Blob {
+	ImmutableSet<String> path();
+	String filename();
+	PropertyTreeMap meta();
 	String contentType();
 	String content();
 }
