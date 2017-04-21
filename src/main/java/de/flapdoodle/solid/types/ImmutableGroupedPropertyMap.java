@@ -132,7 +132,11 @@ public final class ImmutableGroupedPropertyMap implements GroupedPropertyMap {
 		}
 		
 		private Builder putIntern(Key key, Object value) {
-			Map<String, Object> propertyMap = mapOfGroup(key.parent());
+			Key parent = key.parent();
+			if (!parent.isRoot()) {
+				Preconditions.checkArgument(!mapOfGroup(parent.parent()).containsKey(parent.last()),"there is already a value set to %s",parent);
+			}
+			Map<String, Object> propertyMap = mapOfGroup(parent);
 			Object old = propertyMap.put(key.last(), value);
 			Preconditions.checkArgument(old==null,"value for %s already set to %s",key, old);
 			return this;

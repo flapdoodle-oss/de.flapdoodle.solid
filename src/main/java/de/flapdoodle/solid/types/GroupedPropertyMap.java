@@ -27,6 +27,10 @@ public interface GroupedPropertyMap {
 	ImmutableMap<String, Object> propertiesOf(String ... group);
 
 	ImmutableSet<String> groupsOf(String ... group);
+	
+	default String prettyPrinted() {
+		return GroupedPropertyMapPrinter.prettyPrinted(this);
+	}
 
 	public static ImmutableGroupedPropertyMap.Builder builder() {
 		return ImmutableGroupedPropertyMap.builder();
