@@ -23,7 +23,6 @@ import org.immutables.value.Value.Auxiliary;
 import org.immutables.value.Value.Parameter;
 
 import com.google.common.base.MoreObjects;
-import com.google.common.base.Optional;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
@@ -80,13 +79,13 @@ public final class ImmutableGroupedPropertyMap implements GroupedPropertyMap {
 
 
 	@Override
-	public Optional<Object> get(String ... key) {
+	public Maybe<Object> get(String ... key) {
 		Key mapKey = Key.of(key);
 		ImmutableMap<String, Object> map = mapOfMaps.get(mapKey.parent());
 		if (map!=null) {
-			return Optional.fromNullable(map.get(mapKey.last()));
+			return Maybe.fromNullable(map.get(mapKey.last()));
 		}
-		return Optional.absent();
+		return Maybe.absent();
 	}
 	
 	@Override
