@@ -24,7 +24,6 @@ import com.google.common.collect.ImmutableMap;
 
 import de.flapdoodle.solid.site.ImmutableSiteConfig.Builder;
 import de.flapdoodle.solid.types.GroupedPropertyMap;
-import de.flapdoodle.solid.types.Types;
 
 @Value.Immutable
 public interface SiteConfig {
@@ -54,13 +53,13 @@ public interface SiteConfig {
 	public static SiteConfig of(String filename, GroupedPropertyMap map) {
 		Builder builder = builder()
 				.filename(filename)
-				.baseUrl(map.get("baseURL").flatmap(v -> Types.isInstance(String.class, v)).get())
-				.theme(map.get("theme").flatmap(v -> Types.isInstance(String.class, v)).asGuava());
+				.baseUrl(map.find(String.class, "baseURL").get())
+				.theme(map.find(String.class, "theme").asGuava());
 		
-		map.get("title").flatmap(v -> Types.isInstance(String.class, v))
+		map.find(String.class, "title")
 			.ifPresent(v -> builder.putProperties("title", v));
-		map.get("subtitle").flatmap(v -> Types.isInstance(String.class, v))
-				.ifPresent(v -> builder.putProperties("subtitle", v));
+		map.find(String.class, "subtitle")
+			.ifPresent(v -> builder.putProperties("subtitle", v));
 		
 		return builder.build();
 	}

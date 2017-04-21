@@ -79,7 +79,7 @@ public final class ImmutableGroupedPropertyMap implements GroupedPropertyMap {
 
 
 	@Override
-	public Maybe<Object> get(String ... key) {
+	public Maybe<Object> find(String ... key) {
 		Key mapKey = Key.of(key);
 		ImmutableMap<String, Object> map = mapOfMaps.get(mapKey.parent());
 		if (map!=null) {

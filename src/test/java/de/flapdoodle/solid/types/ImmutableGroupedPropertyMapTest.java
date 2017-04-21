@@ -32,7 +32,7 @@ public class ImmutableGroupedPropertyMapTest {
 			.put("foo", "bar")
 			.build();
 		
-		assertEquals("bar", map.get("foo").get());
+		assertEquals("bar", map.find("foo").get());
 		
 		ImmutableMap<String, Object> properties = map.propertiesOf();
 		assertEquals(ImmutableMap.of("foo","bar"), properties);
@@ -45,8 +45,8 @@ public class ImmutableGroupedPropertyMapTest {
 			.put("bar", "foo")
 			.build();
 		
-		assertEquals("bar", map.get("foo").get());
-		assertEquals("foo", map.get("bar").get());
+		assertEquals("bar", map.find("foo").get());
+		assertEquals("foo", map.find("bar").get());
 		
 		ImmutableMap<String, Object> properties = map.propertiesOf();
 		assertEquals(ImmutableMap.of("foo","bar","bar","foo"), properties);
@@ -74,8 +74,8 @@ public class ImmutableGroupedPropertyMapTest {
 			.put("foo", "bar")
 			.build();
 		
-		assertFalse(map.get("bar").isPresent());
-		assertFalse(map.get("bar","foo").isPresent());
+		assertFalse(map.find("bar").isPresent());
+		assertFalse(map.find("bar","foo").isPresent());
 	}
 	
 	@Test
@@ -85,7 +85,7 @@ public class ImmutableGroupedPropertyMapTest {
 			.build();
 		
 		
-		assertEquals("bar", map.get("foo","blob").get());
+		assertEquals("bar", map.find("foo","blob").get());
 		
 		ImmutableMap<String, Object> properties = map.propertiesOf();
 		assertEquals(ImmutableMap.of(), properties);

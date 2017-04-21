@@ -21,7 +21,11 @@ import com.google.common.collect.ImmutableSet;
 
 public interface GroupedPropertyMap {
 
-	Maybe<Object> get(String ... key);
+	Maybe<Object> find(String ... key);
+	
+	default <T> Maybe<T> find(Class<T> type, String ... key) {
+		return find(key).flatmap(Types.isInstance(type));
+	}
 
 	ImmutableMap<String, Object> propertiesOf(String ... group);
 
