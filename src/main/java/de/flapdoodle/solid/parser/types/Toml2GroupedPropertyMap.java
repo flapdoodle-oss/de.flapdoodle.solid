@@ -14,7 +14,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package de.flapdoodle.solid.parser.config;
+package de.flapdoodle.solid.parser.types;
 
 import java.util.Map;
 

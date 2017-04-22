@@ -23,4 +23,12 @@ public class Filenames {
 	public static String filenameOf(Path path) {
 		return path.getFileName().toString();
 	}
+	
+	public static String extensionOf(Path path) {
+		String filename = filenameOf(path);
+		int lastIndex = filename.lastIndexOf(".");
+		return lastIndex != -1 
+				? filename.substring(lastIndex+1)
+				: "";
+	}
 }

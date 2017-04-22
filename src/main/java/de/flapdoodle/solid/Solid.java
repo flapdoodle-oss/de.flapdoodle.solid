@@ -16,6 +16,7 @@
  */
 package de.flapdoodle.solid;
 
+@SuppressWarnings("ucd")
 public class Solid {
 
 	public static void main(String[] args) {
