@@ -16,24 +16,26 @@
  */
 package de.flapdoodle.solid.parser;
 
-import static org.junit.Assert.assertNotNull;
-
 import java.nio.file.Path;
 import java.nio.file.Paths;
 
 import org.junit.Test;
 
+import de.flapdoodle.solid.parser.content.BlobParser;
+import de.flapdoodle.solid.parser.content.DefaultBlobParser;
 import de.flapdoodle.solid.parser.content.Site;
+import de.flapdoodle.solid.parser.types.ParserFactory;
 
-public class SiteParserTest {
+public class SiteFactoryTest {
 
 	@Test
 	public void siteParserWillCheckForSolidConfigFirst() {
+		ParserFactory parserFactory = ParserFactory.defaultFactory();
+		BlobParser blobParser = new DefaultBlobParser();
+		DefaultSiteFactory siteFactory = new DefaultSiteFactory(parserFactory, blobParser);
+		
 		Path siteARoot = Paths.get("src", "test","resources","sample","site-a");
-		SiteParser parser = SiteParser.parse(siteARoot);
-		assertNotNull(parser);
-		System.out.println(" -> "+parser);
-		Site site = parser.collect();
+		Site site = siteFactory.siteOf(siteARoot);
 		System.out.println(" -> "+site);
 	}
 }

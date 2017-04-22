@@ -25,7 +25,10 @@ public class Filenames {
 	}
 	
 	public static String extensionOf(Path path) {
-		String filename = filenameOf(path);
+		return extensionOf(filenameOf(path));
+	}
+
+	public static String extensionOf(String filename) {
 		int lastIndex = filename.lastIndexOf(".");
 		return lastIndex != -1 
 				? filename.substring(lastIndex+1)

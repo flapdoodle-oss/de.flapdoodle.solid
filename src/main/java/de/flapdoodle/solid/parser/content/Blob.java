@@ -27,6 +27,6 @@ public interface Blob {
 	ImmutableSet<String> path();
 	String filename();
 	GroupedPropertyMap meta();
-	String contentType();
+	ContentType contentType();
 	String content();
 }

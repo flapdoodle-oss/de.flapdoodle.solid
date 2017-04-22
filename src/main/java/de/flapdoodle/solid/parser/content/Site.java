@@ -18,11 +18,16 @@ package de.flapdoodle.solid.parser.content;
 
 import org.immutables.value.Value;
 
+import com.google.common.collect.ImmutableList;
+import com.google.common.collect.ImmutableSet;
+
 import de.flapdoodle.solid.site.SiteConfig;
 
 @Value.Immutable
 public interface Site {
 	SiteConfig config();
+	ImmutableList<Blob> blobs();
+	ImmutableSet<String> ignoredFiles();
 	
 	public static ImmutableSite.Builder builder() {
 		return ImmutableSite.builder();
