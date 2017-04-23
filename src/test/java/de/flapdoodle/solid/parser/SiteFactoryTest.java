@@ -18,6 +18,9 @@ package de.flapdoodle.solid.parser;
 
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.List;
+import java.util.Optional;
+import java.util.stream.Collectors;
 
 import org.junit.Test;
 
@@ -37,5 +40,17 @@ public class SiteFactoryTest {
 		Path siteARoot = Paths.get("src", "test","resources","sample","site-a");
 		Site site = siteFactory.siteOf(siteARoot);
 		System.out.println(" -> "+site);
+		
+		System.out.println("dates -> "+metaValues(site, "date"));
+		System.out.println("titles -> "+metaValues(site, "title"));
+	}
+
+	private static List<Object> metaValues(Site site, String key) {
+		List<Object> dates = site.blobs().stream()
+			.map(blob -> blob.meta().find(key))
+			.filter(Optional::isPresent)
+			.map(Optional::get)
+			.collect(Collectors.toList());
+		return dates;
 	}
 }
