@@ -58,7 +58,7 @@ public class DefaultBlobParser implements BlobParser {
 			
 			if (metaAndContent.isPresent()) {
 				return Optional.of(Blob.builder()
-					.path(Filenames.pathAsList(path.getParent()))
+					.addAllPath(Filenames.pathAsList(path.getParent()))
 					.filename(filename)
 					.meta(metaAndContent.get().meta())
 					.contentType(contentType.get())
