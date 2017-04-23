@@ -1,7 +1,6 @@
 package de.flapdoodle.solid.parser.types;
 
-import com.moandjiezana.toml.Toml;
-
+import de.flapdoodle.solid.parser.meta.Toml;
 import de.flapdoodle.solid.types.GroupedPropertyMap;
 
 public class TomlParser implements Parser {
@@ -14,7 +13,7 @@ public class TomlParser implements Parser {
 
 	@Override
 	public GroupedPropertyMap parse(String content) {
-		return toml2GroupedPropertyMap.asGroupedPropertyMap(new Toml().read(content));
+		return toml2GroupedPropertyMap.asGroupedPropertyMap(Toml.parse(content));
 	}
 
 }

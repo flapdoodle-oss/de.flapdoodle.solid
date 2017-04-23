@@ -20,14 +20,14 @@ import java.util.Map;
 
 import com.google.common.collect.ImmutableList;
 
-import de.flapdoodle.solid.parser.meta.Toml;
+import de.flapdoodle.solid.parser.meta.Yaml;
 import de.flapdoodle.solid.types.GroupedPropertyMap;
 import de.flapdoodle.solid.types.ImmutableGroupedPropertyMap.Builder;
 
-public class Toml2GroupedPropertyMap implements AsGroupedPropertyMap<Toml> {
+public class Yaml2GroupedPropertyMap implements AsGroupedPropertyMap<Yaml> {
 
 	@Override
-	public GroupedPropertyMap asGroupedPropertyMap(Toml source) {
+	public GroupedPropertyMap asGroupedPropertyMap(Yaml source) {
 		Builder builder = GroupedPropertyMap.builder();
 		fill(builder, ImmutableList.of(), source.asMap());
 		return builder.build();

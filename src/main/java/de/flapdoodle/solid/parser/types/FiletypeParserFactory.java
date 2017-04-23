@@ -4,7 +4,8 @@ import java.util.Optional;
 
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.ImmutableSet;
-import com.moandjiezana.toml.Toml;
+
+import de.flapdoodle.solid.parser.meta.Toml;
 
 public interface FiletypeParserFactory {
 	

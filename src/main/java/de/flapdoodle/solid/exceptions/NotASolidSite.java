@@ -27,7 +27,7 @@ public class NotASolidSite extends AbstractRuntimeException {
 	}
 
 	private static String asMessage(Path path, Iterable<String> triedConfigs) {
-		return "could not find a matching config"+Joiner.on(",").join(triedConfigs)+" in "+path;
+		return "could not find a matching config "+Joiner.on(",").join(triedConfigs)+" in "+path;
 	}
 
 }

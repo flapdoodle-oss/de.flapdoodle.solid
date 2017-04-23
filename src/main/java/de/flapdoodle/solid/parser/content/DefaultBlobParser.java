@@ -16,6 +16,8 @@ public class DefaultBlobParser implements BlobParser {
 
 	private static final Pattern TOML_START = Pattern.compile("(?m)(?d)^\\+{3}");
 	private static final Pattern TOML_END = TOML_START;
+	private static final Pattern YAML_START = Pattern.compile("(?m)(?d)^\\-{3}");
+	private static final Pattern YAML_END = YAML_START;
 
 	@Override
 	public Optional<Blob> parse(Path path, String content) {
@@ -26,6 +28,11 @@ public class DefaultBlobParser implements BlobParser {
 			Optional<MetaAndContent> metaAndContent = findToml(content);
 			if (metaAndContent.isPresent()) {
 				System.out.println("got toml");
+			} else {
+				metaAndContent = findYaml(content);
+				if (metaAndContent.isPresent()) {
+					System.out.println("got yaml");
+				}
 			}
 		}
 		
@@ -35,6 +42,11 @@ public class DefaultBlobParser implements BlobParser {
 	@VisibleForTesting
 	protected static Optional<MetaAndContent> findToml(String content) {
 		return findMeta(TOML_START, TOML_END, content);
+	}
+
+	@VisibleForTesting
+	protected static Optional<MetaAndContent> findYaml(String content) {
+		return findMeta(YAML_START, YAML_END, content);
 	}
 	
 	@VisibleForTesting

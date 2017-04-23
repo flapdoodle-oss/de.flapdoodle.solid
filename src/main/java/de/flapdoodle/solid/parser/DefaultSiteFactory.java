@@ -74,6 +74,7 @@ public class DefaultSiteFactory implements SiteFactory {
 				.map(config -> SiteConfig.of(Filenames.filenameOf(path), config));
 		
 		List<SiteConfig> configs = Try.supplier(() -> Files.list(siteRoot)
+				.filter(p -> Filenames.filenameOf(p).startsWith("solid."))
 				.map(path2Config)
 				.filter(Optional::isPresent)
 				.map(Optional::get)
@@ -82,7 +83,10 @@ public class DefaultSiteFactory implements SiteFactory {
 			.get();
 		
 		if (configs.size()!=1) {
-			throw new NotASolidSite(siteRoot, filetypeParserFactory.supportedExtensions());
+			throw new NotASolidSite(siteRoot, filetypeParserFactory.supportedExtensions()
+					.stream()
+					.map(s -> "solid."+s)
+					.collect(Collectors.toList()));
 		}
 		
 		return configs.get(0);
