@@ -27,6 +27,10 @@ import org.immutables.value.Value.Parameter;
 import com.google.common.annotations.VisibleForTesting;
 
 import de.flapdoodle.solid.io.Filenames;
+import de.flapdoodle.solid.parser.meta.Toml;
+import de.flapdoodle.solid.parser.meta.Yaml;
+import de.flapdoodle.solid.parser.types.ParserFactory;
+import de.flapdoodle.solid.types.GroupedPropertyMap;
 
 public class DefaultBlobParser implements BlobParser {
 
@@ -34,6 +38,12 @@ public class DefaultBlobParser implements BlobParser {
 	private static final Pattern TOML_END = TOML_START;
 	private static final Pattern YAML_START = Pattern.compile("(?m)(?d)^\\-{3}");
 	private static final Pattern YAML_END = YAML_START;
+	
+	private final ParserFactory parserFactory;
+	
+	public DefaultBlobParser(ParserFactory parserFactory) {
+		this.parserFactory = parserFactory;
+	}
 
 	@Override
 	public Optional<Blob> parse(Path path, String content) {
@@ -41,14 +51,19 @@ public class DefaultBlobParser implements BlobParser {
 		String extension = Filenames.extensionOf(filename);
 		Optional<ContentType> contentType = ContentType.ofExtension(extension);
 		if (contentType.isPresent()) {
-			Optional<MetaAndContent> metaAndContent = findToml(content);
+			Optional<ParsedMetaAndContent> metaAndContent = findToml(parserFactory, content);
+			if (!metaAndContent.isPresent()) {
+				metaAndContent = findYaml(parserFactory, content);
+			}
+			
 			if (metaAndContent.isPresent()) {
-				System.out.println("got toml");
-			} else {
-				metaAndContent = findYaml(content);
-				if (metaAndContent.isPresent()) {
-					System.out.println("got yaml");
-				}
+				return Optional.of(Blob.builder()
+					.path(Filenames.pathAsList(path.getParent()))
+					.filename(filename)
+					.meta(metaAndContent.get().meta())
+					.contentType(contentType.get())
+					.content(metaAndContent.get().content())
+					.build());
 			}
 		}
 		
@@ -56,13 +71,15 @@ public class DefaultBlobParser implements BlobParser {
 	}
 
 	@VisibleForTesting
-	protected static Optional<MetaAndContent> findToml(String content) {
-		return findMeta(TOML_START, TOML_END, content);
+	protected static Optional<ParsedMetaAndContent> findToml(ParserFactory parserFactory, String content) {
+		return findMeta(TOML_START, TOML_END, content)
+				.map(mc -> ParsedMetaAndContent.of(parserFactory.parserFor(Toml.class).get().parse(mc.meta()), mc.content()));
 	}
 
 	@VisibleForTesting
-	protected static Optional<MetaAndContent> findYaml(String content) {
-		return findMeta(YAML_START, YAML_END, content);
+	protected static Optional<ParsedMetaAndContent> findYaml(ParserFactory parserFactory, String content) {
+		return findMeta(YAML_START, YAML_END, content)
+				.map(mc -> ParsedMetaAndContent.of(parserFactory.parserFor(Yaml.class).get().parse(mc.meta()), mc.content()));
 	}
 	
 	@VisibleForTesting
@@ -92,6 +109,18 @@ public class DefaultBlobParser implements BlobParser {
 		
 		public static MetaAndContent of(String meta, String content) {
 			return ImmutableMetaAndContent.of(meta, content);
+		}
+	}
+	
+	@Value.Immutable
+	interface ParsedMetaAndContent {
+		@Parameter
+		GroupedPropertyMap meta();
+		@Parameter
+		String content();
+		
+		public static ParsedMetaAndContent of(GroupedPropertyMap meta, String content) {
+			return ImmutableParsedMetaAndContent.of(meta, content);
 		}
 	}
 }

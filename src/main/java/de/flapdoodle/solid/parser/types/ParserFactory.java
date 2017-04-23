@@ -21,6 +21,7 @@ import java.util.Optional;
 import com.google.common.collect.ImmutableMap;
 
 import de.flapdoodle.solid.parser.meta.Toml;
+import de.flapdoodle.solid.parser.meta.Yaml;
 
 public interface ParserFactory {
 	Optional<Parser> parserFor(Class<?> type);
@@ -28,6 +29,7 @@ public interface ParserFactory {
 	public static ParserFactory defaultFactory() {
 		ImmutableMap<Class<?>, Parser> parser=ImmutableMap.<Class<?>,Parser>builder()
 				.put(Toml.class, new TomlParser(new Toml2GroupedPropertyMap()))
+				.put(Yaml.class, new YamlParser(new Yaml2GroupedPropertyMap()))
 				.build();
 		
 		return type -> Optional.ofNullable(parser.get(type));

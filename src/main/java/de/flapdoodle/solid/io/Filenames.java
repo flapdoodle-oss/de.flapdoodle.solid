@@ -18,6 +18,9 @@ package de.flapdoodle.solid.io;
 
 import java.nio.file.Path;
 
+import com.google.common.collect.ImmutableList;
+import com.google.common.collect.ImmutableList.Builder;
+
 public class Filenames {
 	
 	public static String filenameOf(Path path) {
@@ -33,5 +36,13 @@ public class Filenames {
 		return lastIndex != -1 
 				? filename.substring(lastIndex+1)
 				: "";
+	}
+
+	public static ImmutableList<String> pathAsList(Path path) {
+		Builder<String> builder = ImmutableList.builder();
+		path.forEach(p -> {
+			builder.add(filenameOf(p));
+		});
+		return builder.build();
 	}
 }

@@ -29,4 +29,8 @@ public interface Blob {
 	GroupedPropertyMap meta();
 	ContentType contentType();
 	String content();
+	
+	public static ImmutableBlob.Builder builder() {
+		return ImmutableBlob.builder();
+	}
 }

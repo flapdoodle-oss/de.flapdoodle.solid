@@ -31,7 +31,7 @@ public class SiteFactoryTest {
 	@Test
 	public void siteParserWillCheckForSolidConfigFirst() {
 		ParserFactory parserFactory = ParserFactory.defaultFactory();
-		BlobParser blobParser = new DefaultBlobParser();
+		BlobParser blobParser = new DefaultBlobParser(parserFactory);
 		DefaultSiteFactory siteFactory = new DefaultSiteFactory(parserFactory, blobParser);
 		
 		Path siteARoot = Paths.get("src", "test","resources","sample","site-a");
