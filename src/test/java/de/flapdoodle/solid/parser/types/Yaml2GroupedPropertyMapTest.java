@@ -26,7 +26,7 @@ import com.google.common.base.Charsets;
 import com.google.common.io.Resources;
 
 import de.flapdoodle.solid.parser.meta.Yaml;
-import de.flapdoodle.solid.types.GroupedPropertyMap;
+import de.flapdoodle.solid.types.maps.GroupedPropertyMap;
 
 public class Yaml2GroupedPropertyMapTest {
 	@Test

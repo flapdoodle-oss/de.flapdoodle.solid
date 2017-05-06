@@ -21,8 +21,8 @@ import java.util.Map;
 import com.google.common.collect.ImmutableList;
 
 import de.flapdoodle.solid.parser.meta.Toml;
-import de.flapdoodle.solid.types.GroupedPropertyMap;
-import de.flapdoodle.solid.types.ImmutableGroupedPropertyMap.Builder;
+import de.flapdoodle.solid.types.maps.GroupedPropertyMap;
+import de.flapdoodle.solid.types.maps.ImmutableGroupedPropertyMap.Builder;
 
 public class Toml2GroupedPropertyMap implements AsGroupedPropertyMap<Toml> {
 

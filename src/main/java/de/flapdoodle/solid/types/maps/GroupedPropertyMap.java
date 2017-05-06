@@ -14,12 +14,14 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package de.flapdoodle.solid.types;
+package de.flapdoodle.solid.types.maps;
 
 import java.util.Optional;
 
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.ImmutableSet;
+
+import de.flapdoodle.solid.types.Types;
 
 public interface GroupedPropertyMap {
 

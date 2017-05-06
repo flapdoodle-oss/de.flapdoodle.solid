@@ -14,8 +14,23 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package de.flapdoodle.solid.types;
+package de.flapdoodle.solid.types.maps;
 
-public class MapFormatter {
+import org.junit.Test;
+
+public class GroupedPropertyMapPrinterTest {
 	
+	@Test
+	public void prettyPrintShouldIndentCorrect() {
+		ImmutableGroupedPropertyMap map = GroupedPropertyMap.builder()
+			.put("top", "bar")
+			.put("gear", 17)
+			.put("server", "port", "sub")
+			.put("server", "path", "root", "sub-sub")
+			.put("c", "sub-sub")
+			.build();
+		
+		String pretty = GroupedPropertyMapPrinter.prettyPrinted(map);
+		System.out.println(pretty);
+	}
 }

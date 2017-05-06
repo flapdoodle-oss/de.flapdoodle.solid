@@ -20,7 +20,7 @@ import org.immutables.value.Value;
 
 import com.google.common.collect.ImmutableSet;
 
-import de.flapdoodle.solid.types.GroupedPropertyMap;
+import de.flapdoodle.solid.types.maps.GroupedPropertyMap;
 
 @Value.Immutable
 public interface Blob {

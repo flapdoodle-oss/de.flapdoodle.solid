@@ -26,7 +26,7 @@ import com.google.common.base.Charsets;
 import com.google.common.io.Resources;
 
 import de.flapdoodle.solid.parser.meta.Toml;
-import de.flapdoodle.solid.types.GroupedPropertyMap;
+import de.flapdoodle.solid.types.maps.GroupedPropertyMap;
 
 public class Toml2GroupedPropertyMapTest {
 	@Test

@@ -30,7 +30,7 @@ import de.flapdoodle.solid.io.Filenames;
 import de.flapdoodle.solid.parser.meta.Toml;
 import de.flapdoodle.solid.parser.meta.Yaml;
 import de.flapdoodle.solid.parser.types.ParserFactory;
-import de.flapdoodle.solid.types.GroupedPropertyMap;
+import de.flapdoodle.solid.types.maps.GroupedPropertyMap;
 
 public class DefaultBlobParser implements BlobParser {
 

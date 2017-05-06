@@ -14,7 +14,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package de.flapdoodle.solid.types;
+package de.flapdoodle.solid.types.maps;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
@@ -23,6 +23,8 @@ import org.junit.Test;
 
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.ImmutableSet;
+
+import de.flapdoodle.solid.types.maps.ImmutableGroupedPropertyMap;
 
 public class ImmutableGroupedPropertyMapTest {
 

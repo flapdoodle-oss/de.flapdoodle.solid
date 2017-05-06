@@ -14,7 +14,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package de.flapdoodle.solid.types;
+package de.flapdoodle.solid.types.maps;
 
 import com.google.common.base.Strings;
 import com.google.common.collect.ImmutableList;

@@ -16,7 +16,7 @@
  */
 package de.flapdoodle.solid.parser.types;
 
-import de.flapdoodle.solid.types.GroupedPropertyMap;
+import de.flapdoodle.solid.types.maps.GroupedPropertyMap;
 
 public interface Parser {
 	GroupedPropertyMap parse(String content);

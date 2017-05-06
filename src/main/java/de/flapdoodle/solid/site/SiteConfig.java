@@ -24,7 +24,7 @@ import org.immutables.value.Value.Default;
 import com.google.common.collect.ImmutableMap;
 
 import de.flapdoodle.solid.site.ImmutableSiteConfig.Builder;
-import de.flapdoodle.solid.types.GroupedPropertyMap;
+import de.flapdoodle.solid.types.maps.GroupedPropertyMap;
 
 @Value.Immutable
 public interface SiteConfig {

@@ -17,7 +17,7 @@
 package de.flapdoodle.solid.parser.types;
 
 import de.flapdoodle.solid.parser.meta.Toml;
-import de.flapdoodle.solid.types.GroupedPropertyMap;
+import de.flapdoodle.solid.types.maps.GroupedPropertyMap;
 
 public class TomlParser implements Parser {
 

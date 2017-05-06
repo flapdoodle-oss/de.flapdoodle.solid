@@ -16,10 +16,36 @@
  */
 package de.flapdoodle.solid;
 
+import java.nio.file.Path;
+import java.nio.file.Paths;
+
+import de.flapdoodle.solid.generator.DefaultSiteGenerator;
+
 @SuppressWarnings("ucd")
 public class Solid {
 
 	public static void main(String[] args) {
 		System.out.println("solid - a static site generator");
+		
+		Path siteARoot = Paths.get(args[0]);
+		
+		testing(siteARoot).run();
+	}
+
+	public static Runnable testing(Path siteRoot) {
+		return StaticPageGenerator.once().generator(SiteSpring.withPath(siteRoot), new DefaultSiteGenerator(), (documents) -> {
+			if (!documents.isEmpty()) {
+				System.out.println("-------------------------");
+				System.out.println("Documents: ");
+				documents.forEach(d -> {
+					System.out.println(" - "+d.path());
+				});
+				System.out.println("-------------------------");
+			} else {
+				System.out.println("-------------------------");
+				System.out.println("No generated Documents.");
+				System.out.println("-------------------------");
+			}
+		});
 	}
 }

@@ -8,6 +8,16 @@ canonifyURLs = true
 relativeURLs = true
 #disqusShortname = "sample-de"
 
+[urlsX]
+	[urlsX.posts]
+		path = "/:year/:month/:day/:title/"
+		
+	[urlsX.monthly]
+		path = "/:year/:month/:day/:page/"
+		pageSize = 4		
+
+	
+
 [permalinks]
   post = "/:year/:month/:day/:title/"
 

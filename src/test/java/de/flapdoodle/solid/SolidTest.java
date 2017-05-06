@@ -16,6 +16,9 @@
  */
 package de.flapdoodle.solid;
 
+import java.nio.file.Path;
+import java.nio.file.Paths;
+
 import org.junit.Test;
 
 import com.vladsch.flexmark.ast.Node;
@@ -42,5 +45,11 @@ public class SolidTest {
     Node document = parser.parse("This is *Sparta*");
     String html = renderer.render(document);  // "<p>This is <em>Sparta</em></p>\n"
     System.out.println(html);
+	}
+	
+	@Test
+	public void sampleSite() {
+		Path siteARoot = Paths.get("src", "test","resources","sample","site-a");
+		Solid.testing(siteARoot).run();
 	}
 }
