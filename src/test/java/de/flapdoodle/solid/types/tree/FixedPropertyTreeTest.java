@@ -30,4 +30,21 @@ public class FixedPropertyTreeTest {
 		assertEquals("[]", tree.get("sub").get(0).right().properties().toString());
 		assertEquals(17, tree.get("number").get(0).left());
 	}
+	
+	@Test
+	public void mixed() {
+		PropertyTree tree = FixedPropertyTree.builder()
+			.put("sub", FixedPropertyTree.builder()
+					.put("foo", "bar")
+					.build())
+			.put("sub", 17)
+			.build();
+		
+		assertEquals("[sub]", tree.properties().toString());
+		assertEquals("[foo]", tree.get("sub").get(0).right().properties().toString());
+		assertEquals(17, tree.get("sub").get(1).left());
+		
+		String pretty = PropertyTreePrinter.prettyPrinted(tree);
+		System.out.println(pretty);
+	}
 }

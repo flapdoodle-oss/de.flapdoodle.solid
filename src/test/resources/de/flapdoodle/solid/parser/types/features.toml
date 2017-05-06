@@ -1,0 +1,17 @@
+string="content"
+array = [ "A", "B", "C" ]
+created = 2006-10-24T21:04:33+00:00
+
+[sub]
+a="A"
+
+[sub.sub]
+b="B"
+
+[[table]]
+c="C"
+
+[[table]]
+d="D"
+
+json={i={j="J",k="K"}}
