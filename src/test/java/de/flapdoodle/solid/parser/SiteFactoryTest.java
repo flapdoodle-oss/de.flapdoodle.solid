@@ -40,6 +40,8 @@ public class SiteFactoryTest {
 		Path siteARoot = Paths.get("src", "test","resources","sample","site-a");
 		Site site = siteFactory.siteOf(siteARoot);
 		
+		System.out.println(site.config().properties());
+		
 		assertNotNull(site);
 		assertEquals(3, site.blobs().size());
 	}

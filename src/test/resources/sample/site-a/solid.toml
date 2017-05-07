@@ -8,11 +8,11 @@ canonifyURLs = true
 relativeURLs = true
 #disqusShortname = "sample-de"
 
-[urlsX]
-	[urlsX.posts]
+[urls]
+	[urls.posts]
 		path = "/:year/:month/:day/:title/"
 		
-	[urlsX.monthly]
+	[urls.monthly]
 		path = "/:year/:month/:day/:page/"
 		pageSize = 4		
 
@@ -24,19 +24,19 @@ relativeURLs = true
 [params]
 	locale = "de-DE"
 
-[urls]
+[Xurls]
 	itemsPerPage = 4
 	
-[urls.paging]
+[Xurls.paging]
 	monthly = 10
 	
-[urls.paths]
+[Xurls.paths]
 	posts = "/:year/:month/:day/:title/"
 	monthly = "/:year/:month/"
 	year = "/:year/"
 	paged-year = "/:year/:page"
 	
-[urls.mapping]
+[Xurls.mapping]
 	year = "published.year"
 	month = "published.month"
 	day = "published.day"

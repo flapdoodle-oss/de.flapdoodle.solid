@@ -27,6 +27,12 @@ public interface PropertyTree {
 		return PropertyTreePrinter.prettyPrinted(this);
 	}
 	
+	default Either<Object,? extends PropertyTree> single(String key) {
+		List<Either<Object, ? extends PropertyTree>> result = get(key);
+		Preconditions.checkArgument(result.size()==1,"more or less than one element: %s", result);
+		return result.get(0);
+	}
+	
 	default <T> Optional<T> find(Class<T> type, String ... path) {
 		return find(type, FluentIterable.from(path));
 	}

@@ -20,13 +20,17 @@ import java.util.Optional;
 
 import org.immutables.value.Value;
 import org.immutables.value.Value.Default;
+import org.immutables.value.Value.Style;
 
+import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableMap;
 
 import de.flapdoodle.solid.site.ImmutableSiteConfig.Builder;
 import de.flapdoodle.solid.types.tree.PropertyTree;
+import de.flapdoodle.types.Either;
 
 @Value.Immutable
+@Style(deepImmutablesDetection=true)
 public interface SiteConfig {
 	
 	String filename();
@@ -47,6 +51,8 @@ public interface SiteConfig {
 	
 	ImmutableMap<String, String> properties();
 	
+	Urls urls();
+	
 	public static ImmutableSiteConfig.Builder builder() {
 		return ImmutableSiteConfig.builder();
 	}
@@ -61,6 +67,23 @@ public interface SiteConfig {
 			.ifPresent(v -> builder.putProperties("title", v));
 		map.find(String.class, "subtitle")
 			.ifPresent(v -> builder.putProperties("subtitle", v));
+		
+		ImmutableUrls.Builder urlsBuilder = Urls.builder();
+		Either<Object, ? extends PropertyTree> urlsConfigOrElse = map.single("urls");
+		Preconditions.checkArgument(!urlsConfigOrElse.isLeft(),"url config not valid: %s",urlsConfigOrElse);
+		PropertyTree urlConfigs = urlsConfigOrElse.right();
+		
+		urlConfigs.properties().forEach(label -> {
+			ImmutableConfig.Builder configBuilder = Urls.Config.builder();
+			Either<Object, ? extends PropertyTree> config = urlConfigs.single(label);
+			Preconditions.checkArgument(!config.isLeft(),"config for %s is valid: %s",label, config);
+			PropertyTree properties = config.right();
+			Optional<String> path = properties.find(String.class, "path");
+			Preconditions.checkArgument(path.isPresent(),"could not get propery path from %s in %s",config,label);
+			configBuilder.path(path.get());
+			urlsBuilder.putConfigs(label, configBuilder.build());
+		});
+		builder.urls(urlsBuilder.build());
 		
 		return builder.build();
 	}
