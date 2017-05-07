@@ -23,14 +23,13 @@ import com.google.common.collect.ImmutableMap;
 import de.flapdoodle.solid.parser.meta.Toml;
 import de.flapdoodle.solid.parser.meta.Yaml;
 
-@Deprecated
-public interface ParserFactory {
-	Optional<Parser> parserFor(Class<?> type);
+public interface PropertyTreeParserFactory {
+	Optional<PropertyTreeParser> parserFor(Class<?> type);
 	
-	public static ParserFactory defaultFactory() {
-		ImmutableMap<Class<?>, Parser> parser=ImmutableMap.<Class<?>,Parser>builder()
-				.put(Toml.class, new TomlParser(new Toml2GroupedPropertyMap()))
-				.put(Yaml.class, new YamlParser(new Yaml2GroupedPropertyMap()))
+	public static PropertyTreeParserFactory defaultFactory() {
+		ImmutableMap<Class<?>, PropertyTreeParser> parser=ImmutableMap.<Class<?>,PropertyTreeParser>builder()
+				.put(Toml.class, content -> new Toml2PropertyTree().asPropertyTree(Toml.parse(content)))
+				.put(Yaml.class, content -> new Yaml2PropertyTree().asPropertyTree(Yaml.parse(content)))
 				.build();
 		
 		return type -> Optional.ofNullable(parser.get(type));

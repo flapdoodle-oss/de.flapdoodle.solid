@@ -16,9 +16,9 @@
  */
 package de.flapdoodle.solid.parser.types;
 
-import de.flapdoodle.solid.types.maps.GroupedPropertyMap;
+import de.flapdoodle.solid.types.tree.PropertyTree;
 
-@Deprecated
-public interface Parser {
-	GroupedPropertyMap parse(String content);
+@FunctionalInterface
+public interface PropertyTreeParser {
+	PropertyTree parse(String content);
 }
