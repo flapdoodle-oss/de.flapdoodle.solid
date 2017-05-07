@@ -32,16 +32,16 @@ import de.flapdoodle.solid.parser.content.BlobParser;
 import de.flapdoodle.solid.parser.content.ImmutableSite.Builder;
 import de.flapdoodle.solid.parser.content.Site;
 import de.flapdoodle.solid.parser.types.FiletypeParserFactory;
-import de.flapdoodle.solid.parser.types.ParserFactory;
+import de.flapdoodle.solid.parser.types.PropertyTreeParserFactory;
 import de.flapdoodle.solid.site.SiteConfig;
 import de.flapdoodle.types.Try;
 
 public class DefaultSiteFactory implements SiteFactory {
 
-	private final ParserFactory parserFactory;
+	private final PropertyTreeParserFactory parserFactory;
 	private final BlobParser blobParser;
 
-	public DefaultSiteFactory(ParserFactory parserFactory, BlobParser blobParser) {
+	public DefaultSiteFactory(PropertyTreeParserFactory parserFactory, BlobParser blobParser) {
 		this.parserFactory = parserFactory;
 		this.blobParser = blobParser;
 	}
@@ -78,7 +78,7 @@ public class DefaultSiteFactory implements SiteFactory {
 		return siteBuilder.build();
 	}
 	
-	private static SiteConfig parse(Path siteRoot, ParserFactory parserFactory) {
+	private static SiteConfig parse(Path siteRoot, PropertyTreeParserFactory parserFactory) {
 		
 		FiletypeParserFactory filetypeParserFactory=FiletypeParserFactory.defaults(parserFactory);
 		

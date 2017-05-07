@@ -24,7 +24,7 @@ import org.immutables.value.Value.Default;
 import com.google.common.collect.ImmutableMap;
 
 import de.flapdoodle.solid.site.ImmutableSiteConfig.Builder;
-import de.flapdoodle.solid.types.maps.GroupedPropertyMap;
+import de.flapdoodle.solid.types.tree.PropertyTree;
 
 @Value.Immutable
 public interface SiteConfig {
@@ -51,7 +51,7 @@ public interface SiteConfig {
 		return ImmutableSiteConfig.builder();
 	}
 	
-	public static SiteConfig of(String filename, GroupedPropertyMap map) {
+	public static SiteConfig of(String filename, PropertyTree map) {
 		Builder builder = builder()
 				.filename(filename)
 				.baseUrl(map.find(String.class, "baseURL").get())

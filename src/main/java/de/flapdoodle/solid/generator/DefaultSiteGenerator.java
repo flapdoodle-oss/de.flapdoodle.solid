@@ -22,7 +22,7 @@ public class DefaultSiteGenerator implements SiteGenerator {
 
 	private static List<Object> metaValues(Site site, String key) {
 		List<Object> dates = site.blobs().stream()
-			.map(blob -> blob.meta().find(key))
+			.map(blob -> blob.meta().find(Object.class, key))
 			.filter(Optional::isPresent)
 			.map(Optional::get)
 			.collect(Collectors.toList());

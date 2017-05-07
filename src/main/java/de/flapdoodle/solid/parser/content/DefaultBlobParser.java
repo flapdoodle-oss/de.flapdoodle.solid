@@ -29,8 +29,8 @@ import com.google.common.annotations.VisibleForTesting;
 import de.flapdoodle.solid.io.Filenames;
 import de.flapdoodle.solid.parser.meta.Toml;
 import de.flapdoodle.solid.parser.meta.Yaml;
-import de.flapdoodle.solid.parser.types.ParserFactory;
-import de.flapdoodle.solid.types.maps.GroupedPropertyMap;
+import de.flapdoodle.solid.parser.types.PropertyTreeParserFactory;
+import de.flapdoodle.solid.types.tree.PropertyTree;
 
 public class DefaultBlobParser implements BlobParser {
 
@@ -39,9 +39,9 @@ public class DefaultBlobParser implements BlobParser {
 	private static final Pattern YAML_START = Pattern.compile("(?m)(?d)^\\-{3}");
 	private static final Pattern YAML_END = YAML_START;
 	
-	private final ParserFactory parserFactory;
+	private final PropertyTreeParserFactory parserFactory;
 	
-	public DefaultBlobParser(ParserFactory parserFactory) {
+	public DefaultBlobParser(PropertyTreeParserFactory parserFactory) {
 		this.parserFactory = parserFactory;
 	}
 
@@ -71,13 +71,13 @@ public class DefaultBlobParser implements BlobParser {
 	}
 
 	@VisibleForTesting
-	protected static Optional<ParsedMetaAndContent> findToml(ParserFactory parserFactory, String content) {
+	protected static Optional<ParsedMetaAndContent> findToml(PropertyTreeParserFactory parserFactory, String content) {
 		return findMeta(TOML_START, TOML_END, content)
 				.map(mc -> ParsedMetaAndContent.of(parserFactory.parserFor(Toml.class).get().parse(mc.meta()), mc.content()));
 	}
 
 	@VisibleForTesting
-	protected static Optional<ParsedMetaAndContent> findYaml(ParserFactory parserFactory, String content) {
+	protected static Optional<ParsedMetaAndContent> findYaml(PropertyTreeParserFactory parserFactory, String content) {
 		return findMeta(YAML_START, YAML_END, content)
 				.map(mc -> ParsedMetaAndContent.of(parserFactory.parserFor(Yaml.class).get().parse(mc.meta()), mc.content()));
 	}
@@ -115,11 +115,11 @@ public class DefaultBlobParser implements BlobParser {
 	@Value.Immutable
 	interface ParsedMetaAndContent {
 		@Parameter
-		GroupedPropertyMap meta();
+		PropertyTree meta();
 		@Parameter
 		String content();
 		
-		public static ParsedMetaAndContent of(GroupedPropertyMap meta, String content) {
+		public static ParsedMetaAndContent of(PropertyTree meta, String content) {
 			return ImmutableParsedMetaAndContent.of(meta, content);
 		}
 	}

@@ -25,18 +25,18 @@ import de.flapdoodle.solid.parser.meta.Toml;
 
 public interface FiletypeParserFactory {
 	
-	Optional<Parser> parserFor(String extension);
+	Optional<PropertyTreeParser> parserFor(String extension);
 	
 	ImmutableSet<String> supportedExtensions();
 	
-	public static FiletypeParserFactory defaults(ParserFactory parserFactory) {
+	public static FiletypeParserFactory defaults(PropertyTreeParserFactory parserFactory) {
 		ImmutableMap<String, Class<?>> parser=ImmutableMap.<String,Class<?>>builder()
 				.put("toml", Toml.class)
 				.build();
 		
 		return new FiletypeParserFactory() {
 			@Override
-			public Optional<Parser> parserFor(String extension) {
+			public Optional<PropertyTreeParser> parserFor(String extension) {
 				return Optional.ofNullable(parser.get(extension))
 						.flatMap(parserFactory::parserFor);
 			}

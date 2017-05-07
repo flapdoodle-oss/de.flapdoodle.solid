@@ -20,13 +20,13 @@ import org.immutables.value.Value;
 
 import com.google.common.collect.ImmutableSet;
 
-import de.flapdoodle.solid.types.maps.GroupedPropertyMap;
+import de.flapdoodle.solid.types.tree.PropertyTree;
 
 @Value.Immutable
 public interface Blob {
 	ImmutableSet<String> path();
 	String filename();
-	GroupedPropertyMap meta();
+	PropertyTree meta();
 	ContentType contentType();
 	String content();
 	
