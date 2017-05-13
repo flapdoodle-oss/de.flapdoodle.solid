@@ -30,7 +30,6 @@ import de.flapdoodle.solid.io.Filenames;
 import de.flapdoodle.solid.parser.meta.Toml;
 import de.flapdoodle.solid.parser.meta.Yaml;
 import de.flapdoodle.solid.parser.types.PropertyTreeParserFactory;
-import de.flapdoodle.solid.types.tree.PropertyTree;
 
 public class DefaultBlobParser implements BlobParser {
 
@@ -109,18 +108,6 @@ public class DefaultBlobParser implements BlobParser {
 		
 		public static MetaAndContent of(String meta, String content) {
 			return ImmutableMetaAndContent.of(meta, content);
-		}
-	}
-	
-	@Value.Immutable
-	interface ParsedMetaAndContent {
-		@Parameter
-		PropertyTree meta();
-		@Parameter
-		String content();
-		
-		public static ParsedMetaAndContent of(PropertyTree meta, String content) {
-			return ImmutableParsedMetaAndContent.of(meta, content);
 		}
 	}
 }

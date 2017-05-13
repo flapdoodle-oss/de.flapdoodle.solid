@@ -53,11 +53,18 @@ public abstract class FixedPropertyTree implements PropertyTree {
 		public Builder put(String key, String value) {
 			return putValue(key,value);
 		}
+		
 		public Builder put(String key, Number value) {
 			return putValue(key,value);
 		}
+		
 		public Builder put(String key, Date value) {
 			return putValue(key,value);
+		}
+		
+		public Builder copyOf(PropertyTree src) {
+			src.properties().forEach(p -> this.putAllMap(p, src.get(p)));
+			return this;
 		}
 	}
 	

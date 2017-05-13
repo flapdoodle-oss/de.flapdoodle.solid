@@ -444,6 +444,19 @@
 			<version>${flexmark.version}</version>
 		</dependency>
 
+		<!-- https://mvnrepository.com/artifact/com.samskivert/jmustache -->
+		<dependency>
+			<groupId>com.samskivert</groupId>
+			<artifactId>jmustache</artifactId>
+			<version>1.13</version>
+		</dependency>
+		<!-- https://mvnrepository.com/artifact/io.undertow/undertow-core -->
+		<dependency>
+			<groupId>io.undertow</groupId>
+			<artifactId>undertow-core</artifactId>
+			<version>1.4.14.Final</version>
+		</dependency>
+
 		
 		<dependency>
 			<groupId>de.flapdoodle.testdoc</groupId>

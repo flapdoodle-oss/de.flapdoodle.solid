@@ -16,18 +16,15 @@
  */
 package de.flapdoodle.solid.site;
 
-import java.util.Optional;
-
 import org.immutables.value.Value;
 import org.immutables.value.Value.Default;
 import org.immutables.value.Value.Style;
 
-import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableMap;
 
+import de.flapdoodle.legacy.Optionals;
 import de.flapdoodle.solid.site.ImmutableSiteConfig.Builder;
 import de.flapdoodle.solid.types.tree.PropertyTree;
-import de.flapdoodle.types.Either;
 
 @Value.Immutable
 @Style(deepImmutablesDetection=true)
@@ -47,11 +44,21 @@ public interface SiteConfig {
 		return "static";
 	}
 	
-	Optional<String> theme();
+	String theme();
 	
 	ImmutableMap<String, String> properties();
 	
 	Urls urls();
+	
+	PathProperties pathProperties();
+	
+	PostProcessing postProcessing();
+	
+	Formatters formatters();
+	
+	Filters filters();
+	
+	ImmutableMap<String, String> defaultFormatter();
 	
 	public static ImmutableSiteConfig.Builder builder() {
 		return ImmutableSiteConfig.builder();
@@ -61,29 +68,38 @@ public interface SiteConfig {
 		Builder builder = builder()
 				.filename(filename)
 				.baseUrl(map.find(String.class, "baseURL").get())
-				.theme(map.find(String.class, "theme"));
+				.theme(Optionals.checkPresent(map.find(String.class, "theme"),"theme not set in %s",filename).get());
 		
 		map.find(String.class, "title")
 			.ifPresent(v -> builder.putProperties("title", v));
 		map.find(String.class, "subtitle")
 			.ifPresent(v -> builder.putProperties("subtitle", v));
 		
-		ImmutableUrls.Builder urlsBuilder = Urls.builder();
-		Either<Object, ? extends PropertyTree> urlsConfigOrElse = map.single("urls");
-		Preconditions.checkArgument(!urlsConfigOrElse.isLeft(),"url config not valid: %s",urlsConfigOrElse);
-		PropertyTree urlConfigs = urlsConfigOrElse.right();
+		builder.urls(Urls.of(Optionals.checkPresent(map.find("urls"),"urls not found in %s",map).get()));
 		
-		urlConfigs.properties().forEach(label -> {
-			ImmutableConfig.Builder configBuilder = Urls.Config.builder();
-			Either<Object, ? extends PropertyTree> config = urlConfigs.single(label);
-			Preconditions.checkArgument(!config.isLeft(),"config for %s is valid: %s",label, config);
-			PropertyTree properties = config.right();
-			Optional<String> path = properties.find(String.class, "path");
-			Preconditions.checkArgument(path.isPresent(),"could not get propery path from %s in %s",config,label);
-			configBuilder.path(path.get());
-			urlsBuilder.putConfigs(label, configBuilder.build());
-		});
-		builder.urls(urlsBuilder.build());
+		builder.pathProperties(map.find("pathProperties")
+				.map(PathProperties::of)
+				.orElseGet(() -> PathProperties.empty()));
+
+		builder.postProcessing(map.find("postProcessing")
+			.map(PostProcessing::of)
+			.orElseGet(() -> PostProcessing.empty()));
+		
+		builder.formatters(map.find("formatters")
+				.map(Formatters::of)
+				.orElse(Formatters.empty()));
+		
+		builder.filters(map.find("filters")
+				.map(Filters::of)
+				.orElse(Filters.empty()));
+		
+		map.find("defaultFormatters")
+			.ifPresent(def -> {
+				def.properties().forEach(property -> {
+					String formatter = Optionals.checkPresent(def.find(String.class, property),"invalid default formatter for %s",property).get();
+					builder.putDefaultFormatter(property, formatter);
+				});
+			});
 		
 		return builder.build();
 	}

@@ -22,4 +22,8 @@ import de.flapdoodle.solid.parser.content.Site;
 
 public interface SiteGenerator {
 	ImmutableList<Document> generate(Site site);
+	
+	public static SiteGenerator defaultGenerator() {
+		return new DefaultSiteGenerator(PropertyResolver.defaultResolver(), PathRenderer.defaultPathRenderer(), FilterFactory.defaultFilterFactory());
+	}
 }

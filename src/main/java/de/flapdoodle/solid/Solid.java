@@ -19,33 +19,31 @@ package de.flapdoodle.solid;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 
-import de.flapdoodle.solid.generator.DefaultSiteGenerator;
+import com.google.common.base.Preconditions;
+
+import de.flapdoodle.solid.generator.SiteGenerator;
+import de.flapdoodle.solid.sinks.DebuggingPageSink;
+import de.flapdoodle.solid.sinks.StaticHttpServerPageSink;
+import de.flapdoodle.solid.sinks.UndertowPageSink;
 
 @SuppressWarnings("ucd")
 public class Solid {
 
 	public static void main(String[] args) {
 		System.out.println("solid - a static site generator");
+		Preconditions.checkArgument(args.length>=2,"usage: <siteRoot> <exportDirectory>");
 		
-		Path siteARoot = Paths.get(args[0]);
+		Path siteRoot = Paths.get(args[0]);
+		Path target = Paths.get(args[1]);
 		
-		testing(siteARoot).run();
+		StaticPageGenerator.onChange(siteRoot, target)
+			.generator(SiteSpring.withPath(siteRoot), SiteGenerator.defaultGenerator(), new StaticHttpServerPageSink(target)
+					.andThen(new DebuggingPageSink())
+					.andThen(new UndertowPageSink()))
+			.run();
 	}
 
 	public static Runnable testing(Path siteRoot) {
-		return StaticPageGenerator.once().generator(SiteSpring.withPath(siteRoot), new DefaultSiteGenerator(), (documents) -> {
-			if (!documents.isEmpty()) {
-				System.out.println("-------------------------");
-				System.out.println("Documents: ");
-				documents.forEach(d -> {
-					System.out.println(" - "+d.path());
-				});
-				System.out.println("-------------------------");
-			} else {
-				System.out.println("-------------------------");
-				System.out.println("No generated Documents.");
-				System.out.println("-------------------------");
-			}
-		});
+		return StaticPageGenerator.once().generator(SiteSpring.withPath(siteRoot), SiteGenerator.defaultGenerator(), new DebuggingPageSink());
 	}
 }

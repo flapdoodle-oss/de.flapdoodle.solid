@@ -25,6 +25,7 @@ import de.flapdoodle.solid.parser.content.BlobParser;
 import de.flapdoodle.solid.parser.content.DefaultBlobParser;
 import de.flapdoodle.solid.parser.content.Site;
 import de.flapdoodle.solid.parser.types.PropertyTreeParserFactory;
+import de.flapdoodle.solid.theme.ThemeFactory;
 
 public interface SiteSpring extends Supplier<Site> {
 
@@ -32,7 +33,8 @@ public interface SiteSpring extends Supplier<Site> {
 		return () -> {
 			PropertyTreeParserFactory parserFactory = PropertyTreeParserFactory.defaultFactory();
 			BlobParser blobParser = new DefaultBlobParser(parserFactory);
-			DefaultSiteFactory siteFactory = new DefaultSiteFactory(parserFactory, blobParser);
+			ThemeFactory themeFactory = ThemeFactory.defaultFactory();
+			DefaultSiteFactory siteFactory = new DefaultSiteFactory(parserFactory, blobParser, themeFactory);
 			return siteFactory.siteOf(siteRoot);
 		};
 	}

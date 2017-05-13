@@ -16,7 +16,17 @@
  */
 package de.flapdoodle.solid;
 
+import java.nio.file.Path;
+import java.util.concurrent.TimeUnit;
+import java.util.function.Consumer;
+
+import com.google.common.collect.ImmutableSet;
+import com.google.common.collect.Multimap;
+import com.google.common.collect.Multimaps;
+
 import de.flapdoodle.solid.generator.SiteGenerator;
+import de.flapdoodle.solid.io.PathWatcher;
+import de.flapdoodle.solid.threads.Deferer;
 
 public interface StaticPageGenerator {
 	Runnable generator(SiteSpring siteSpring, SiteGenerator generator, PageSink pageSink);
@@ -25,5 +35,44 @@ public interface StaticPageGenerator {
 		return (siteSpring, generator, pageSink) -> () -> {
 			pageSink.accept(generator.generate(siteSpring.get()));
 		};
+	}
+	
+	public static StaticPageGenerator onChange(Path dir, Path ... excludes) {
+		ImmutableSet<Path> excludesAsSet=ImmutableSet.copyOf(excludes);
+		
+		return (siteSpring, generator, pageSink) -> () -> {
+			try {
+				pageSink.accept(generator.generate(siteSpring.get()));
+			} catch (RuntimeException rx) {
+				rx.printStackTrace();
+			}
+			
+			Consumer<Multimap<String, Path>> generateOnChange = Deferer.call((Multimap<String, Path> changes) -> {
+				try {
+					pageSink.accept(generator.generate(siteSpring.get()));
+				} catch (RuntimeException rx) {
+					rx.printStackTrace();
+				}
+			})
+				.onInactivityFor(1, TimeUnit.SECONDS);
+			
+			PathWatcher.watch(dir)
+				.every(5, TimeUnit.SECONDS)
+				.with((Multimap<String, Path> changes) -> {
+					Multimap<String, Path> withoutExcludedPathEntries = Multimaps.filterValues(changes, path -> !excludesAsSet.stream()
+							.filter(e -> isParentOf(e,path))
+							.findAny().isPresent());
+					
+					if (!withoutExcludedPathEntries.isEmpty()) {
+						System.out.println("Something has changed: "+withoutExcludedPathEntries);
+						generateOnChange.accept(withoutExcludedPathEntries);
+					}
+					return false;
+				});
+		};
+	}
+
+	static boolean isParentOf(Path exclude, Path path) {
+		return path.toAbsolutePath().startsWith(exclude.toAbsolutePath());
 	}
 }

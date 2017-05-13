@@ -1,7 +1,7 @@
 baseURL = "http://www.foo.de/blog"
 title = "Sample Blog"
 subtitle = "Es musste mal gesagt werden..."
-theme = "wp"
+theme = "wpM"
 defaultContentLanguage = "de"
 languageCode = "de-de"
 canonifyURLs = true 
@@ -9,34 +9,57 @@ relativeURLs = true
 #disqusShortname = "sample-de"
 
 [urls]
-	[urls.posts]
-		path = "/:year/:month/:day/:title/"
+	[urls.pages]
+		path = "/pages/:pathTitle/"
+		filter = "pages"
 		
-	[urls.monthly]
+	[urls.posts]
+		path = "/:year/:month/:day/:pathTitle/"
+		filter = "posts"
+		
+	[urls.daily]
 		path = "/:year/:month/:day/:page/"
 		pageSize = 4		
+		filter = "posts"
 
+	[urls.monthly]
+		path = "/:year/:month/:page/"
+		pageSize = 4		
+		filter = "posts"
 	
+	[urls.year]
+		path = "/:year/:page/"
+		pageSize = 10		
+		filter = "posts"
 
-[permalinks]
-  post = "/:year/:month/:day/:title/"
 
-[params]
-	locale = "de-DE"
+[pathProperties]
+	pathTitle = [ "post_url", "title" ]
 
-[Xurls]
-	itemsPerPage = 4
-	
-[Xurls.paging]
-	monthly = 10
-	
-[Xurls.paths]
-	posts = "/:year/:month/:day/:title/"
-	monthly = "/:year/:month/"
-	year = "/:year/"
-	paged-year = "/:year/:page"
-	
-[Xurls.mapping]
-	year = "published.year"
-	month = "published.month"
-	day = "published.day"
+[filters.posts]
+	property = "type"
+	value = "post"
+	operator = "eq"
+
+[filters.pages]
+	property = "type"
+	value = "page"
+	operator = "eq"
+
+[formatters]
+	4digits = "%04d"
+	2digits = "%02d"
+
+[formatters.title]
+	type = "Url"
+
+[defaultFormatters]
+	year = "4digits"
+	month = "2digits"
+	day = "2digits"
+	pathTitle = "title"
+
+[postProcessing.regex.post_url]
+	source = "url"
+	pattern = "/([0-9]{4})/([0-9]{2})/([0-9]{2})/(?<part>[^/]+)/"
+	replacement = "${part}"

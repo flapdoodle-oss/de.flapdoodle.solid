@@ -63,4 +63,23 @@ public class FixedPropertyTreeTest {
 		String pretty = PropertyTreePrinter.prettyPrinted(tree);
 		System.out.println(pretty);
 	}
+	
+	@Test
+	public void copy() {
+		PropertyTree org = FixedPropertyTree.builder()
+			.put("sub", FixedPropertyTree.builder()
+					.put("foo", "bar")
+					.build())
+			.put("sub", 17)
+			.build();
+		
+		ImmutableFixedPropertyTree tree = FixedPropertyTree.builder().copyOf(org).build();
+		
+		assertEquals("[sub]", tree.properties().toString());
+		assertEquals("[foo]", tree.get("sub").get(0).right().properties().toString());
+		assertEquals(17, tree.get("sub").get(1).left());
+		
+		String pretty = PropertyTreePrinter.prettyPrinted(tree);
+		System.out.println(pretty);
+	}
 }

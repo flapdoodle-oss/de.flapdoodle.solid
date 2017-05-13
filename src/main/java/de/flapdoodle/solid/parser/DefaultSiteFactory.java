@@ -31,30 +31,39 @@ import de.flapdoodle.solid.parser.content.Blob;
 import de.flapdoodle.solid.parser.content.BlobParser;
 import de.flapdoodle.solid.parser.content.ImmutableSite.Builder;
 import de.flapdoodle.solid.parser.content.Site;
+import de.flapdoodle.solid.parser.content.SiteConfigPostProcessor;
 import de.flapdoodle.solid.parser.types.FiletypeParserFactory;
 import de.flapdoodle.solid.parser.types.PropertyTreeParserFactory;
 import de.flapdoodle.solid.site.SiteConfig;
+import de.flapdoodle.solid.theme.Theme;
+import de.flapdoodle.solid.theme.ThemeFactory;
 import de.flapdoodle.types.Try;
 
 public class DefaultSiteFactory implements SiteFactory {
 
 	private final PropertyTreeParserFactory parserFactory;
 	private final BlobParser blobParser;
+	private final ThemeFactory themeFactory;
 
-	public DefaultSiteFactory(PropertyTreeParserFactory parserFactory, BlobParser blobParser) {
+	public DefaultSiteFactory(PropertyTreeParserFactory parserFactory, BlobParser blobParser, ThemeFactory themeFactory) {
 		this.parserFactory = parserFactory;
 		this.blobParser = blobParser;
+		this.themeFactory = themeFactory;
 	}
 	
 	@Override
 	public Site siteOf(Path siteRoot) {
 		SiteConfig siteConfig = parse(siteRoot, parserFactory);
-		return collect(siteRoot, siteConfig, blobParser);
+		Theme theme = themeFactory.of(siteRoot.resolve("themes").resolve(siteConfig.theme()));
+		return collect(siteRoot, siteConfig, theme, blobParser);
 	}
 	
-	private static Site collect(Path siteRoot, SiteConfig siteConfig, BlobParser blobParser) {
+	private static Site collect(Path siteRoot, SiteConfig siteConfig, Theme theme, BlobParser blobParser) {
 		Builder siteBuilder = Site.builder()
-				.config(siteConfig);
+				.config(siteConfig)
+				.theme(theme);
+		
+		SiteConfigPostProcessor postProcessor = SiteConfigPostProcessor.of(siteConfig.postProcessing());
 		
 		Try.runable(() ->	Files.walk(siteRoot.resolve(siteConfig.contentDirectory()))
 				.forEach(path -> {
@@ -67,7 +76,7 @@ public class DefaultSiteFactory implements SiteFactory {
 							.mapCheckedException(SomethingWentWrong::new)
 							.get();
 						if (blob.isPresent()) {
-							siteBuilder.addBlobs(blob.get());
+							siteBuilder.addBlobs(postProcessor.process(blob.get()));
 						} else {
 							siteBuilder.addIgnoredFiles(relativePath.toString());
 						}

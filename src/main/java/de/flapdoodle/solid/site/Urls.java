@@ -20,7 +20,13 @@ import java.util.Optional;
 
 import org.immutables.value.Value.Immutable;
 
+import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
+import com.google.common.collect.ImmutableSet;
+
+import de.flapdoodle.legacy.Optionals;
+import de.flapdoodle.solid.parser.path.Path;
+import de.flapdoodle.solid.types.tree.PropertyTree;
 
 @Immutable
 public interface Urls {
@@ -28,8 +34,9 @@ public interface Urls {
 
 	@Immutable
 	interface Config {
-		String path();
+		Path path();
 		Optional<Integer> itemsPerPage();
+		ImmutableSet<String> filters();
 		
 		public static ImmutableConfig.Builder builder() {
 			return ImmutableConfig.builder();
@@ -38,5 +45,18 @@ public interface Urls {
 	
 	public static ImmutableUrls.Builder builder() {
 		return ImmutableUrls.builder();
+	}
+	
+	public static Urls of(PropertyTree urls) {
+		ImmutableUrls.Builder urlsBuilder = Urls.builder();
+		urls.properties().forEach(label -> {
+			ImmutableConfig.Builder configBuilder = Urls.Config.builder();
+			PropertyTree config = urls.find(label).get();
+			String path = Optionals.checkPresent(config.find(String.class, "path"),"could not get propery path from %s in %s",config,label).get();
+			configBuilder.path(Path.parse(path))
+				.addAllFilters(config.findList(String.class, "filter"));
+			urlsBuilder.putConfigs(label, configBuilder.build());
+		});
+		return urlsBuilder.build();
 	}
 }

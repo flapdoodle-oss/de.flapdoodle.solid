@@ -44,6 +44,18 @@ public class PropertyTreeTest {
 	}
 	
 	@Test
+	public void bugPropertyInSub() {
+		PropertyTree tree = FixedPropertyTree.builder()
+				.put("sub", FixedPropertyTree.builder()
+						.put("simple", 17)
+						.put("foo", 6)
+						.build())
+				.build();
+		
+		assertFalse(tree.find(Integer.class, "sub", "simple","foo").isPresent());
+	}
+	
+	@Test
 	public void wontFindAnythingIfMoreThanOneInList() {
 		PropertyTree tree = FixedPropertyTree.builder()
 				.put("sub", FixedPropertyTree.builder()

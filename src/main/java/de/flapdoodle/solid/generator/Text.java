@@ -37,4 +37,8 @@ public interface Text extends Content {
 	default Charset encoding() {
 		return Charsets.UTF_8;
 	}
+	
+	public static ImmutableText.Builder builder() {
+		return ImmutableText.builder();
+	}
 }

@@ -18,11 +18,13 @@ package de.flapdoodle.solid.generator;
 
 import org.immutables.value.Value.Immutable;
 
-import com.google.common.collect.ImmutableList;
-
 @Immutable
 public interface Document {
-	ImmutableList<String> path();
+	String path();
 	
 	Content content();
+	
+	public static ImmutableDocument.Builder builder() {
+		return ImmutableDocument.builder();
+	}
 }

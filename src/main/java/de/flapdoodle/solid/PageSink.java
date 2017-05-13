@@ -24,4 +24,8 @@ import de.flapdoodle.solid.generator.Document;
 
 public interface PageSink extends Consumer<ImmutableList<Document>> {
 
+	@Override
+	default PageSink andThen(Consumer<? super ImmutableList<Document>> after) {
+		return (t) -> { accept(t); after.accept(t); };
+	}
 }

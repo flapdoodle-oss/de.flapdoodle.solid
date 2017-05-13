@@ -22,10 +22,13 @@ import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableSet;
 
 import de.flapdoodle.solid.site.SiteConfig;
+import de.flapdoodle.solid.theme.Theme;
 
 @Value.Immutable
 public interface Site {
 	SiteConfig config();
+	Theme theme();
+	
 	ImmutableList<Blob> blobs();
 	ImmutableSet<String> ignoredFiles();
 	
