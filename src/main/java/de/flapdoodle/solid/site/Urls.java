@@ -37,6 +37,8 @@ public interface Urls {
 		Path path();
 		Optional<Integer> itemsPerPage();
 		ImmutableSet<String> filters();
+		ImmutableList<String> ordering();
+
 		
 		public static ImmutableConfig.Builder builder() {
 			return ImmutableConfig.builder();
@@ -54,7 +56,8 @@ public interface Urls {
 			PropertyTree config = urls.find(label).get();
 			String path = Optionals.checkPresent(config.find(String.class, "path"),"could not get propery path from %s in %s",config,label).get();
 			configBuilder.path(Path.parse(path))
-				.addAllFilters(config.findList(String.class, "filter"));
+				.addAllFilters(config.findList(String.class, "filter"))
+				.addAllOrdering(config.findList(String.class, "order"));
 			urlsBuilder.putConfigs(label, configBuilder.build());
 		});
 		return urlsBuilder.build();

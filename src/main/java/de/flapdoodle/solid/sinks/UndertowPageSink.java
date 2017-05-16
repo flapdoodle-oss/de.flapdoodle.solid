@@ -31,7 +31,7 @@ public class UndertowPageSink implements PageSink {
 					if (document!=null) {
 						Content content = document.content();
 						if (content instanceof Text) {
-							exchange.getResponseHeaders().put(Headers.CONTENT_TYPE, content.mimeType());
+							exchange.getResponseHeaders().put(Headers.CONTENT_TYPE, content.mimeType()+"; charset=UTF-8");
 	            exchange.getResponseSender().send(((Text) content).text());
 						} else {
 							if (content instanceof Binary) {

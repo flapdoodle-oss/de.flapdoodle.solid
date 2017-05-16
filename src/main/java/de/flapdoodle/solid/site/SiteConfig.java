@@ -20,6 +20,7 @@ import org.immutables.value.Value;
 import org.immutables.value.Value.Default;
 import org.immutables.value.Value.Style;
 
+import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
 
 import de.flapdoodle.legacy.Optionals;
@@ -58,6 +59,8 @@ public interface SiteConfig {
 	
 	Filters filters();
 	
+	ImmutableList<String> defaultOrdering();
+	
 	ImmutableMap<String, String> defaultFormatter();
 	
 	public static ImmutableSiteConfig.Builder builder() {
@@ -92,6 +95,8 @@ public interface SiteConfig {
 		builder.filters(map.find("filters")
 				.map(Filters::of)
 				.orElse(Filters.empty()));
+		
+		builder.addAllDefaultOrdering(map.findList(String.class, "order"));
 		
 		map.find("defaultFormatters")
 			.ifPresent(def -> {

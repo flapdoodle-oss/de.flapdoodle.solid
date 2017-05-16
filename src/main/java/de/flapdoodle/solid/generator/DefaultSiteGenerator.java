@@ -29,6 +29,7 @@ import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.ImmutableMultimap;
 import com.google.common.collect.Iterables;
+import com.google.common.collect.Ordering;
 
 import de.flapdoodle.solid.formatter.DefaultObjectFormatter;
 import de.flapdoodle.solid.generator.PathRenderer.FormatterOfProperty;
@@ -64,11 +65,22 @@ public class DefaultSiteGenerator implements SiteGenerator {
 		
 		FormatterOfProperty propertyFormatter=formatterOfProperty(site);
 		
+		final ImmutableList<String> defaultOrdering=site.config().defaultOrdering().isEmpty() 
+				? ImmutableList.of("!date")
+				: site.config().defaultOrdering();
+				
+		
 		PathProperties pathProperties = site.config().pathProperties().merge(PathProperties.defaults());
 		site.config().urls().configs().forEach((String name, Config config) -> {
 			Path currentPath = config.path();
+			
+			ImmutableList<String> currentOrdering=config.ordering().isEmpty() 
+					? defaultOrdering 
+					: config.ordering();
 
-			ImmutableMultimap<ImmutableMap<String, Object>, Blob> groupedBlobs = filter(site.blobs(), filterFactory.filters(config.filters(), site.config().filters().filters())).stream()
+			ImmutableList<Blob> sortedBlobs = sort(site.blobs(), currentOrdering);
+			
+			ImmutableMultimap<ImmutableMap<String, Object>, Blob> groupedBlobs = filter(sortedBlobs, filterFactory.filters(config.filters(), site.config().filters().filters())).stream()
 				.collect(Collectors.groupingBy(blob -> pathPropertiesOf(blob, pathProperties::mapped, currentPath, propertyResolver)));
 
 			if (currentPath.propertyNames().contains(Path.PAGE)) {
@@ -100,6 +112,45 @@ public class DefaultSiteGenerator implements SiteGenerator {
 		});
 		
 		return documents.build();
+	}
+
+	private ImmutableList<Blob> sort(ImmutableList<Blob> blobs, ImmutableList<String> currentOrdering) {
+		Ordering<Blob> comparator=comparatorOf(currentOrdering);
+		return comparator.immutableSortedCopy(blobs);
+	}
+
+	private Ordering<Blob> comparatorOf(ImmutableList<String> currentOrdering) {
+		Preconditions.checkArgument(!currentOrdering.isEmpty(),"invalid ordering: %s",currentOrdering);
+		
+		ImmutableList<Ordering<Blob>> all = currentOrdering.stream()
+			.map(p -> orderingFor(p))
+			.collect(ImmutableList.toImmutableList());
+		
+		return Ordering.compound(all);
+	}
+	
+	private static Ordering<Blob> orderingFor(String property) {
+		boolean reverse;
+		String cleanedProperty;
+		if (property.startsWith("!")) {
+			cleanedProperty=property.substring(1);
+			reverse=true;
+		} else {
+			cleanedProperty=property;
+			reverse=false;
+		}
+		
+		Ordering<Blob> ret = Ordering.natural().nullsLast()
+				.onResultOf(blob -> propertyOf(blob, cleanedProperty));
+		return reverse ? ret.reverse() : ret;
+	}
+	
+	private static Comparable<?> propertyOf(Blob blob, String property) {
+		Optional<Object> result = blob.meta().find(Object.class, Splitter.on('.').split(property));
+		if (result.isPresent() && result.get() instanceof Comparable) {
+			return (Comparable<?>) result.get();
+		}
+		return null;
 	}
 
 	private ImmutableList<Blob> filter(ImmutableList<Blob> src, Predicate<Blob> filter) {
