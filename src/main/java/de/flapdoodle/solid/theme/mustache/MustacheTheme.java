@@ -6,8 +6,11 @@ import java.util.List;
 
 import org.immutables.value.Value.Auxiliary;
 import org.immutables.value.Value.Immutable;
+import org.immutables.value.Value.Parameter;
 
+import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableList;
+import com.google.common.collect.ImmutableMap;
 import com.samskivert.mustache.DefaultCollector;
 import com.samskivert.mustache.Mustache;
 import com.samskivert.mustache.Mustache.Collector;
@@ -31,6 +34,7 @@ public class MustacheTheme implements Theme {
 
 	private final Path rootDir;
 	private final Compiler compiler;
+	private final ThreadLocal<ImmutableMap<String, de.flapdoodle.solid.formatter.Formatter>> formatter=new ThreadLocal<>();
 
 	public MustacheTheme(Path rootDir) {
 		this.rootDir = rootDir;
@@ -61,7 +65,7 @@ public class MustacheTheme implements Theme {
 		};
 	}
 
-	private static Collector customCollector() {
+	private Collector customCollector() {
 		return new DefaultCollector() {
 			
 			@Override
@@ -70,6 +74,14 @@ public class MustacheTheme implements Theme {
 				if (ret==null) {
 					if (ctx instanceof PropertyTree) {
 						return (c,n) -> ((PropertyTree) c).get(n);
+					}
+					if (ctx instanceof MustacheFormating) {
+						ImmutableMap<String, de.flapdoodle.solid.formatter.Formatter> map = Preconditions.checkNotNull(formatter.get(),"formatter map not set");
+						de.flapdoodle.solid.formatter.Formatter formatter = map.get(name);
+						return (c,n) ->formatter.format(c).orElse("");
+					}
+					if (name.equals("formatWith")) {
+						return (c,n) -> MustacheFormating.of(c);
 					}
 				}
 				return ret;
@@ -91,13 +103,26 @@ public class MustacheTheme implements Theme {
 	}
 
 	private Renderer rendererOf(Template template) {
-		return renderable -> Text.builder()
-				.mimeType("text/html")
-				.text(template.execute(asMustacheContext(renderable)))
-				.build();
+		return renderable -> {
+			formatter.set(renderable.context().site().config().formatters().formatters());
+			return Text.builder()
+					.mimeType("text/html")
+					.text(template.execute(asMustacheContext(renderable)))
+					.build();
+		};
 	}
 
 	protected Object asMustacheContext(Renderer.Renderable renderable) {
+//		ImmutableMap<String, de.flapdoodle.solid.formatter.Formatter> formatters = renderable.context().site().config().formatters().formatters();
+//		new Mustache.Lambda() {
+//			
+//			@Override
+//			public void execute(Fragment frag, Writer out) throws IOException {
+//				// TODO Auto-generated method stub
+//				
+//			}
+//		};
+		
 		return MustacheWrapper.builder()
 			.context(renderable.context())
 			.addAllBlobs(renderable.blobs())
@@ -116,6 +141,16 @@ public class MustacheTheme implements Theme {
 		
 		public static ImmutableMustacheWrapper.Builder builder() {
 			return ImmutableMustacheWrapper.builder();
+		}
+	}
+	
+	@Immutable
+	interface MustacheFormating {
+		@Parameter
+		Object value();
+		
+		public static MustacheFormating of(Object value) {
+			return ImmutableMustacheFormating.of(value);
 		}
 	}
 }
