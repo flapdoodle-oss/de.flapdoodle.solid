@@ -3,6 +3,7 @@ package de.flapdoodle.solid.theme.mustache;
 import java.io.FileReader;
 import java.nio.file.Path;
 import java.util.List;
+import java.util.Optional;
 
 import org.immutables.value.Value.Auxiliary;
 import org.immutables.value.Value.Immutable;
@@ -78,13 +79,28 @@ public class MustacheTheme implements Theme {
 					if (ctx instanceof MustacheFormating) {
 						ImmutableMap<String, de.flapdoodle.solid.formatter.Formatter> map = Preconditions.checkNotNull(formatter.get(),"formatter map not set");
 						de.flapdoodle.solid.formatter.Formatter formatter = map.get(name);
-						return (c,n) ->formatter.format(c).orElse("");
+						return (c,n) ->formatter.format(((MustacheFormating) c).value()).orElse("");
 					}
 					if (name.equals("formatWith")) {
-						return (c,n) -> MustacheFormating.of(c);
+						return (c,n) -> singleValue(c).map(MustacheFormating::of).orElse(null);
 					}
 				}
 				return ret;
+			}
+
+			private Optional<Object> singleValue(Object c) {
+				if (c instanceof List) {
+					List l=(List) c;
+					if (l.size()==1) {
+						return singleValue(l.get(0));
+					}
+					return Optional.empty();
+				}
+				if (c instanceof Either) {
+					Either e=(Either) c;
+					return e.isLeft() ? singleValue(e.left()) : singleValue(e.right());
+				}
+				return Optional.ofNullable(c);
 			}
 		};
 	}
