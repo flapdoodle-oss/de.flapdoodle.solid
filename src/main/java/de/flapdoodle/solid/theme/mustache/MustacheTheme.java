@@ -51,17 +51,9 @@ public class MustacheTheme implements Theme {
 		return new Formatter() {
 			@Override
 			public String format(Object value) {
-				if (value instanceof List) {
-					List l = (List) value;
-					if (l.size()==1) {
-						return format(l.get(0));
-					}
-				}
-				if (value instanceof Either) {
-					Either either = (Either) value;
-					return format(either.isLeft() ? either.left() : either.right());
-				}
-				return value.toString();
+				return singleValue(value)
+						.orElse(value)
+						.toString();
 			}
 		};
 	}
@@ -88,23 +80,24 @@ public class MustacheTheme implements Theme {
 				return ret;
 			}
 
-			private Optional<Object> singleValue(Object c) {
-				if (c instanceof List) {
-					List l=(List) c;
-					if (l.size()==1) {
-						return singleValue(l.get(0));
-					}
-					return Optional.empty();
-				}
-				if (c instanceof Either) {
-					Either e=(Either) c;
-					return e.isLeft() ? singleValue(e.left()) : singleValue(e.right());
-				}
-				return Optional.ofNullable(c);
-			}
 		};
 	}
 
+	private static Optional<Object> singleValue(Object c) {
+		if (c instanceof List) {
+			List l=(List) c;
+			if (l.size()==1) {
+				return singleValue(l.get(0));
+			}
+			return Optional.empty();
+		}
+		if (c instanceof Either) {
+			Either e=(Either) c;
+			return e.isLeft() ? singleValue(e.left()) : singleValue(e.right());
+		}
+		return Optional.ofNullable(c);
+	}
+	
 	private static TemplateLoader loaderOf(Path root) {
 		return name -> new FileReader(root.resolve(name+".mustache").toFile());
 	}
