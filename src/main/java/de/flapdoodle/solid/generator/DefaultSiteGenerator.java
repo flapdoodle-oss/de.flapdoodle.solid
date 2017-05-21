@@ -18,7 +18,6 @@ package de.flapdoodle.solid.generator;
 
 import java.util.Collection;
 import java.util.List;
-import java.util.Optional;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Function;
 import java.util.function.Predicate;
@@ -85,7 +84,7 @@ public class DefaultSiteGenerator implements SiteGenerator {
 				.collect(Collectors.groupingBy(blob -> pathPropertiesOf(blob, pathProperties::mapped, currentPath, propertyResolver)));
 
 			if (currentPath.propertyNames().contains(Path.PAGE)) {
-				groupedBlobs=groupByPage(groupedBlobs, Path.PAGE, config.itemsPerPage().orElse(10));
+				groupedBlobs=groupByPage(groupedBlobs, Path.PAGE, Maybe.fromOptional(config.itemsPerPage()).orElse(() -> 10));
 			}
 			
 			System.out.println(name);
@@ -165,7 +164,7 @@ public class DefaultSiteGenerator implements SiteGenerator {
 			if (formatterName.isPresent()) {
 				return Preconditions.checkNotNull(site.config().formatters().formatters().get(formatterName.get()),"could not get formatter %s",formatterName.get());
 			}
-			Optional<String> defaultFormatterName = Optional.ofNullable(site.config().defaultFormatter().get(name));
+			Maybe<String> defaultFormatterName = Maybe.ofNullable(site.config().defaultFormatter().get(name));
 			if (defaultFormatterName.isPresent()) {
 				return Preconditions.checkNotNull(site.config().formatters().formatters().get(defaultFormatterName.get()),"could not get formatter %s",defaultFormatterName.get());
 			}

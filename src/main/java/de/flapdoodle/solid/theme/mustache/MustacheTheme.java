@@ -3,7 +3,6 @@ package de.flapdoodle.solid.theme.mustache;
 import java.io.FileReader;
 import java.nio.file.Path;
 import java.util.List;
-import java.util.Optional;
 
 import org.immutables.value.Value.Auxiliary;
 import org.immutables.value.Value.Immutable;
@@ -81,7 +80,7 @@ public class MustacheTheme implements Theme {
 			@Override
 			public String format(Object value) {
 				return singleValue(value)
-						.orElse(value)
+						.orElse(() -> value)
 						.toString();
 			}
 		};
@@ -124,19 +123,19 @@ public class MustacheTheme implements Theme {
 		};
 	}
 
-	private static Optional<Object> singleValue(Object c) {
+	private static Maybe<Object> singleValue(Object c) {
 		if (c instanceof List) {
 			List l=(List) c;
 			if (l.size()==1) {
 				return singleValue(l.get(0));
 			}
-			return Optional.empty();
+			return Maybe.empty();
 		}
 		if (c instanceof Either) {
 			Either e=(Either) c;
 			return e.isLeft() ? singleValue(e.left()) : singleValue(e.right());
 		}
-		return Optional.ofNullable(c);
+		return Maybe.ofNullable(c);
 	}
 	
 	private static TemplateLoader loaderOf(Path root) {

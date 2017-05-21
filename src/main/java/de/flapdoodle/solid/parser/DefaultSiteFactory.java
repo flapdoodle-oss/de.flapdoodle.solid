@@ -19,7 +19,6 @@ package de.flapdoodle.solid.parser;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.List;
-import java.util.Optional;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
@@ -69,7 +68,7 @@ public class DefaultSiteFactory implements SiteFactory {
 		SiteConfigPostProcessor postProcessor = SiteConfigPostProcessor.of(siteConfig.postProcessing());
 		
 		Try.runable(() ->	In.walk(siteRoot.resolve(siteConfig.contentDirectory()), (relativePath,content) -> {
-			Optional<Blob> blob = blobParser.parse(relativePath, new String(content.data(), Charsets.UTF_8));
+			Maybe<Blob> blob = blobParser.parse(relativePath, new String(content.data(), Charsets.UTF_8));
 			if (blob.isPresent()) {
 				siteBuilder.addBlobs(postProcessor.process(blob.get()));
 			} else {

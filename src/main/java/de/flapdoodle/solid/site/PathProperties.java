@@ -17,7 +17,6 @@
 package de.flapdoodle.solid.site;
 
 import java.util.List;
-import java.util.Optional;
 
 import org.immutables.value.Value.Auxiliary;
 import org.immutables.value.Value.Immutable;
@@ -27,6 +26,7 @@ import com.google.common.collect.ImmutableCollection;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMultimap;
 
+import de.flapdoodle.solid.types.Maybe;
 import de.flapdoodle.solid.types.tree.PropertyTree;
 import de.flapdoodle.types.Either;
 
@@ -36,7 +36,7 @@ public interface PathProperties {
 	
 	@Auxiliary
 	default ImmutableCollection<String> mapped(String src) {
-		return Optional.ofNullable(alias().get(src)).orElse(ImmutableList.of(src));
+		return Maybe.ofNullable(alias().get(src)).orElse(() -> ImmutableList.of(src));
 	}
 	
 	@Auxiliary

@@ -17,7 +17,6 @@
 package de.flapdoodle.solid.types.maps;
 
 import java.util.Map;
-import java.util.Optional;
 
 import org.immutables.value.Value;
 import org.immutables.value.Value.Auxiliary;
@@ -30,6 +29,8 @@ import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.ImmutableMultimap;
 import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Maps;
+
+import de.flapdoodle.solid.types.Maybe;
 
 public final class ImmutableGroupedPropertyMap implements GroupedPropertyMap {
 
@@ -80,13 +81,13 @@ public final class ImmutableGroupedPropertyMap implements GroupedPropertyMap {
 
 
 	@Override
-	public Optional<Object> find(String ... key) {
+	public Maybe<Object> find(String ... key) {
 		Key mapKey = Key.of(key);
 		ImmutableMap<String, Object> map = mapOfMaps.get(mapKey.parent());
 		if (map!=null) {
-			return Optional.ofNullable(map.get(mapKey.last()));
+			return Maybe.ofNullable(map.get(mapKey.last()));
 		}
-		return Optional.empty();
+		return Maybe.empty();
 	}
 	
 	@Override

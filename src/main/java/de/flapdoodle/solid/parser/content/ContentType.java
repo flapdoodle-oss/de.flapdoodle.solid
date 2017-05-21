@@ -16,21 +16,21 @@
  */
 package de.flapdoodle.solid.parser.content;
 
-import java.util.Optional;
+import de.flapdoodle.solid.types.Maybe;
 
 public enum ContentType {
 	Markdown, Html, Text;
 	
-	public static Optional<ContentType> ofExtension(String ext) {
+	public static Maybe<ContentType> ofExtension(String ext) {
 		switch (ext) {
 			case "md":
-				return Optional.of(Markdown);
+				return Maybe.of(Markdown);
 			case "html":
 			case "htm":
-				return Optional.of(Html);
+				return Maybe.of(Html);
 			case "txt":
-				return Optional.of(Text);
+				return Maybe.of(Text);
 		}
-		return Optional.empty();
+		return Maybe.empty();
 	}
 }

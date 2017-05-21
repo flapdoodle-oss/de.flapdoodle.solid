@@ -17,7 +17,6 @@
 package de.flapdoodle.solid.parser.content;
 
 import java.nio.file.Path;
-import java.util.Optional;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -30,6 +29,7 @@ import de.flapdoodle.solid.io.Filenames;
 import de.flapdoodle.solid.parser.meta.Toml;
 import de.flapdoodle.solid.parser.meta.Yaml;
 import de.flapdoodle.solid.parser.types.PropertyTreeParserFactory;
+import de.flapdoodle.solid.types.Maybe;
 
 public class DefaultBlobParser implements BlobParser {
 
@@ -45,18 +45,18 @@ public class DefaultBlobParser implements BlobParser {
 	}
 
 	@Override
-	public Optional<Blob> parse(Path path, String content) {
+	public Maybe<Blob> parse(Path path, String content) {
 		String filename = Filenames.filenameOf(path);
 		String extension = Filenames.extensionOf(filename);
-		Optional<ContentType> contentType = ContentType.ofExtension(extension);
+		Maybe<ContentType> contentType = ContentType.ofExtension(extension);
 		if (contentType.isPresent()) {
-			Optional<ParsedMetaAndContent> metaAndContent = findToml(parserFactory, content);
+			Maybe<ParsedMetaAndContent> metaAndContent = findToml(parserFactory, content);
 			if (!metaAndContent.isPresent()) {
 				metaAndContent = findYaml(parserFactory, content);
 			}
 			
 			if (metaAndContent.isPresent()) {
-				return Optional.of(Blob.builder()
+				return Maybe.of(Blob.builder()
 					.addAllPath(Filenames.pathAsList(path.getParent()))
 					.filename(filename)
 					.meta(metaAndContent.get().meta())
@@ -66,23 +66,23 @@ public class DefaultBlobParser implements BlobParser {
 			}
 		}
 		
-		return Optional.empty();
+		return Maybe.empty();
 	}
 
 	@VisibleForTesting
-	protected static Optional<ParsedMetaAndContent> findToml(PropertyTreeParserFactory parserFactory, String content) {
+	protected static Maybe<ParsedMetaAndContent> findToml(PropertyTreeParserFactory parserFactory, String content) {
 		return findMeta(TOML_START, TOML_END, content)
 				.map(mc -> ParsedMetaAndContent.of(parserFactory.parserFor(Toml.class).get().parse(mc.meta()), mc.content()));
 	}
 
 	@VisibleForTesting
-	protected static Optional<ParsedMetaAndContent> findYaml(PropertyTreeParserFactory parserFactory, String content) {
+	protected static Maybe<ParsedMetaAndContent> findYaml(PropertyTreeParserFactory parserFactory, String content) {
 		return findMeta(YAML_START, YAML_END, content)
 				.map(mc -> ParsedMetaAndContent.of(parserFactory.parserFor(Yaml.class).get().parse(mc.meta()), mc.content()));
 	}
 	
 	@VisibleForTesting
-	protected static Optional<MetaAndContent> findMeta(Pattern startMarker, Pattern endMarker, String content) {
+	protected static Maybe<MetaAndContent> findMeta(Pattern startMarker, Pattern endMarker, String content) {
 		Matcher startMatcher = startMarker.matcher(content);
 		
 		if (startMatcher.find()) {
@@ -92,11 +92,11 @@ public class DefaultBlobParser implements BlobParser {
 			if (endMatcher.find(startOfMeta)) {
 				int endOfMeta=endMatcher.start();
 				int startOfContent=endMatcher.end();
-				return Optional.of(MetaAndContent.of(content.substring(startOfMeta, endOfMeta), content.substring(startOfContent)));
+				return Maybe.of(MetaAndContent.of(content.substring(startOfMeta, endOfMeta), content.substring(startOfContent)));
 			}
 		}
 		
-		return Optional.empty();
+		return Maybe.empty();
 	}
 	
 	@Value.Immutable
