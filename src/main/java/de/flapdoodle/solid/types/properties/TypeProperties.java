@@ -17,20 +17,20 @@
 package de.flapdoodle.solid.types.properties;
 
 import java.util.Date;
-import java.util.Optional;
 
 import org.immutables.value.Value.Immutable;
 
 import com.google.common.collect.ImmutableMap;
 
+import de.flapdoodle.solid.types.Maybe;
 import de.flapdoodle.solid.types.dates.Dates;
 
 @Immutable
 public interface TypeProperties<T> {
 	ImmutableMap<String, TypeProperty<T, ?>> map();
 	
-	default Optional<TypeProperty<T, ?>> of(String name) {
-		return Optional.ofNullable(map().get(name));
+	default Maybe<TypeProperty<T, ?>> of(String name) {
+		return Maybe.ofNullable(map().get(name));
 	}
 	
 	public static <T> ImmutableTypeProperties.Builder<T> builder(Class<T> type) {

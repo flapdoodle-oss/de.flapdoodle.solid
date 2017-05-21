@@ -16,13 +16,12 @@
  */
 package de.flapdoodle.solid.generator;
 
-import java.util.Optional;
-
+import de.flapdoodle.solid.types.Maybe;
 import de.flapdoodle.solid.types.properties.TypePropertiesLookup;
 import de.flapdoodle.solid.types.tree.PropertyTree;
 
 public interface PropertyResolver {
-	Optional<?> resolve(PropertyTree tree, Iterable<String> path);
+	Maybe<?> resolve(PropertyTree tree, Iterable<String> path);
 	
 	public static PropertyResolver defaultResolver() {
 		return new TypePropertyBasePropertyResolver(TypePropertiesLookup.defaultLookup());

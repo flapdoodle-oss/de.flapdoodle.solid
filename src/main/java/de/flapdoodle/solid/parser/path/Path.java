@@ -16,7 +16,6 @@
  */
 package de.flapdoodle.solid.parser.path;
 
-import java.util.Optional;
 import java.util.function.Predicate;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
@@ -33,6 +32,7 @@ import com.google.common.collect.Iterables;
 
 import de.flapdoodle.solid.parser.path.ImmutablePath.Builder;
 import de.flapdoodle.solid.parser.regex.Patterns;
+import de.flapdoodle.solid.types.Maybe;
 import de.flapdoodle.solid.types.Pair;
 
 // /foo/bar/:property-nix/:other/nix
@@ -91,7 +91,7 @@ public abstract class Path {
 		String property();
 		
 		@Parameter
-		Optional<String> formatter();
+		Maybe<String> formatter();
 	}
 	
 	public static Path parse(String src) {
@@ -100,7 +100,7 @@ public abstract class Path {
 			if (either.isLeft()) {
 				builder.addParts(ImmutableStatic.of(either.left()));
 			} else {
-				builder.addParts(ImmutableProperty.of(either.right().group("name"),Optional.ofNullable(either.right().group("formatter"))));
+				builder.addParts(ImmutableProperty.of(either.right().group("name"),Maybe.ofNullable(either.right().group("formatter"))));
 			}
 		});
 		return builder.build();

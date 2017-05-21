@@ -17,11 +17,12 @@
 package de.flapdoodle.solid.types.properties;
 
 import java.util.Map;
-import java.util.Optional;
 
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Maps;
+
+import de.flapdoodle.solid.types.Maybe;
 
 public class MapBasedTypePropertiesLookup implements TypePropertiesLookup {
 
@@ -32,11 +33,11 @@ public class MapBasedTypePropertiesLookup implements TypePropertiesLookup {
 	}
 	
 	@Override
-	public <T> Optional<TypeProperties<T>> propertiesOf(Class<T> type) {
-		Optional<TypeProperties<T>> ret = Optional.ofNullable((TypeProperties<T>) map.get(type));
+	public <T> Maybe<TypeProperties<T>> propertiesOf(Class<T> type) {
+		Maybe<TypeProperties<T>> ret = Maybe.ofNullable((TypeProperties<T>) map.get(type));
 		if (!ret.isPresent()) {
 			Class<?> assignableType = assignableType(map.keySet(), type);
-			return Optional.ofNullable((TypeProperties<T>) map.get(assignableType));
+			return Maybe.ofNullable((TypeProperties<T>) map.get(assignableType));
 		}
 		return ret;
 	}

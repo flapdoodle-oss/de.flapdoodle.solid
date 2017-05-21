@@ -40,6 +40,7 @@ import de.flapdoodle.solid.site.PathProperties;
 import de.flapdoodle.solid.site.Urls.Config;
 import de.flapdoodle.solid.theme.Renderer;
 import de.flapdoodle.solid.types.Collectors;
+import de.flapdoodle.solid.types.Maybe;
 import de.flapdoodle.solid.types.Pair;
 
 public class DefaultSiteGenerator implements SiteGenerator {
@@ -89,8 +90,8 @@ public class DefaultSiteGenerator implements SiteGenerator {
 			
 			System.out.println(name);
 			groupedBlobs.asMap().forEach((key, blobs) -> {
-				Optional<String> renderedPath = pathRenderer.render(currentPath, key, propertyFormatter);
-				System.out.println(" "+key+" -> "+blobs.size()+" --> "+renderedPath.orElse("---"));
+				Maybe<String> renderedPath = pathRenderer.render(currentPath, key, propertyFormatter);
+				System.out.println(" "+key+" -> "+blobs.size()+" --> "+renderedPath.orElse(() -> "---"));
 				if (renderedPath.isPresent()) {
 					Content renderedResult = site.theme().rendererFor(name).render(Renderer.Renderable.builder()
 							.addAllBlobs(blobs)
@@ -147,7 +148,7 @@ public class DefaultSiteGenerator implements SiteGenerator {
 	}
 	
 	private static Comparable<?> propertyOf(Blob blob, String property) {
-		Optional<Object> result = blob.meta().find(Object.class, Splitter.on('.').split(property));
+		Maybe<Object> result = blob.meta().find(Object.class, Splitter.on('.').split(property));
 		if (result.isPresent() && result.get() instanceof Comparable) {
 			return (Comparable<?>) result.get();
 		}
@@ -195,7 +196,7 @@ public class DefaultSiteGenerator implements SiteGenerator {
 			.collect(ImmutableList.toImmutableList());
 		
 		ImmutableMap<String, Object> blopPathPropertyMap = pathProperties.stream()
-			.map(p -> Pair.<String, Optional<?>>of(p, propertyOf(blob, pathPropertyMapping, propertyResolver, p)))
+			.map(p -> Pair.<String, Maybe<?>>of(p, propertyOf(blob, pathPropertyMapping, propertyResolver, p)))
 			.filter(pair -> pair.b().isPresent())
 			.map(pair -> Pair.<String, Object>of(pair.a(), pair.b().get()))
 			.collect(ImmutableMap.toImmutableMap(Pair::a, Pair::b));
@@ -203,24 +204,24 @@ public class DefaultSiteGenerator implements SiteGenerator {
 		return blopPathPropertyMap;
 	}
 
-	private static Optional<?> propertyOf(Blob blob, Function<String, Collection<String>> pathPropertyMapping, PropertyResolver propertyResolver,
+	private static Maybe<?> propertyOf(Blob blob, Function<String, Collection<String>> pathPropertyMapping, PropertyResolver propertyResolver,
 			String propertyName) {
 		Collection<String> aliasList = pathPropertyMapping.apply(propertyName);
 		for (String alias : aliasList) {
-			Optional<?> resolved = propertyResolver.resolve(blob.meta(), Splitter.on('.').split(alias));
+			Maybe<?> resolved = propertyResolver.resolve(blob.meta(), Splitter.on('.').split(alias));
 			if (resolved.isPresent()) {
 				return resolved;
 			}
  		}
-		return Optional.empty();
+		return Maybe.empty();
 	}
 
 	@Deprecated
 	private static ImmutableList<Object> metaValues(Site site, String key) {
 		ImmutableList<Object> dates = site.blobs().stream()
 			.map(blob -> blob.meta().find(Object.class, key))
-			.filter(Optional::isPresent)
-			.map(Optional::get)
+			.filter(Maybe::isPresent)
+			.map(Maybe::get)
 			.collect(ImmutableList.toImmutableList());
 		return dates;
 	}

@@ -1,7 +1,5 @@
 package de.flapdoodle.solid.generator;
 
-import java.util.Optional;
-
 import com.google.common.collect.ImmutableMap;
 
 import de.flapdoodle.solid.parser.path.Path;
@@ -11,7 +9,7 @@ import de.flapdoodle.solid.types.Maybe;
 public class DefaultPathRenderer implements PathRenderer {
 
 	@Override
-	public Optional<String> render(Path path, ImmutableMap<String, Object> properties, FormatterOfProperty propertyFormatter) {
+	public Maybe<String> render(Path path, ImmutableMap<String, Object> properties, FormatterOfProperty propertyFormatter) {
 		if (path.propertyNames().size()<=properties.keySet().size()) {
 			StringBuilder sb=new StringBuilder();
 			for (Path.Part part : path.parts()) {
@@ -28,14 +26,14 @@ public class DefaultPathRenderer implements PathRenderer {
 							}
 							sb.append(urlify(urlPart.get()));
 						} else {
-							return Optional.empty();
+							return Maybe.empty();
 						}
 					}
 				}
 			};
-			return Optional.of(sb.toString());
+			return Maybe.of(sb.toString());
 		}
-		return Optional.empty();
+		return Maybe.empty();
 	}
 	
 	private static String urlify(String src) {

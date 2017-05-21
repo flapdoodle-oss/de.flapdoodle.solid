@@ -2,7 +2,6 @@ package de.flapdoodle.solid.theme;
 
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.Optional;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
@@ -45,7 +44,7 @@ public class DefaultThemeFactory implements ThemeFactory {
 		}
 		
 		PropertyTree config = configs.get(0);
-		Optional<String> engine = config.find(String.class, "engine");
+		Maybe<String> engine = config.find(String.class, "engine");
 		if (engine.isPresent() && engine.get().equals("mustache")) {
 			return new MustacheTheme(themeDirectory, config);
 		}

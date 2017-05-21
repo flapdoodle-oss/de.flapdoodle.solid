@@ -17,8 +17,8 @@
 package de.flapdoodle.solid.generator;
 
 import java.util.Iterator;
-import java.util.Optional;
 
+import de.flapdoodle.solid.types.Maybe;
 import de.flapdoodle.solid.types.properties.TypeProperties;
 import de.flapdoodle.solid.types.properties.TypePropertiesLookup;
 import de.flapdoodle.solid.types.properties.TypeProperty;
@@ -34,13 +34,13 @@ public class TypePropertyBasePropertyResolver implements PropertyResolver {
 	}
 	
 	@Override
-	public Optional<?> resolve(PropertyTree tree, Iterable<String> path) {
+	public Maybe<?> resolve(PropertyTree tree, Iterable<String> path) {
 		PropertyTree current=tree;
 		Iterator<String> iterator = path.iterator();
 		while (iterator.hasNext()) {
 			String part = iterator.next();
 			
-			Optional<Either<Object, ? extends PropertyTree>> found = current.find(e -> Optional.of(e), part);
+			Maybe<Either<Object, ? extends PropertyTree>> found = current.find(e -> Maybe.of(e), part);
 			if (found.isPresent()) {
 				Either<Object, ? extends PropertyTree> either = found.get();
 				if (either.isLeft()) {
@@ -52,23 +52,23 @@ public class TypePropertyBasePropertyResolver implements PropertyResolver {
 				break;
 			}
 		}
-		return Optional.empty();
+		return Maybe.empty();
 	}
 
-	private static <T> Optional<?> resolve(T instance, Iterator<String> iterator, TypePropertiesLookup lookup) {
+	private static <T> Maybe<?> resolve(T instance, Iterator<String> iterator, TypePropertiesLookup lookup) {
 		if (!iterator.hasNext()) {
-			return Optional.of(instance);
+			return Maybe.of(instance);
 		}
 		
-		Optional<TypeProperties<T>> properties = lookup.propertiesOf((Class<T>) instance.getClass());
+		Maybe<TypeProperties<T>> properties = lookup.propertiesOf((Class<T>) instance.getClass());
 		if (properties.isPresent()) {
 			TypeProperties<T> typeProperties = properties.get();
-			Optional<TypeProperty<T, ?>> propertyOf = typeProperties.of(iterator.next());
+			Maybe<TypeProperty<T, ?>> propertyOf = typeProperties.of(iterator.next());
 			if (propertyOf.isPresent()) {
 				Object newInstance = propertyOf.get().propertyOf(instance);
 				return resolve(newInstance, iterator, lookup);
 			}
 		}
-		return Optional.empty();
+		return Maybe.empty();
 	}
 }

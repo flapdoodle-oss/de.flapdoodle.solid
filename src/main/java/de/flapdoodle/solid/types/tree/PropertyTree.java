@@ -18,7 +18,6 @@ package de.flapdoodle.solid.types.tree;
 
 import java.util.Iterator;
 import java.util.List;
-import java.util.Optional;
 import java.util.Set;
 import java.util.function.Function;
 
@@ -26,6 +25,7 @@ import com.google.common.base.Preconditions;
 import com.google.common.collect.FluentIterable;
 import com.google.common.collect.ImmutableList;
 
+import de.flapdoodle.solid.types.Maybe;
 import de.flapdoodle.types.Either;
 
 //wie json
@@ -45,7 +45,7 @@ public interface PropertyTree {
 		return PropertyTreePrinter.prettyPrinted(this);
 	}
 	
-	default Optional<PropertyTree> find(String ...path) {
+	default Maybe<PropertyTree> find(String ...path) {
 		return find(propertyTree(), FluentIterable.from(path));
 	}
 	
@@ -53,11 +53,11 @@ public interface PropertyTree {
 		return findList(propertyTree(), FluentIterable.from(path));
 	}
 	
-	default <T> Optional<T> find(Class<T> type, String ... path) {
+	default <T> Maybe<T> find(Class<T> type, String ... path) {
 		return find(matchingType(type), FluentIterable.from(path));
 	}
 	
-	default <T> Optional<T> find(Class<T> type, Iterable<String> path) {
+	default <T> Maybe<T> find(Class<T> type, Iterable<String> path) {
 		return find(matchingType(type), path);
 	}
 
@@ -69,32 +69,32 @@ public interface PropertyTree {
 		return findList(matchingType(type), path);
 	}
 
-	default <T> Optional<T> find(Function<Either<Object, ? extends PropertyTree>,Optional<T>> map, String ... path) {
+	default <T> Maybe<T> find(Function<Either<Object, ? extends PropertyTree>,Maybe<T>> map, String ... path) {
 		return find(map, FluentIterable.from(path));
 	}
 	
-	default <T> Optional<T> find(Function<Either<Object, ? extends PropertyTree>,Optional<T>> map, Iterable<String> path) {
+	default <T> Maybe<T> find(Function<Either<Object, ? extends PropertyTree>,Maybe<T>> map, Iterable<String> path) {
 		ImmutableList<T> result = findList(map, path);
 		return result.size()==1 
-				? Optional.of(result.get(0)) 
-				: Optional.empty();
+				? Maybe.of(result.get(0)) 
+				: Maybe.empty();
 	}
 
-	default <T> ImmutableList<T> findList(Function<Either<Object, ? extends PropertyTree>,Optional<T>> map, String ... path) {
+	default <T> ImmutableList<T> findList(Function<Either<Object, ? extends PropertyTree>,Maybe<T>> map, String ... path) {
 		return findList(map, FluentIterable.from(path));
 	}
 	
-	default <T> ImmutableList<T> findList(Function<Either<Object, ? extends PropertyTree>,Optional<T>> map, Iterable<String> path) {
+	default <T> ImmutableList<T> findList(Function<Either<Object, ? extends PropertyTree>,Maybe<T>> map, Iterable<String> path) {
 		Iterator<String> iterator = path.iterator();
 		Preconditions.checkArgument(iterator.hasNext(),"empty path: %s",path);
-		Optional<PropertyTree> current = Optional.of(this);
+		Maybe<PropertyTree> current = Maybe.of(this);
 		
 		while (current.isPresent() && iterator.hasNext()) {
 			String key=iterator.next();
 			List<Either<Object, ? extends PropertyTree>> list = current.get().get(key);
 			
 			if (!iterator.hasNext()) {
-				ImmutableList<T> result = list.stream().map(map).filter(Optional::isPresent).map(Optional::get).collect(ImmutableList.toImmutableList());
+				ImmutableList<T> result = list.stream().map(map).filter(Maybe::isPresent).map(Maybe::get).collect(ImmutableList.toImmutableList());
 				if (result.size()==list.size()) {
 					return result;
 				} else {
@@ -104,7 +104,7 @@ public interface PropertyTree {
 				if (list.size()==1) {
 					Either<Object, ? extends PropertyTree> value = list.get(0);
 					if (!value.isLeft()) {
-						current=Optional.of(value.right());
+						current=Maybe.of(value.right());
 					} else {
 						return ImmutableList.of();
 					}
@@ -117,15 +117,15 @@ public interface PropertyTree {
 		return ImmutableList.of();
 	}
 	
-	public static <T> Function<Either<Object, ? extends PropertyTree>, Optional<T>> matchingType(Class<T> type) {
+	public static <T> Function<Either<Object, ? extends PropertyTree>, Maybe<T>> matchingType(Class<T> type) {
 		return either -> either.isLeft() && type.isInstance(either.left()) 
-				? Optional.of((T) either.left()) 
-				: Optional.empty();
+				? Maybe.of((T) either.left()) 
+				: Maybe.empty();
 	}
 	
-	public static Function<Either<Object, ? extends PropertyTree>, Optional<PropertyTree>> propertyTree() {
+	public static Function<Either<Object, ? extends PropertyTree>, Maybe<PropertyTree>> propertyTree() {
 		return either -> !either.isLeft() 
-				? Optional.of(either.right()) 
-				: Optional.empty();
+				? Maybe.of(either.right()) 
+				: Maybe.empty();
 	}
 }

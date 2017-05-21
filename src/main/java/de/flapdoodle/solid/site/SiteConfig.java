@@ -82,19 +82,19 @@ public interface SiteConfig {
 		
 		builder.pathProperties(map.find("pathProperties")
 				.map(PathProperties::of)
-				.orElseGet(() -> PathProperties.empty()));
+				.orElse(() -> PathProperties.empty()));
 
 		builder.postProcessing(map.find("postProcessing")
 			.map(PostProcessing::of)
-			.orElseGet(() -> PostProcessing.empty()));
+			.orElse(() -> PostProcessing.empty()));
 		
 		builder.formatters(map.find("formatters")
 				.map(Formatters::of)
-				.orElse(Formatters.empty()));
+				.orElse(() -> Formatters.empty()));
 		
 		builder.filters(map.find("filters")
 				.map(Filters::of)
-				.orElse(Filters.empty()));
+				.orElse(() -> Filters.empty()));
 		
 		builder.addAllDefaultOrdering(map.findList(String.class, "order"));
 		

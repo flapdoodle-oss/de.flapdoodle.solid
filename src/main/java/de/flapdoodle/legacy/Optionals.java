@@ -20,11 +20,19 @@ import java.util.Optional;
 
 import com.google.common.base.Preconditions;
 
+import de.flapdoodle.solid.types.Maybe;
+
+@Deprecated
 public class Optionals {
 
 	@Deprecated
 	// move to java8/Preconditions
 	public static <T> Optional<T> checkPresent(Optional<T> value, String message, Object ...args) {
+		Preconditions.checkArgument(value.isPresent(),message,args);
+		return value;
+	}
+	
+	public static <T> Maybe<T> checkPresent(Maybe<T> value, String message, Object ...args) {
 		Preconditions.checkArgument(value.isPresent(),message,args);
 		return value;
 	}

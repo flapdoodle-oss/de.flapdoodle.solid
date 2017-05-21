@@ -18,7 +18,7 @@ public class UrlFormatter implements Formatter {
 	}
 
 	public static Maybe<Formatter> parse(PropertyTree config) {
-		if (config.find(String.class, "type").orElse("").equals("Url")) {
+		if (config.find(String.class, "type").orElse(() -> "").equals("Url")) {
 			return Maybe.of(new UrlFormatter());
 		}
 		return Maybe.absent();

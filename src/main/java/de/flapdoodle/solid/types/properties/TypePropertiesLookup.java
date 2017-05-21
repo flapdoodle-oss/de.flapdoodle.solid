@@ -17,10 +17,11 @@
 package de.flapdoodle.solid.types.properties;
 
 import java.util.Date;
-import java.util.Optional;
+
+import de.flapdoodle.solid.types.Maybe;
 
 public interface TypePropertiesLookup {
-	<T> Optional<TypeProperties<T>> propertiesOf(Class<T> type);
+	<T> Maybe<TypeProperties<T>> propertiesOf(Class<T> type);
 	
 	default TypePropertiesLookup withFallback(TypePropertiesLookup fallback) {
 		TypePropertiesLookup that=this;
@@ -28,8 +29,8 @@ public interface TypePropertiesLookup {
 		return new TypePropertiesLookup() {
 			
 			@Override
-			public <T> Optional<TypeProperties<T>> propertiesOf(Class<T> type) {
-				Optional<TypeProperties<T>> ret = that.propertiesOf(type);
+			public <T> Maybe<TypeProperties<T>> propertiesOf(Class<T> type) {
+				Maybe<TypeProperties<T>> ret = that.propertiesOf(type);
 				if (!ret.isPresent()) {
 					return fallback.propertiesOf(type);
 				}
