@@ -1,6 +1,6 @@
 package de.flapdoodle.solid.formatter;
 
-import java.util.Optional;
+import de.flapdoodle.solid.types.Maybe;
 
 public class StringFormatFormatter implements Formatter {
 
@@ -11,8 +11,8 @@ public class StringFormatFormatter implements Formatter {
 	}
 	
 	@Override
-	public Optional<String> format(Object value) {
-		return Optional.of(String.format(formatString, value));
+	public Maybe<String> format(Object value) {
+		return Maybe.of(String.format(formatString, value));
 	}
 
 }

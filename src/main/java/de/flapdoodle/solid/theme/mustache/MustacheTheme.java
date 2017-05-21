@@ -110,7 +110,7 @@ public class MustacheTheme implements Theme {
 						if (ctx instanceof MustacheFormating) {
 							ImmutableMap<String, de.flapdoodle.solid.formatter.Formatter> map = Preconditions.checkNotNull(formatter.get(),"formatter map not set");
 							de.flapdoodle.solid.formatter.Formatter formatter = map.get(name);
-							return (c,n) ->formatter.format(((MustacheFormating) c).value()).orElse("");
+							return (c,n) ->formatter.format(((MustacheFormating) c).value()).orElse(() -> "");
 						}
 						if (name.equals("formatWith")) {
 							return (c,n) -> singleValue(c).map(MustacheFormating::of).orElse(null);

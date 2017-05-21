@@ -1,7 +1,7 @@
 package de.flapdoodle.solid.formatter;
 
-import java.util.Optional;
+import de.flapdoodle.solid.types.Maybe;
 
 public interface Formatter {
-	Optional<String> format(Object value);
+	Maybe<String> format(Object value);
 }
