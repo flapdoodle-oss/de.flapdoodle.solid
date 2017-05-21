@@ -22,12 +22,16 @@ import com.samskivert.mustache.Mustache.VariableFetcher;
 import com.samskivert.mustache.Template;
 
 import de.flapdoodle.solid.exceptions.SomethingWentWrong;
+import de.flapdoodle.solid.generator.Binary;
+import de.flapdoodle.solid.generator.Document;
 import de.flapdoodle.solid.generator.Text;
+import de.flapdoodle.solid.io.In;
 import de.flapdoodle.solid.parser.content.Blob;
 import de.flapdoodle.solid.site.SiteConfig;
 import de.flapdoodle.solid.theme.Renderer;
 import de.flapdoodle.solid.theme.Renderer.Context;
 import de.flapdoodle.solid.theme.Theme;
+import de.flapdoodle.solid.types.Maybe;
 import de.flapdoodle.solid.types.reflection.Inspector;
 import de.flapdoodle.solid.types.tree.PropertyTree;
 import de.flapdoodle.types.Either;
@@ -38,15 +42,37 @@ public class MustacheTheme implements Theme {
 	private final Path rootDir;
 	private final Compiler compiler;
 	private final ThreadLocal<ImmutableMap<String, de.flapdoodle.solid.formatter.Formatter>> formatter=new ThreadLocal<>();
+	private final ImmutableList<Document> staticFiles;
+	private final PropertyTree config;
 
-	public MustacheTheme(Path rootDir) {
+	public MustacheTheme(Path rootDir, PropertyTree config) {
 		this.rootDir = rootDir;
+		this.config = config;
 		this.compiler = Mustache.compiler()
 				.withLoader(loaderOf(this.rootDir))
 				.defaultValue("")
 				.withCollector(customCollector())
 				.withFormatter(customFormatter())
 				.emptyStringIsFalse(true);
+		this.staticFiles = staticFilesOf(rootDir);
+	}
+	
+	private ImmutableList<Document> staticFilesOf(Path rootDir) {
+		return Try.supplier(() -> In.walk(rootDir.resolve("static"), (path,content) -> {
+			return Maybe.of((Document) Document.builder()
+					.content(Binary.builder()
+							.mimeType("image/jpeg")
+							.data(content)
+					.build())
+					.build());
+			}))
+			.onCheckedException(ex -> ImmutableList.of())
+			.get();
+	}
+
+	@Override
+	public ImmutableList<Document> staticFiles() {
+		return staticFiles;
 	}
 
 	private static Formatter customFormatter() {

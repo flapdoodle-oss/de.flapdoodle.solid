@@ -70,7 +70,7 @@ public class DefaultSiteFactory implements SiteFactory {
 					if (path.toFile().isFile()) {
 						Path relativePath = siteRoot.relativize(path);
 						
-						System.out.println(" -> "+relativePath);
+//						System.out.println(" -> "+relativePath);
 						
 						Optional<Blob> blob = Try.supplier(() -> blobParser.parse(relativePath, In.read(path)))
 							.mapCheckedException(SomethingWentWrong::new)
@@ -92,10 +92,7 @@ public class DefaultSiteFactory implements SiteFactory {
 		FiletypeParserFactory filetypeParserFactory=FiletypeParserFactory.defaults(parserFactory);
 		
 		Function<? super Path, ? extends Optional<SiteConfig>> path2Config = path -> 
-			filetypeParserFactory.parserFor(Filenames.extensionOf(path))
-				.map(p -> Try.supplier(() -> p.parse(In.read(path)))
-						.mapCheckedException(SomethingWentWrong::new)
-						.get())
+			PropertyTreeConfigs.propertyTreeOf(filetypeParserFactory, path)
 				.map(config -> SiteConfig.of(Filenames.filenameOf(path), config));
 		
 		List<SiteConfig> configs = Try.supplier(() -> Files.list(siteRoot)

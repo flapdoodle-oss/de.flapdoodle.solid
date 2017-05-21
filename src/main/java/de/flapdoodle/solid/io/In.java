@@ -20,10 +20,36 @@ import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.function.BiFunction;
+
+import com.google.common.collect.ImmutableList;
+
+import de.flapdoodle.solid.exceptions.SomethingWentWrong;
+import de.flapdoodle.solid.types.ByteArray;
+import de.flapdoodle.solid.types.Maybe;
+import de.flapdoodle.types.Try;
 
 public abstract class In {
 
 	public static String read(Path path) throws IOException {
 		return new String(Files.readAllBytes(path),StandardCharsets.UTF_8);
+	}
+	
+	public static <T> ImmutableList<T> walk(Path root,BiFunction<Path, ByteArray, Maybe<T>> mapper) throws IOException {
+		ImmutableList.Builder<T> builder=ImmutableList.builder();
+		
+		Files.walk(root)
+			.forEach(path -> {
+				if (path.toFile().isFile()) {
+					Path relativePath = root.relativize(path);
+					ByteArray content = Try.supplier(() -> ByteArray.fromArray(Files.readAllBytes(path)))
+						.mapCheckedException(SomethingWentWrong::new)
+						.get();
+					
+					mapper.apply(relativePath, content).ifPresent(builder::add);
+				}
+			});
+		
+		return builder.build();
 	}
 }

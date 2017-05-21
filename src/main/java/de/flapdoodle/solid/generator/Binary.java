@@ -16,10 +16,12 @@
  */
 package de.flapdoodle.solid.generator;
 
+import org.immutables.value.Value.Immutable;
 import org.immutables.value.Value.Parameter;
 
 import de.flapdoodle.solid.types.ByteArray;
 
+@Immutable
 public interface Binary extends Content {
 	@Override
 	@Parameter
@@ -27,4 +29,8 @@ public interface Binary extends Content {
 	
 	@Parameter
 	ByteArray data();
+	
+	public static ImmutableBinary.Builder builder() {
+		return ImmutableBinary.builder();
+	}
 }

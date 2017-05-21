@@ -22,6 +22,7 @@ import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.ImmutableSet;
 
 import de.flapdoodle.solid.parser.meta.Toml;
+import de.flapdoodle.solid.parser.meta.Yaml;
 
 public interface FiletypeParserFactory {
 	
@@ -32,6 +33,7 @@ public interface FiletypeParserFactory {
 	public static FiletypeParserFactory defaults(PropertyTreeParserFactory parserFactory) {
 		ImmutableMap<String, Class<?>> parser=ImmutableMap.<String,Class<?>>builder()
 				.put("toml", Toml.class)
+				.put("yaml", Yaml.class)
 				.build();
 		
 		return new FiletypeParserFactory() {

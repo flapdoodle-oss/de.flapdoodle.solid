@@ -27,6 +27,7 @@ import org.junit.Test;
 import de.flapdoodle.solid.parser.content.BlobParser;
 import de.flapdoodle.solid.parser.content.DefaultBlobParser;
 import de.flapdoodle.solid.parser.content.Site;
+import de.flapdoodle.solid.parser.types.FiletypeParserFactory;
 import de.flapdoodle.solid.parser.types.PropertyTreeParserFactory;
 import de.flapdoodle.solid.theme.ThemeFactory;
 
@@ -36,7 +37,7 @@ public class SiteFactoryTest {
 	public void siteParserWillCheckForSolidConfigFirst() {
 		PropertyTreeParserFactory parserFactory = PropertyTreeParserFactory.defaultFactory();
 		BlobParser blobParser = new DefaultBlobParser(parserFactory);
-		DefaultSiteFactory siteFactory = new DefaultSiteFactory(parserFactory, blobParser, ThemeFactory.defaultFactory());
+		DefaultSiteFactory siteFactory = new DefaultSiteFactory(parserFactory, blobParser, ThemeFactory.defaultFactory(FiletypeParserFactory.defaults(parserFactory)));
 		
 		Path siteARoot = Paths.get("src", "test","resources","sample","site-a");
 		Site site = siteFactory.siteOf(siteARoot);
