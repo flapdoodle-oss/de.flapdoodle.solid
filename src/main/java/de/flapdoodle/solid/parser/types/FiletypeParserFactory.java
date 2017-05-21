@@ -16,17 +16,16 @@
  */
 package de.flapdoodle.solid.parser.types;
 
-import java.util.Optional;
-
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.ImmutableSet;
 
 import de.flapdoodle.solid.parser.meta.Toml;
 import de.flapdoodle.solid.parser.meta.Yaml;
+import de.flapdoodle.solid.types.Maybe;
 
 public interface FiletypeParserFactory {
 	
-	Optional<PropertyTreeParser> parserFor(String extension);
+	Maybe<PropertyTreeParser> parserFor(String extension);
 	
 	ImmutableSet<String> supportedExtensions();
 	
@@ -38,8 +37,8 @@ public interface FiletypeParserFactory {
 		
 		return new FiletypeParserFactory() {
 			@Override
-			public Optional<PropertyTreeParser> parserFor(String extension) {
-				return Optional.ofNullable(parser.get(extension))
+			public Maybe<PropertyTreeParser> parserFor(String extension) {
+				return Maybe.ofNullable(parser.get(extension))
 						.flatMap(parserFactory::parserFor);
 			}
 			

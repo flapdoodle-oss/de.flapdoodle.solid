@@ -4,6 +4,7 @@ import java.util.Optional;
 import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Supplier;
+import java.util.stream.Stream;
 
 import org.immutables.value.Value.Auxiliary;
 import org.immutables.value.Value.Immutable;
@@ -21,6 +22,9 @@ public abstract class Maybe<T> {
 
 	@Auxiliary
 	public abstract <D> Maybe<D> flatMap(Function<T, Maybe<D>> map);
+	
+	@Auxiliary
+	public abstract Stream<T> asStream();
 	
 	@Auxiliary
 	public Maybe<T> or(Supplier<Maybe<T>> fallback) {
@@ -57,6 +61,11 @@ public abstract class Maybe<T> {
 		}
 		
 		@Override
+		public Stream<T> asStream() {
+			return Stream.of();
+		}
+		
+		@Override
 		public <D> Maybe<D> map(Function<T, D> map) {
 			return absent();
 		}
@@ -65,6 +74,8 @@ public abstract class Maybe<T> {
 		public <D> Maybe<D> flatMap(Function<T, Maybe<D>> map) {
 			return absent();
 		}
+		
+		
 	}
 	
 	@Immutable
@@ -76,6 +87,11 @@ public abstract class Maybe<T> {
 		@Override
 		public boolean isPresent() {
 			return true;
+		}
+		
+		@Override
+		public Stream<T> asStream() {
+			return Stream.of(get());
 		}
 		
 		@Override
@@ -111,6 +127,7 @@ public abstract class Maybe<T> {
 	public static <T> Maybe<T> fromOptional(Optional<T> src) {
 		return src.isPresent() ? of(src.get()) : absent();
 	}
+
 
 
 }

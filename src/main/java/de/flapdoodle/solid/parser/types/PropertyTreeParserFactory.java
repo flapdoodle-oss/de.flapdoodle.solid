@@ -16,15 +16,14 @@
  */
 package de.flapdoodle.solid.parser.types;
 
-import java.util.Optional;
-
 import com.google.common.collect.ImmutableMap;
 
 import de.flapdoodle.solid.parser.meta.Toml;
 import de.flapdoodle.solid.parser.meta.Yaml;
+import de.flapdoodle.solid.types.Maybe;
 
 public interface PropertyTreeParserFactory {
-	Optional<PropertyTreeParser> parserFor(Class<?> type);
+	Maybe<PropertyTreeParser> parserFor(Class<?> type);
 	
 	public static PropertyTreeParserFactory defaultFactory() {
 		ImmutableMap<Class<?>, PropertyTreeParser> parser=ImmutableMap.<Class<?>,PropertyTreeParser>builder()
@@ -32,6 +31,6 @@ public interface PropertyTreeParserFactory {
 				.put(Yaml.class, content -> new Yaml2PropertyTree().asPropertyTree(Yaml.parse(content)))
 				.build();
 		
-		return type -> Optional.ofNullable(parser.get(type));
+		return type -> Maybe.ofNullable(parser.get(type));
 	}
 }

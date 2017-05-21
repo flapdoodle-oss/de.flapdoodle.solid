@@ -13,6 +13,7 @@ import de.flapdoodle.solid.io.Filenames;
 import de.flapdoodle.solid.parser.PropertyTreeConfigs;
 import de.flapdoodle.solid.parser.types.FiletypeParserFactory;
 import de.flapdoodle.solid.theme.mustache.MustacheTheme;
+import de.flapdoodle.solid.types.Maybe;
 import de.flapdoodle.solid.types.tree.PropertyTree;
 import de.flapdoodle.types.Try;
 
@@ -26,13 +27,12 @@ public class DefaultThemeFactory implements ThemeFactory {
 
 	@Override
 	public Theme of(Path themeDirectory) {
-		Function<Path, Optional<PropertyTree>> path2Config = path -> PropertyTreeConfigs.propertyTreeOf(filetypeParserFactory, path);
+		Function<Path, Maybe<PropertyTree>> path2Config = path -> PropertyTreeConfigs.propertyTreeOf(filetypeParserFactory, path);
 
 		ImmutableList<PropertyTree> configs = Try.supplier(() -> Files.list(themeDirectory)
 				.filter(p -> Filenames.filenameOf(p).startsWith("theme."))
 				.map(path2Config)
-				.filter(Optional::isPresent)
-				.map(Optional::get)
+				.flatMap(Maybe::asStream)
 				.collect(ImmutableList.toImmutableList()))
 				.mapCheckedException(RuntimeException::new)
 				.get();

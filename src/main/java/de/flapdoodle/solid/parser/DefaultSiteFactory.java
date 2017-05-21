@@ -39,6 +39,7 @@ import de.flapdoodle.solid.parser.types.PropertyTreeParserFactory;
 import de.flapdoodle.solid.site.SiteConfig;
 import de.flapdoodle.solid.theme.Theme;
 import de.flapdoodle.solid.theme.ThemeFactory;
+import de.flapdoodle.solid.types.Maybe;
 import de.flapdoodle.types.Try;
 
 public class DefaultSiteFactory implements SiteFactory {
@@ -85,7 +86,7 @@ public class DefaultSiteFactory implements SiteFactory {
 		
 		FiletypeParserFactory filetypeParserFactory=FiletypeParserFactory.defaults(parserFactory);
 		
-		Function<? super Path, ? extends Optional<SiteConfig>> path2Config = path -> 
+		Function<? super Path, ? extends Maybe<SiteConfig>> path2Config = path -> 
 			PropertyTreeConfigs.propertyTreeOf(filetypeParserFactory, path)
 				.map(config -> SiteConfig.of(Filenames.filenameOf(path), config));
 		
@@ -98,8 +99,7 @@ public class DefaultSiteFactory implements SiteFactory {
 		List<SiteConfig> configs = Try.supplier(() -> Files.list(siteRoot)
 				.filter(p -> Filenames.filenameOf(p).startsWith("solid."))
 				.map(path2Config)
-				.filter(Optional::isPresent)
-				.map(Optional::get)
+				.flatMap(Maybe::asStream)
 				.collect(Collectors.toList()))
 			.mapCheckedException(SomethingWentWrong::new)
 			.get();
