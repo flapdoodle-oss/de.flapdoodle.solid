@@ -24,9 +24,11 @@ import com.samskivert.mustache.Template;
 import de.flapdoodle.solid.exceptions.SomethingWentWrong;
 import de.flapdoodle.solid.generator.Text;
 import de.flapdoodle.solid.parser.content.Blob;
+import de.flapdoodle.solid.site.SiteConfig;
 import de.flapdoodle.solid.theme.Renderer;
 import de.flapdoodle.solid.theme.Renderer.Context;
 import de.flapdoodle.solid.theme.Theme;
+import de.flapdoodle.solid.types.reflection.Inspector;
 import de.flapdoodle.solid.types.tree.PropertyTree;
 import de.flapdoodle.types.Either;
 import de.flapdoodle.types.Try;
@@ -63,23 +65,35 @@ public class MustacheTheme implements Theme {
 			
 			@Override
 			public VariableFetcher createFetcher(Object ctx, String name) {
-				VariableFetcher ret = super.createFetcher(ctx, name);
-				if (ret==null) {
-					if (ctx instanceof PropertyTree) {
-						return (c,n) -> ((PropertyTree) c).get(n);
+				try {
+//					Preconditions.checkArgument(!name.isEmpty(),"you should not use something like {{ .Foo }}");
+					if (name.isEmpty()) {
+						return (c,n) -> c;
 					}
-					if (ctx instanceof MustacheFormating) {
-						ImmutableMap<String, de.flapdoodle.solid.formatter.Formatter> map = Preconditions.checkNotNull(formatter.get(),"formatter map not set");
-						de.flapdoodle.solid.formatter.Formatter formatter = map.get(name);
-						return (c,n) ->formatter.format(((MustacheFormating) c).value()).orElse("");
+					
+					VariableFetcher ret = super.createFetcher(ctx, name);
+					if (ret==null) {
+//						System.out.println(""+ctx.getClass()+".'"+name+"'");
+						if ("*".equals(name)) {
+							return (c,n) -> Inspector.propertyNamesOf(c.getClass());
+						}
+						if (ctx instanceof PropertyTree) {
+							return (c,n) -> ((PropertyTree) c).get(n);
+						}
+						if (ctx instanceof MustacheFormating) {
+							ImmutableMap<String, de.flapdoodle.solid.formatter.Formatter> map = Preconditions.checkNotNull(formatter.get(),"formatter map not set");
+							de.flapdoodle.solid.formatter.Formatter formatter = map.get(name);
+							return (c,n) ->formatter.format(((MustacheFormating) c).value()).orElse("");
+						}
+						if (name.equals("formatWith")) {
+							return (c,n) -> singleValue(c).map(MustacheFormating::of).orElse(null);
+						}
 					}
-					if (name.equals("formatWith")) {
-						return (c,n) -> singleValue(c).map(MustacheFormating::of).orElse(null);
-					}
+					return ret;
+				} catch (RuntimeException rx) {
+					throw new RuntimeException("ctx.class: "+ctx.getClass()+", name: '"+name+"'",rx);
 				}
-				return ret;
 			}
-
 		};
 	}
 
@@ -99,7 +113,7 @@ public class MustacheTheme implements Theme {
 	}
 	
 	private static TemplateLoader loaderOf(Path root) {
-		return name -> new FileReader(root.resolve(name+".mustache").toFile());
+		return name -> new FileReader(root.resolve(name.replace("\\", "/")+".mustache").toFile());
 	}
 
 	@Override
@@ -108,16 +122,20 @@ public class MustacheTheme implements Theme {
 			.mapCheckedException(SomethingWentWrong::new)
 			.get();
 		
-		return rendererOf(template);
+		return rendererOf(template, templateName);
 	}
 
-	private Renderer rendererOf(Template template) {
+	private Renderer rendererOf(Template template, String templateName) {
 		return renderable -> {
 			formatter.set(renderable.context().site().config().formatters().formatters());
-			return Text.builder()
-					.mimeType("text/html")
-					.text(template.execute(asMustacheContext(renderable)))
-					.build();
+			try {
+				return Text.builder()
+						.mimeType("text/html")
+						.text(template.execute(asMustacheContext(renderable)))
+						.build();
+			} catch (RuntimeException rx) {
+				throw new RuntimeException("could not render: "+templateName,rx);
+			}
 		};
 	}
 
@@ -146,6 +164,11 @@ public class MustacheTheme implements Theme {
 		@Auxiliary
 		default Blob getSingle() {
 			return blobs().size()==1 ? blobs().get(0) : null;
+		}
+		
+		@Auxiliary
+		default SiteConfig getSite() {
+			return context().site().config();
 		}
 		
 		public static ImmutableMustacheWrapper.Builder builder() {

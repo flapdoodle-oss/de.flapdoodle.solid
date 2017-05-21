@@ -1,6 +1,7 @@
 package de.flapdoodle.solid.types;
 
 import java.util.Optional;
+import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Supplier;
 
@@ -27,9 +28,22 @@ public abstract class Maybe<T> {
 	}
 	
 	@Auxiliary
+	public T orElse(Supplier<T> fallback) {
+		return isPresent() ? this.get() : fallback.get();
+	}
+	
+	@Auxiliary
 	public Optional<T> asOptional() {
 		return isPresent() ? Optional.of(get()) : Optional.empty();
 	}
+	
+	@Auxiliary
+	public void ifPresent(Consumer<T> consumer) {
+		if (isPresent()) {
+			consumer.accept(get());
+		}
+	}
+
 	
 	static class None<T> extends Maybe<T> {
 		@Override
@@ -81,6 +95,11 @@ public abstract class Maybe<T> {
 		return ABSENT;
 	}
 	
+	@Deprecated
+	public static <T> Maybe<T> empty() {
+		return absent();
+	}
+	
 	public static <T> Maybe<T> of(T value) {
 		return ImmutableSome.of(value);
 	}
@@ -92,5 +111,6 @@ public abstract class Maybe<T> {
 	public static <T> Maybe<T> fromOptional(Optional<T> src) {
 		return src.isPresent() ? of(src.get()) : absent();
 	}
+
 
 }
