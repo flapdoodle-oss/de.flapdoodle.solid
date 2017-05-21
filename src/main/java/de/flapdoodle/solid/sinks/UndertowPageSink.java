@@ -59,7 +59,14 @@ public class UndertowPageSink implements PageSink {
 	@Override
 	public void accept(ImmutableList<Document> documents) {
 		this.documentMap = documents.stream()
-				.collect(ImmutableMap.toImmutableMap(doc -> doc.path(), doc -> doc));
+				.collect(ImmutableMap.toImmutableMap(doc -> asValidUrl(doc.path()), doc -> doc));
+	}
+
+	private String asValidUrl(String path) {
+		if (!path.startsWith("/")) {
+			return "/"+path;
+		}
+		return path;
 	}
 
 }

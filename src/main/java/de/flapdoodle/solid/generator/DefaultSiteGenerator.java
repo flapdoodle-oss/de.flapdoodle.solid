@@ -108,8 +108,9 @@ public class DefaultSiteGenerator implements SiteGenerator {
 			});
 			
 			
-			
 		});
+		
+		documents.addAll(site.theme().staticFiles());
 		
 		return documents.build();
 	}
