@@ -60,9 +60,9 @@ public class MustacheTheme implements Theme {
 	private ImmutableList<Document> staticFilesOf(Path rootDir) {
 		return Try.supplier(() -> In.walk(rootDir.resolve("static"), (path,content) -> {
 			return Maybe.of((Document) Document.builder()
-					.path(path.toString())
+					.path(rootDir.relativize(path).toString())
 					.content(Binary.builder()
-							.mimeType("image/jpeg")
+							.mimeType(In.mimeTypeOf(path))
 							.data(content)
 					.build())
 					.build());

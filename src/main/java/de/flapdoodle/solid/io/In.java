@@ -50,13 +50,19 @@ public abstract class In {
 		Files.walk(root)
 			.forEach(path -> {
 				if (path.toFile().isFile()) {
-					Path relativePath = root.relativize(path);
+//					Path relativePath = root.relativize(path);
 					ByteArray content = Try.supplier(() -> ByteArray.fromArray(Files.readAllBytes(path)))
 						.mapCheckedException(SomethingWentWrong::new)
 						.get();
 					
-					consumer.accept(relativePath, content);
+					consumer.accept(path, content);
 				}
 			});
+	}
+	
+	public static String mimeTypeOf(Path path) {
+		return Try.supplier(() -> Files.probeContentType(path))
+				.mapCheckedException(RuntimeException::new)
+				.get();
 	}
 }

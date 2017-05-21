@@ -89,6 +89,12 @@ public class DefaultSiteFactory implements SiteFactory {
 			PropertyTreeConfigs.propertyTreeOf(filetypeParserFactory, path)
 				.map(config -> SiteConfig.of(Filenames.filenameOf(path), config));
 		
+//		In.walk(siteRoot, (path,content) -> {
+//			if (Filenames.filenameOf(path).startsWith("solid.")) {
+//				return Maybe.of(value)
+//			}
+//		});
+			
 		List<SiteConfig> configs = Try.supplier(() -> Files.list(siteRoot)
 				.filter(p -> Filenames.filenameOf(p).startsWith("solid."))
 				.map(path2Config)
