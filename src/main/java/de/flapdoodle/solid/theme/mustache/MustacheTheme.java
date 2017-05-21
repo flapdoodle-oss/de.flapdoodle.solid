@@ -57,15 +57,18 @@ public class MustacheTheme implements Theme {
 	}
 	
 	private ImmutableList<Document> staticFilesOf(Path rootDir) {
-		return Try.supplier(() -> In.walk(rootDir.resolve("static"), (path,content) -> {
-			return Maybe.of((Document) Document.builder()
-					.path(rootDir.relativize(path).toString())
-					.content(Binary.builder()
-							.mimeType(In.mimeTypeOf(path))
-							.data(content)
-					.build())
-					.build());
-			}))
+		return Try.supplier(() -> {
+			Path staticContentPath = rootDir.resolve("static");
+			return In.walk(staticContentPath, (path,content) -> {
+				return Maybe.of((Document) Document.builder()
+						.path(staticContentPath.relativize(path).toString())
+						.content(Binary.builder()
+								.mimeType(In.mimeTypeOf(path))
+								.data(content)
+						.build())
+						.build());
+				});
+		})
 			.onCheckedException(ex -> ImmutableList.of())
 			.get();
 	}
