@@ -20,6 +20,7 @@ import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.function.BiConsumer;
 import java.util.function.BiFunction;
 
 import com.google.common.collect.ImmutableList;
@@ -38,6 +39,14 @@ public abstract class In {
 	public static <T> ImmutableList<T> walk(Path root,BiFunction<Path, ByteArray, Maybe<T>> mapper) throws IOException {
 		ImmutableList.Builder<T> builder=ImmutableList.builder();
 		
+		walk(root, (relativePath, content) -> {
+			mapper.apply(relativePath, content).ifPresent(builder::add);
+		});
+		
+		return builder.build();
+	}
+
+	public static void walk(Path root,BiConsumer<Path, ByteArray> consumer) throws IOException {
 		Files.walk(root)
 			.forEach(path -> {
 				if (path.toFile().isFile()) {
@@ -46,10 +55,8 @@ public abstract class In {
 						.mapCheckedException(SomethingWentWrong::new)
 						.get();
 					
-					mapper.apply(relativePath, content).ifPresent(builder::add);
+					consumer.accept(relativePath, content);
 				}
 			});
-		
-		return builder.build();
 	}
 }

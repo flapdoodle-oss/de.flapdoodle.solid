@@ -23,6 +23,8 @@ import java.util.Optional;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
+import com.google.common.base.Charsets;
+
 import de.flapdoodle.solid.exceptions.NotASolidSite;
 import de.flapdoodle.solid.exceptions.SomethingWentWrong;
 import de.flapdoodle.solid.io.Filenames;
@@ -65,22 +67,14 @@ public class DefaultSiteFactory implements SiteFactory {
 		
 		SiteConfigPostProcessor postProcessor = SiteConfigPostProcessor.of(siteConfig.postProcessing());
 		
-		Try.runable(() ->	Files.walk(siteRoot.resolve(siteConfig.contentDirectory()))
-				.forEach(path -> {
-					if (path.toFile().isFile()) {
-						Path relativePath = siteRoot.relativize(path);
-						
-//						System.out.println(" -> "+relativePath);
-						
-						Optional<Blob> blob = Try.supplier(() -> blobParser.parse(relativePath, In.read(path)))
-							.mapCheckedException(SomethingWentWrong::new)
-							.get();
-						if (blob.isPresent()) {
-							siteBuilder.addBlobs(postProcessor.process(blob.get()));
-						} else {
-							siteBuilder.addIgnoredFiles(relativePath.toString());
-						}
-					}}))
+		Try.runable(() ->	In.walk(siteRoot.resolve(siteConfig.contentDirectory()), (relativePath,content) -> {
+			Optional<Blob> blob = blobParser.parse(relativePath, new String(content.data(), Charsets.UTF_8));
+			if (blob.isPresent()) {
+				siteBuilder.addBlobs(postProcessor.process(blob.get()));
+			} else {
+				siteBuilder.addIgnoredFiles(relativePath.toString());
+			}
+		}))
 		.mapCheckedException(SomethingWentWrong::new)
 		.run();
 		
