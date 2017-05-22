@@ -22,6 +22,7 @@ import org.immutables.value.Value.Style;
 
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
+import com.google.common.collect.ImmutableSet;
 
 import de.flapdoodle.legacy.Optionals;
 import de.flapdoodle.solid.site.ImmutableSiteConfig.Builder;
@@ -73,10 +74,19 @@ public interface SiteConfig {
 				.baseUrl(map.find(String.class, "baseURL").get())
 				.theme(Optionals.checkPresent(map.find(String.class, "theme"),"theme not set in %s",filename).get());
 		
-		map.find(String.class, "title")
-			.ifPresent(v -> builder.putProperties("title", v));
-		map.find(String.class, "subtitle")
-			.ifPresent(v -> builder.putProperties("subtitle", v));
+		ImmutableSet<String> validProperties=ImmutableSet.of("title","subtitle");
+		
+		map.properties()
+			.stream()
+			.filter(validProperties::contains)
+			.forEach(p -> {
+			map.find(String.class, p)
+				.ifPresent(v -> builder.putProperties(p, v));
+		});
+//		map.find(String.class, "title")
+//			.ifPresent(v -> builder.putProperties("title", v));
+//		map.find(String.class, "subtitle")
+//			.ifPresent(v -> builder.putProperties("subtitle", v));
 		
 		builder.urls(Urls.of(Optionals.checkPresent(map.find("urls"),"urls not found in %s",map).get()));
 		
