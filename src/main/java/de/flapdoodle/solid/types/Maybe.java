@@ -10,6 +10,8 @@ import org.immutables.value.Value.Auxiliary;
 import org.immutables.value.Value.Immutable;
 import org.immutables.value.Value.Parameter;
 
+import com.google.common.base.Preconditions;
+
 public abstract class Maybe<T> {
 
 	public abstract T get();
@@ -128,6 +130,8 @@ public abstract class Maybe<T> {
 		return src.isPresent() ? of(src.get()) : absent();
 	}
 
-
-
+	public static <T> Maybe<T> isPresent(Maybe<T> maybe, String message, Object ... errorMessageArgs) {
+		Preconditions.checkArgument(maybe.isPresent(),message,errorMessageArgs);
+		return maybe;
+	}
 }

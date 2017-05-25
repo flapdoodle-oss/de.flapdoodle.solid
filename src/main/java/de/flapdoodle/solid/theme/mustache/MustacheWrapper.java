@@ -7,7 +7,7 @@ import org.immutables.value.Value.Lazy;
 import com.google.common.collect.ImmutableList;
 
 import de.flapdoodle.solid.parser.content.Blob;
-import de.flapdoodle.solid.theme.Renderer.Context;
+import de.flapdoodle.solid.theme.Context;
 
 @Immutable
 interface MustacheWrapper {
@@ -22,6 +22,11 @@ interface MustacheWrapper {
 	@Lazy
 	default MustacheSiteWrapper getSite() {
 		return MustacheSiteWrapper.of(context().site().config());
+	}
+	
+	@Auxiliary
+	default String getUrl() {
+		return context().paths().currentUrl();
 	}
 	
 	public static ImmutableMustacheWrapper.Builder builder() {
