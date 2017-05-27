@@ -8,6 +8,7 @@ import com.google.common.collect.ImmutableList;
 
 import de.flapdoodle.solid.parser.content.Blob;
 import de.flapdoodle.solid.theme.Context;
+import de.flapdoodle.solid.theme.Paths;
 
 @Immutable
 interface MustacheWrapper {
@@ -28,7 +29,12 @@ interface MustacheWrapper {
 	default String getUrl() {
 		return context().paths().currentUrl();
 	}
-	
+
+	@Auxiliary
+	default Paths getPaths() {
+		return context().paths();
+	}
+
 	public static ImmutableMustacheWrapper.Builder builder() {
 		return ImmutableMustacheWrapper.builder();
 	}

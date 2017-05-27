@@ -38,6 +38,10 @@ public abstract class Maybe<T> {
 		return isPresent() ? this.get() : fallback.get();
 	}
 	
+	public T orElseNull() {
+		return isPresent() ? this.get() : null;
+	}
+	
 	@Auxiliary
 	public Optional<T> asOptional() {
 		return isPresent() ? Optional.of(get()) : Optional.empty();

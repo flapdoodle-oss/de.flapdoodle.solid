@@ -16,6 +16,8 @@
  */
 package de.flapdoodle.solid.generator;
 
+import java.util.Collection;
+
 import org.immutables.value.Value.Immutable;
 
 import com.google.common.collect.ImmutableList;
@@ -35,6 +37,8 @@ import de.flapdoodle.solid.theme.Paths;
 import de.flapdoodle.solid.theme.Renderer;
 import de.flapdoodle.solid.types.Collectors;
 import de.flapdoodle.solid.types.Maybe;
+import de.flapdoodle.solid.types.paging.Pager;
+import de.flapdoodle.solid.types.paging.Pager.KeyValue;
 
 public class DefaultSiteGenerator implements SiteGenerator {
 
@@ -89,19 +93,29 @@ public class DefaultSiteGenerator implements SiteGenerator {
 		});
 		
 		ImmutableMap<String, GroupedBlobs> groupedBlobsById = groupedBlobsBuilder.build();
+		
 		groupedBlobsById.forEach((name, grouped) -> {
 			System.out.println(name);
-			grouped.groupedBlobs().asMap().forEach((key, blobs) -> {
-				Path currentPath = grouped.currentPath();
-				String renderedPath = Maybe.isPresent(pathRenderer.render(currentPath, key, propertyFormatter),"could not render path for: %s with %s",currentPath,key).get();
+			Path currentPath = grouped.currentPath();
+			
+			Pager.forEach(grouped.groupedBlobs().asMap(), (before,current,after) -> {
+				ImmutableMap<String, Object> key = current.key();
+				Collection<Blob> blobs = current.value();
 				
-				System.out.println(" "+key+" -> "+blobs.size()+" --> "+renderedPath);
+				String renderedPath = Maybe.isPresent(pathRenderer.render(currentPath, key, propertyFormatter),"could not render path for: %s with %s",currentPath,key).get();
+				Maybe<String> prev=before.map(KeyValue::key)
+						.flatMap(k -> pathRenderer.render(currentPath, k, propertyFormatter));
+				Maybe<String> next=after.map(KeyValue::key)
+						.flatMap(k -> pathRenderer.render(currentPath, k, propertyFormatter));
+				
+				System.out.println(" "+key+" -> "+blobs.size()+" --> "+renderedPath+"("+prev+":"+next+")");
+				
 				Content renderedResult = site.theme().rendererFor(name).render(Renderer.Renderable.builder()
 						.addAllBlobs(blobs)
 						.context(Context.builder()
 								.putAllPathProperties(key)
 								.site(site)
-								.paths(new PathsImpl(renderedPath))
+								.paths(new PathsImpl(renderedPath,prev,next))
 								.build())
 						.build());
 				
@@ -109,6 +123,7 @@ public class DefaultSiteGenerator implements SiteGenerator {
 					.path(renderedPath)
 					.content(renderedResult)
 					.build());
+				
 			});
 		});
 		
@@ -141,15 +156,28 @@ public class DefaultSiteGenerator implements SiteGenerator {
 	private class PathsImpl implements Paths {
 
 		private final String currentUrl;
+		private final Maybe<String> prevUrl;
+		private final Maybe<String> nextUrl;
 		
-		public PathsImpl(String currentUrl) {
+		public PathsImpl(String currentUrl, Maybe<String> prevUrl, Maybe<String> nextUrl) {
 			this.currentUrl = currentUrl;
+			this.prevUrl = prevUrl;
+			this.nextUrl = nextUrl;
 		}
 
 		@Override
 		public String currentUrl() {
 			return currentUrl;
 		}
+
+		@Override
+		public String previousUrl() {
+			return prevUrl.orElseNull();
+		}
 		
+		@Override
+		public String nextUrl() {
+			return nextUrl.orElseNull();
+		}
 	}
 }

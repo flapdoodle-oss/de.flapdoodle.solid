@@ -8,7 +8,10 @@ import java.util.List;
 import org.junit.Test;
 
 import com.google.common.collect.ImmutableList;
+import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Lists;
+
+import de.flapdoodle.solid.types.paging.Pager.KeyValue;
 
 public class PagerTest {
 
@@ -70,5 +73,30 @@ public class PagerTest {
 		assertEquals("one", calls.get(0));
 		assertEquals("two", calls.get(1));
 		assertEquals("3", calls.get(2));
+	}
+	
+	@Test
+	public void mapShouldWorkToo() {
+		List<KeyValue<String, Integer>> calls=Lists.newArrayList();
+		ImmutableMap<String, Integer> map=ImmutableMap.of("one",1,"two",2,"3",3);
+		Pager.forEach(map, (last,current,next) -> {
+			if (current.key().equals("one")) {
+				assertFalse(last.isPresent());
+				assertEquals("two", next.get().key());
+			}
+			if (current.key().equals("two")) {
+				assertEquals("one", last.get().key());
+				assertEquals("3", next.get().key());
+			}
+			if (current.key().equals("3")) {
+				assertEquals("two", last.get().key());
+				assertFalse(next.isPresent());
+			}
+			calls.add(current);
+		});
+		assertEquals(3, calls.size());
+		assertEquals("one", calls.get(0).key());
+		assertEquals("two", calls.get(1).key());
+		assertEquals("3", calls.get(2).key());
 	}
 }
