@@ -1,6 +1,7 @@
 package de.flapdoodle.solid.theme.mustache;
 
 import java.util.List;
+import java.util.Optional;
 
 import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableMap;
@@ -27,6 +28,10 @@ final class CustomCollector extends DefaultCollector {
 
 		@Override
 		public VariableFetcher createFetcher(Object ctx, String name) {
+			return wrapWithMaybeAndOptionalExtractor(internal(ctx, name));
+		}
+
+		private VariableFetcher internal(Object ctx, String name) {
 			try {
 //					Preconditions.checkArgument(!name.isEmpty(),"you should not use something like {{ .Foo }}");
 				if (name.isEmpty()) {
@@ -61,6 +66,28 @@ final class CustomCollector extends DefaultCollector {
 			} catch (RuntimeException rx) {
 				throw new RuntimeException("ctx.class: "+ctx.getClass()+", name: '"+name+"'",rx);
 			}
+		}
+
+		private VariableFetcher wrapWithMaybeAndOptionalExtractor(VariableFetcher src) {
+			if (src!=null) {
+				return (ctx,name) -> {
+					Object ret = src.get(ctx, name);
+					if (ret instanceof Maybe) {
+						Maybe maybe = (Maybe) ret;
+						return maybe.isPresent() ? maybe.get() : null;
+					}
+					if (ret instanceof Optional) {
+						Optional maybe = (Optional) ret;
+						return maybe.isPresent() ? maybe.get() : null;
+					}
+					if (ret instanceof com.google.common.base.Optional) {
+						com.google.common.base.Optional maybe = (com.google.common.base.Optional) ret;
+						return maybe.isPresent() ? maybe.get() : null;
+					}
+					return ret;
+				};
+			}
+			return src;
 		}
 
 		protected static Maybe<Object> singleValue(Object c) {

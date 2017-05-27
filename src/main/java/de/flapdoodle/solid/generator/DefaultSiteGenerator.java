@@ -17,6 +17,7 @@
 package de.flapdoodle.solid.generator;
 
 import java.util.Collection;
+import java.util.Optional;
 
 import org.immutables.value.Value.Immutable;
 
@@ -33,6 +34,7 @@ import de.flapdoodle.solid.parser.path.Path;
 import de.flapdoodle.solid.site.PathProperties;
 import de.flapdoodle.solid.site.Urls.Config;
 import de.flapdoodle.solid.theme.Context;
+import de.flapdoodle.solid.theme.Page;
 import de.flapdoodle.solid.theme.Paths;
 import de.flapdoodle.solid.theme.Renderer;
 import de.flapdoodle.solid.types.Collectors;
@@ -103,10 +105,10 @@ public class DefaultSiteGenerator implements SiteGenerator {
 				Collection<Blob> blobs = current.value();
 				
 				String renderedPath = Maybe.isPresent(pathRenderer.render(currentPath, key, propertyFormatter),"could not render path for: %s with %s",currentPath,key).get();
-				Maybe<String> prev=before.map(KeyValue::key)
-						.flatMap(k -> pathRenderer.render(currentPath, k, propertyFormatter));
-				Maybe<String> next=after.map(KeyValue::key)
-						.flatMap(k -> pathRenderer.render(currentPath, k, propertyFormatter));
+				
+				Maybe<Page> prev = pageOf(currentPath, before, propertyFormatter);
+				
+				Maybe<Page> next=pageOf(currentPath, after, propertyFormatter);
 				
 				System.out.println(" "+key+" -> "+blobs.size()+" --> "+renderedPath+"("+prev+":"+next+")");
 				
@@ -130,6 +132,21 @@ public class DefaultSiteGenerator implements SiteGenerator {
 		documents.addAll(site.theme().staticFiles());
 		
 		return documents.build();
+	}
+
+	private Maybe<Page> pageOf(Path currentPath, Maybe<KeyValue<ImmutableMap<String, Object>, Collection<Blob>>> pageBlobs, FormatterOfProperty propertyFormatter) {
+		Maybe<String> title = pageBlobs.map(KeyValue::value)
+			.flatMap(blobs -> {
+				return blobs.size()==1 ? blobs.iterator().next().meta()
+						.find(String.class, "title") : Maybe.<String>absent();
+			});
+		
+		return pageBlobs.map(KeyValue::key)
+				.flatMap(k -> pathRenderer.render(currentPath, k, propertyFormatter))
+				.map(url -> Page.builder()
+						.url(url)
+						.title(title.asOptional())
+						.build());
 	}
 
 	@Deprecated
@@ -156,13 +173,13 @@ public class DefaultSiteGenerator implements SiteGenerator {
 	private class PathsImpl implements Paths {
 
 		private final String currentUrl;
-		private final Maybe<String> prevUrl;
-		private final Maybe<String> nextUrl;
+		private final Optional<Page> prev;
+		private final Optional<Page> next;
 		
-		public PathsImpl(String currentUrl, Maybe<String> prevUrl, Maybe<String> nextUrl) {
+		public PathsImpl(String currentUrl, Maybe<Page> prev, Maybe<Page> next) {
 			this.currentUrl = currentUrl;
-			this.prevUrl = prevUrl;
-			this.nextUrl = nextUrl;
+			this.prev = prev.asOptional();
+			this.next = next.asOptional();
 		}
 
 		@Override
@@ -171,13 +188,14 @@ public class DefaultSiteGenerator implements SiteGenerator {
 		}
 
 		@Override
-		public String previousUrl() {
-			return prevUrl.orElseNull();
+		public Optional<Page> getPreviousPage() {
+			return prev;
 		}
-		
+
 		@Override
-		public String nextUrl() {
-			return nextUrl.orElseNull();
+		public Optional<Page> getNextPage() {
+			return next;
 		}
+
 	}
 }

@@ -1,9 +1,11 @@
 package de.flapdoodle.solid.theme;
 
+import java.util.Optional;
+
 public interface Paths {
 	String currentUrl();
 
-	String previousUrl();
+	Optional<Page> getPreviousPage();
 
-	String nextUrl();
+	Optional<Page> getNextPage();
 }
