@@ -31,6 +31,7 @@ public abstract class MustacheBlobWrapper {
 				.build(), blob().content());
 	}
 	
+	
 	public static MustacheBlobWrapper of(Blob src, MarkupRendererFactory factory) {
 		return ImmutableMustacheBlobWrapper.of(src, factory.rendererFor(src.contentType()));
 	}
