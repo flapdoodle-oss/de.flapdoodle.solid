@@ -12,6 +12,7 @@ import com.samskivert.mustache.Mustache.Formatter;
 import com.samskivert.mustache.Mustache.TemplateLoader;
 import com.samskivert.mustache.Template;
 
+import de.flapdoodle.solid.content.render.MarkupRendererFactory;
 import de.flapdoodle.solid.exceptions.SomethingWentWrong;
 import de.flapdoodle.solid.generator.Binary;
 import de.flapdoodle.solid.generator.Document;
@@ -30,19 +31,22 @@ public class MustacheTheme implements Theme {
 	final ThreadLocal<ImmutableMap<String, de.flapdoodle.solid.formatter.Formatter>> formatter=new ThreadLocal<>();
 	private final ImmutableList<Document> staticFiles;
 	private final PropertyTree config;
+	private final MarkupRendererFactory markupRenderFactory;
 
-	public MustacheTheme(Path rootDir, PropertyTree config) {
+	public MustacheTheme(Path rootDir, PropertyTree config, MarkupRendererFactory markupRenderFactory) {
 		this.rootDir = rootDir;
 		this.config = config;
+		this.markupRenderFactory = markupRenderFactory;
 		this.compiler = Mustache.compiler()
 				.withLoader(loaderOf(this.rootDir))
 				.defaultValue("")
 				.withCollector(customCollector())
 				.withFormatter(customFormatter())
+//				.withEscaper(Escapers.NONE)
 				.emptyStringIsFalse(true);
 		this.staticFiles = staticFilesOf(rootDir);
 	}
-	
+
 	private ImmutableList<Document> staticFilesOf(Path rootDir) {
 		return Try.supplier(() -> {
 			Path staticContentPath = rootDir.resolve("static");
@@ -97,9 +101,13 @@ public class MustacheTheme implements Theme {
 		return renderable -> {
 			formatter.set(renderable.context().site().config().formatters().formatters());
 			try {
+				ImmutableMustacheRenderContext renderContext = MustacheRenderContext.builder()
+						.markupRenderFactory(markupRenderFactory)
+						.build();
+				
 				return Text.builder()
 						.mimeType("text/html")
-						.text(template.execute(asMustacheContext(renderable)))
+						.text(template.execute(asMustacheContext(renderable, renderContext)))
 						.build();
 			} catch (RuntimeException rx) {
 				throw new RuntimeException("could not render: "+templateName,rx);
@@ -107,10 +115,11 @@ public class MustacheTheme implements Theme {
 		};
 	}
 
-	protected Object asMustacheContext(Renderer.Renderable renderable) {
+	protected Object asMustacheContext(Renderer.Renderable renderable, MustacheRenderContext renderContext) {
 		return MustacheWrapper.builder()
+			.renderContext(renderContext)
 			.context(renderable.context())
-			.addAllBlobs(renderable.blobs())
+			.addAllAllBlobs(renderable.blobs())
 			.build();
 	}
 }

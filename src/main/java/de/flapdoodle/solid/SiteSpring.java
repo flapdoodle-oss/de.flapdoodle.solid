@@ -20,6 +20,7 @@ import java.nio.file.Path;
 
 import com.google.common.base.Supplier;
 
+import de.flapdoodle.solid.content.render.MarkupRendererFactory;
 import de.flapdoodle.solid.parser.DefaultSiteFactory;
 import de.flapdoodle.solid.parser.content.BlobParser;
 import de.flapdoodle.solid.parser.content.DefaultBlobParser;
@@ -34,7 +35,8 @@ public interface SiteSpring extends Supplier<Site> {
 		return () -> {
 			PropertyTreeParserFactory parserFactory = PropertyTreeParserFactory.defaultFactory();
 			BlobParser blobParser = new DefaultBlobParser(parserFactory);
-			ThemeFactory themeFactory = ThemeFactory.defaultFactory(FiletypeParserFactory.defaults(parserFactory));
+			MarkupRendererFactory markupRendererFactory=MarkupRendererFactory.defaultFactory();
+			ThemeFactory themeFactory = ThemeFactory.defaultFactory(FiletypeParserFactory.defaults(parserFactory), markupRendererFactory);
 			DefaultSiteFactory siteFactory = new DefaultSiteFactory(parserFactory, blobParser, themeFactory);
 			return siteFactory.siteOf(siteRoot);
 		};

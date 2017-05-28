@@ -11,27 +11,35 @@ import de.flapdoodle.solid.theme.Context;
 import de.flapdoodle.solid.theme.Paths;
 
 @Immutable
-interface MustacheWrapper {
-	ImmutableList<Blob> blobs();
-	Context context();
+abstract class MustacheWrapper {
+	protected abstract MustacheRenderContext renderContext();
+	protected abstract ImmutableList<Blob> allBlobs();
+	public abstract Context context();
 	
 	@Auxiliary
-	default Blob getSingle() {
-		return blobs().size()==1 ? blobs().get(0) : null;
+	public MustacheBlobWrapper getSingle() {
+		return allBlobs().size()==1 ? MustacheBlobWrapper.of(allBlobs().get(0), renderContext().markupRenderFactory()) : null;
+	}
+	
+	@Auxiliary
+	public ImmutableList<MustacheBlobWrapper> getBlobs() {
+		return allBlobs().stream()
+				.map(blob -> MustacheBlobWrapper.of(blob, renderContext().markupRenderFactory()))
+				.collect(ImmutableList.toImmutableList());
 	}
 	
 	@Lazy
-	default MustacheSiteWrapper getSite() {
+	public MustacheSiteWrapper getSite() {
 		return MustacheSiteWrapper.of(context().site().config());
 	}
 	
 	@Auxiliary
-	default String getUrl() {
+	public String getUrl() {
 		return context().paths().currentUrl();
 	}
 
 	@Auxiliary
-	default Paths getPaths() {
+	public Paths getPaths() {
 		return context().paths();
 	}
 

@@ -24,6 +24,7 @@ import java.nio.file.Paths;
 
 import org.junit.Test;
 
+import de.flapdoodle.solid.content.render.MarkupRendererFactory;
 import de.flapdoodle.solid.parser.content.BlobParser;
 import de.flapdoodle.solid.parser.content.DefaultBlobParser;
 import de.flapdoodle.solid.parser.content.Site;
@@ -37,7 +38,8 @@ public class SiteFactoryTest {
 	public void siteParserWillCheckForSolidConfigFirst() {
 		PropertyTreeParserFactory parserFactory = PropertyTreeParserFactory.defaultFactory();
 		BlobParser blobParser = new DefaultBlobParser(parserFactory);
-		DefaultSiteFactory siteFactory = new DefaultSiteFactory(parserFactory, blobParser, ThemeFactory.defaultFactory(FiletypeParserFactory.defaults(parserFactory)));
+		MarkupRendererFactory markupRendererFactory=MarkupRendererFactory.defaultFactory();
+		DefaultSiteFactory siteFactory = new DefaultSiteFactory(parserFactory, blobParser, ThemeFactory.defaultFactory(FiletypeParserFactory.defaults(parserFactory), markupRendererFactory));
 		
 		Path siteARoot = Paths.get("src", "test","resources","sample","site-a");
 		Site site = siteFactory.siteOf(siteARoot);

@@ -7,6 +7,7 @@ import java.util.stream.Collectors;
 
 import com.google.common.collect.ImmutableList;
 
+import de.flapdoodle.solid.content.render.MarkupRendererFactory;
 import de.flapdoodle.solid.exceptions.NotASolidSite;
 import de.flapdoodle.solid.io.Filenames;
 import de.flapdoodle.solid.parser.PropertyTreeConfigs;
@@ -19,9 +20,11 @@ import de.flapdoodle.types.Try;
 public class DefaultThemeFactory implements ThemeFactory {
 
 	private final FiletypeParserFactory filetypeParserFactory;
+	private final MarkupRendererFactory markupRendererFactory;
 
-	public DefaultThemeFactory(FiletypeParserFactory filetypeParserFactory) {
+	public DefaultThemeFactory(FiletypeParserFactory filetypeParserFactory, MarkupRendererFactory markupRendererFactory) {
 		this.filetypeParserFactory = filetypeParserFactory;
+		this.markupRendererFactory = markupRendererFactory;
 	}
 
 	@Override
@@ -46,7 +49,7 @@ public class DefaultThemeFactory implements ThemeFactory {
 		PropertyTree config = configs.get(0);
 		Maybe<String> engine = config.find(String.class, "engine");
 		if (engine.isPresent() && engine.get().equals("mustache")) {
-			return new MustacheTheme(themeDirectory, config);
+			return new MustacheTheme(themeDirectory, config, markupRendererFactory);
 		}
 
 		throw new RuntimeException("theme engine not supported: "+config.prettyPrinted());
