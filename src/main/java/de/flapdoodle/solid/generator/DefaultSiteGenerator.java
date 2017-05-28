@@ -56,10 +56,11 @@ public class DefaultSiteGenerator implements SiteGenerator {
 	
 	@Override
 	public ImmutableList<Document> generate(Site site) {
-		System.out.println(" -> "+site);
+		System.out.println(" blobs: -> "+site.blobs().size());
+		System.out.println(" theme: -> "+site.theme());
 		
-		System.out.println("dates -> "+metaValues(site, "date"));
-		System.out.println("titles -> "+metaValues(site, "title"));
+//		System.out.println("dates -> "+metaValues(site, "date"));
+//		System.out.println("titles -> "+metaValues(site, "title"));
 		
 		ImmutableList.Builder<Document> documents=ImmutableList.builder();
 		
@@ -110,7 +111,7 @@ public class DefaultSiteGenerator implements SiteGenerator {
 				
 				Maybe<Page> next=pageOf(currentPath, after, propertyFormatter);
 				
-				System.out.println(" "+key+" -> "+blobs.size()+" --> "+renderedPath+"("+prev+":"+next+")");
+				System.out.println(" "+key+" -> "+blobs.size()+" --> "+renderedPath+"(prev:"+prev.isPresent()+",next"+next.isPresent()+")");
 				
 				Content renderedResult = site.theme().rendererFor(name).render(Renderer.Renderable.builder()
 						.addAllBlobs(blobs)

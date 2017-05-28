@@ -13,6 +13,7 @@ import de.flapdoodle.solid.io.Filenames;
 import de.flapdoodle.solid.parser.PropertyTreeConfigs;
 import de.flapdoodle.solid.parser.types.FiletypeParserFactory;
 import de.flapdoodle.solid.theme.mustache.MustacheTheme;
+import de.flapdoodle.solid.theme.stringtemplate.StringtemplateTheme;
 import de.flapdoodle.solid.types.Maybe;
 import de.flapdoodle.solid.types.tree.PropertyTree;
 import de.flapdoodle.types.Try;
@@ -50,6 +51,9 @@ public class DefaultThemeFactory implements ThemeFactory {
 		Maybe<String> engine = config.find(String.class, "engine");
 		if (engine.isPresent() && engine.get().equals("mustache")) {
 			return new MustacheTheme(themeDirectory, config, markupRendererFactory);
+		}
+		if (engine.isPresent() && engine.get().equals("st")) {
+			return new StringtemplateTheme(themeDirectory, config, markupRendererFactory);
 		}
 
 		throw new RuntimeException("theme engine not supported: "+config.prettyPrinted());

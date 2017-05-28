@@ -10,6 +10,7 @@ import org.immutables.value.Value.Auxiliary;
 import org.immutables.value.Value.Immutable;
 import org.immutables.value.Value.Parameter;
 
+import com.google.common.base.MoreObjects;
 import com.google.common.base.Preconditions;
 
 public abstract class Maybe<T> {
@@ -81,6 +82,10 @@ public abstract class Maybe<T> {
 			return absent();
 		}
 		
+		@Override
+		public String toString() {
+			return MoreObjects.toStringHelper(getClass()).toString();
+		}
 		
 	}
 	

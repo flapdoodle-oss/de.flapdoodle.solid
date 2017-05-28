@@ -3,7 +3,6 @@ package de.flapdoodle.solid.theme.mustache;
 import java.io.FileReader;
 import java.nio.file.Path;
 
-import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
 import com.samskivert.mustache.Mustache;
 import com.samskivert.mustache.Mustache.Collector;
@@ -14,29 +13,19 @@ import com.samskivert.mustache.Template;
 
 import de.flapdoodle.solid.content.render.MarkupRendererFactory;
 import de.flapdoodle.solid.exceptions.SomethingWentWrong;
-import de.flapdoodle.solid.generator.Binary;
-import de.flapdoodle.solid.generator.Document;
 import de.flapdoodle.solid.generator.Text;
-import de.flapdoodle.solid.io.In;
+import de.flapdoodle.solid.theme.AbstractTheme;
 import de.flapdoodle.solid.theme.Renderer;
-import de.flapdoodle.solid.theme.Theme;
-import de.flapdoodle.solid.types.Maybe;
 import de.flapdoodle.solid.types.tree.PropertyTree;
 import de.flapdoodle.types.Try;
 
-public class MustacheTheme implements Theme {
+public class MustacheTheme extends AbstractTheme {
 
-	private final Path rootDir;
 	private final Compiler compiler;
 	final ThreadLocal<ImmutableMap<String, de.flapdoodle.solid.formatter.Formatter>> formatter=new ThreadLocal<>();
-	private final ImmutableList<Document> staticFiles;
-	private final PropertyTree config;
-	private final MarkupRendererFactory markupRenderFactory;
 
 	public MustacheTheme(Path rootDir, PropertyTree config, MarkupRendererFactory markupRenderFactory) {
-		this.rootDir = rootDir;
-		this.config = config;
-		this.markupRenderFactory = markupRenderFactory;
+		super(rootDir, config, markupRenderFactory);
 		this.compiler = Mustache.compiler()
 				.withLoader(loaderOf(this.rootDir))
 				.defaultValue("")
@@ -44,29 +33,6 @@ public class MustacheTheme implements Theme {
 				.withFormatter(customFormatter())
 //				.withEscaper(Escapers.NONE)
 				.emptyStringIsFalse(true);
-		this.staticFiles = staticFilesOf(rootDir);
-	}
-
-	private ImmutableList<Document> staticFilesOf(Path rootDir) {
-		return Try.supplier(() -> {
-			Path staticContentPath = rootDir.resolve("static");
-			return In.walk(staticContentPath, (path,content) -> {
-				return Maybe.of((Document) Document.builder()
-						.path(staticContentPath.relativize(path).toString())
-						.content(Binary.builder()
-								.mimeType(In.mimeTypeOf(path))
-								.data(content)
-						.build())
-						.build());
-				});
-		})
-			.onCheckedException(ex -> ImmutableList.of())
-			.get();
-	}
-
-	@Override
-	public ImmutableList<Document> staticFiles() {
-		return staticFiles;
 	}
 
 	private static Formatter customFormatter() {
