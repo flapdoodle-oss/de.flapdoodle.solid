@@ -38,12 +38,12 @@ public class Solid {
 		
 		StaticPageGenerator.onChange(siteRoot, target)
 			.generator(SiteSpring.withPath(siteRoot), SiteGenerator.defaultGenerator(), new StaticHttpServerPageSink(target)
-					.andThen(new DebuggingPageSink())
+					.andThen(new DebuggingPageSink(false))
 					.andThen(new UndertowPageSink()))
 			.run();
 	}
 
 	public static Runnable testing(Path siteRoot) {
-		return StaticPageGenerator.once().generator(SiteSpring.withPath(siteRoot), SiteGenerator.defaultGenerator(), new DebuggingPageSink());
+		return StaticPageGenerator.once().generator(SiteSpring.withPath(siteRoot), SiteGenerator.defaultGenerator(), new DebuggingPageSink(true));
 	}
 }

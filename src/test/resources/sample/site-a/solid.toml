@@ -9,6 +9,11 @@ relativeURLs = true
 #disqusShortname = "sample-de"
 
 [urls]
+	[urls.home]
+		path = "/:page/"
+		pageSize = 10
+		filter = "posts"
+		
 	[urls.pages]
 		path = "/pages/:pathTitle/"
 		filter = "pages"

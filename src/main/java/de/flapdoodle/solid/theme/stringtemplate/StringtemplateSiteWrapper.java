@@ -1,4 +1,4 @@
-package de.flapdoodle.solid.theme.mustache;
+package de.flapdoodle.solid.theme.stringtemplate;
 
 import org.immutables.value.Value.Auxiliary;
 import org.immutables.value.Value.Immutable;
@@ -9,7 +9,7 @@ import de.flapdoodle.solid.theme.MapLike;
 import de.flapdoodle.solid.types.Maybe;
 
 @Immutable
-public abstract class MustacheSiteWrapper implements MapLike {
+public abstract class StringtemplateSiteWrapper implements MapLike {
 	@Parameter
 	protected abstract SiteConfig config();
 	
@@ -20,7 +20,7 @@ public abstract class MustacheSiteWrapper implements MapLike {
 				.or(() -> Maybe.<Object>ofNullable(config().properties().get(key.substring(0,1).toLowerCase()+key.substring(1))));
 	}
 	
-	public static MustacheSiteWrapper of(SiteConfig config) {
-		return ImmutableMustacheSiteWrapper.of(config);
+	public static StringtemplateSiteWrapper of(SiteConfig config) {
+		return ImmutableStringtemplateSiteWrapper.of(config);
 	}
 }

@@ -8,6 +8,7 @@ import com.google.common.collect.ImmutableMap;
 import com.samskivert.mustache.DefaultCollector;
 import com.samskivert.mustache.Mustache.VariableFetcher;
 
+import de.flapdoodle.solid.theme.MapLike;
 import de.flapdoodle.solid.types.Maybe;
 import de.flapdoodle.solid.types.reflection.Inspector;
 import de.flapdoodle.solid.types.tree.PropertyTree;

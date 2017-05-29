@@ -4,8 +4,16 @@ import com.google.common.collect.ImmutableList;
 
 import de.flapdoodle.solid.PageSink;
 import de.flapdoodle.solid.generator.Document;
+import de.flapdoodle.solid.generator.Text;
 
 public final class DebuggingPageSink implements PageSink {
+	
+	private final boolean showContent;
+
+	public DebuggingPageSink(boolean showContent) {
+		this.showContent = showContent;
+	}
+	
 	@Override
 	public void accept(ImmutableList<Document> documents) {
 		if (!documents.isEmpty()) {
@@ -15,14 +23,16 @@ public final class DebuggingPageSink implements PageSink {
 				System.out.println(" - "+d.path());
 			});
 			System.out.println("-------------------------");
-//			documents.forEach(d -> {
-//				if (d.content() instanceof Text) {
-//					System.out.println(" - "+d.path());
-//					System.out.println("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~");
-//					System.out.println(((Text) d.content()).text());
-//					System.out.println("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~");
-//				}
-//			});
+			if (showContent) {
+				documents.forEach(d -> {
+				if (d.content() instanceof Text) {
+					System.out.println(" - "+d.path());
+					System.out.println("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~");
+					System.out.println(((Text) d.content()).text());
+					System.out.println("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~");
+				}
+			});
+			}
 
 		} else {
 			System.out.println("-------------------------");

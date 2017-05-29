@@ -1,4 +1,4 @@
-package de.flapdoodle.solid.theme.mustache;
+package de.flapdoodle.solid.theme;
 
 import de.flapdoodle.solid.types.Maybe;
 
