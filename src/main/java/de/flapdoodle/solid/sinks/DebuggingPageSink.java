@@ -5,6 +5,7 @@ import com.google.common.collect.ImmutableList;
 import de.flapdoodle.solid.PageSink;
 import de.flapdoodle.solid.generator.Document;
 import de.flapdoodle.solid.generator.Text;
+import de.flapdoodle.solid.site.SiteConfig;
 
 public final class DebuggingPageSink implements PageSink {
 	
@@ -15,7 +16,7 @@ public final class DebuggingPageSink implements PageSink {
 	}
 	
 	@Override
-	public void accept(ImmutableList<Document> documents) {
+	public void accept(SiteConfig siteConfig, ImmutableList<Document> documents) {
 		if (!documents.isEmpty()) {
 			System.out.println("-------------------------");
 			System.out.println("Documents: ");

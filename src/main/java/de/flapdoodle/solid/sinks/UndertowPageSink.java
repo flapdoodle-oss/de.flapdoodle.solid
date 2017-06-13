@@ -9,7 +9,10 @@ import de.flapdoodle.solid.PageSink;
 import de.flapdoodle.solid.generator.Binary;
 import de.flapdoodle.solid.generator.Content;
 import de.flapdoodle.solid.generator.Document;
+import de.flapdoodle.solid.generator.ImmutableDocument;
+import de.flapdoodle.solid.generator.ImmutableText;
 import de.flapdoodle.solid.generator.Text;
+import de.flapdoodle.solid.site.SiteConfig;
 import io.undertow.Undertow;
 import io.undertow.server.HttpHandler;
 import io.undertow.server.HttpServerExchange;
@@ -18,9 +21,11 @@ import io.undertow.util.Headers;
 public class UndertowPageSink implements PageSink {
 
 	private final Undertow server;
+	private final String serverUrl;
 	private ImmutableMap<String, Document> documentMap=ImmutableMap.of();
 
 	public UndertowPageSink() {
+		this.serverUrl = "http://localhost:8080";
 		this.server = Undertow.builder()
 			.addHttpListener(8080, "localhost")
 			.setHandler(new HttpHandler() {
@@ -57,9 +62,18 @@ public class UndertowPageSink implements PageSink {
 	}
 	
 	@Override
-	public void accept(ImmutableList<Document> documents) {
+	public void accept(SiteConfig siteConfig, ImmutableList<Document> documents) {
 		this.documentMap = documents.stream()
+				.map(doc -> replaceBaseUrl(siteConfig.baseUrl(), this.serverUrl, doc))
 				.collect(ImmutableMap.toImmutableMap(doc -> asValidUrl(doc.path()), doc -> doc));
+	}
+
+	private Document replaceBaseUrl(String baseUrl, String serverUrl, Document doc) {
+		if (doc.content() instanceof Text) {
+			Text text=(Text) doc.content();
+			return ImmutableDocument.copyOf(doc).withContent(ImmutableText.copyOf(text).withText(text.text().replace(baseUrl, serverUrl)));
+		}
+		return doc;
 	}
 
 	private String asValidUrl(String path) {

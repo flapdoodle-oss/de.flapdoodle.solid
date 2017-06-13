@@ -26,6 +26,7 @@ import com.google.common.collect.Multimaps;
 
 import de.flapdoodle.solid.generator.SiteGenerator;
 import de.flapdoodle.solid.io.PathWatcher;
+import de.flapdoodle.solid.parser.content.Site;
 import de.flapdoodle.solid.threads.Deferer;
 
 public interface StaticPageGenerator {
@@ -33,7 +34,8 @@ public interface StaticPageGenerator {
 	
 	public static StaticPageGenerator once() {
 		return (siteSpring, generator, pageSink) -> () -> {
-			pageSink.accept(generator.generate(siteSpring.get()));
+			Site site = siteSpring.get();
+			pageSink.accept(site.config(), generator.generate(site));
 		};
 	}
 	
@@ -42,14 +44,16 @@ public interface StaticPageGenerator {
 		
 		return (siteSpring, generator, pageSink) -> () -> {
 			try {
-				pageSink.accept(generator.generate(siteSpring.get()));
+				Site site = siteSpring.get();
+				pageSink.accept(site.config(), generator.generate(site));
 			} catch (RuntimeException rx) {
 				rx.printStackTrace();
 			}
 			
 			Consumer<Multimap<String, Path>> generateOnChange = Deferer.call((Multimap<String, Path> changes) -> {
 				try {
-					pageSink.accept(generator.generate(siteSpring.get()));
+					Site site = siteSpring.get();
+					pageSink.accept(site.config(), generator.generate(site));
 				} catch (RuntimeException rx) {
 					rx.printStackTrace();
 				}

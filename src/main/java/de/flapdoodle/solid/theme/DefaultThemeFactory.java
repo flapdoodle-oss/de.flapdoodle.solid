@@ -13,6 +13,7 @@ import de.flapdoodle.solid.io.Filenames;
 import de.flapdoodle.solid.parser.PropertyTreeConfigs;
 import de.flapdoodle.solid.parser.types.FiletypeParserFactory;
 import de.flapdoodle.solid.theme.mustache.MustacheTheme;
+import de.flapdoodle.solid.theme.pebble.PebbleTheme;
 import de.flapdoodle.solid.theme.stringtemplate.StringtemplateTheme;
 import de.flapdoodle.solid.types.Maybe;
 import de.flapdoodle.solid.types.tree.PropertyTree;
@@ -54,6 +55,9 @@ public class DefaultThemeFactory implements ThemeFactory {
 		}
 		if (engine.isPresent() && engine.get().equals("st")) {
 			return new StringtemplateTheme(themeDirectory, config, markupRendererFactory);
+		}
+		if (engine.isPresent() && engine.get().equals("pebble")) {
+			return new PebbleTheme(themeDirectory, config, markupRendererFactory);
 		}
 
 		throw new RuntimeException("theme engine not supported: "+config.prettyPrinted());

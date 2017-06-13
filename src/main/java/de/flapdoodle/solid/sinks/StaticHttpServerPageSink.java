@@ -15,6 +15,7 @@ import de.flapdoodle.solid.exceptions.SomethingWentWrong;
 import de.flapdoodle.solid.generator.Binary;
 import de.flapdoodle.solid.generator.Document;
 import de.flapdoodle.solid.generator.Text;
+import de.flapdoodle.solid.site.SiteConfig;
 import de.flapdoodle.types.Try;
 
 public class StaticHttpServerPageSink implements PageSink {
@@ -26,7 +27,7 @@ public class StaticHttpServerPageSink implements PageSink {
 	}
 	
 	@Override
-	public void accept(ImmutableList<Document> documents) {
+	public void accept(SiteConfig siteConfig, ImmutableList<Document> documents) {
 		documents.forEach(doc -> Try.consumer((Document d) -> write(d, exportDirectory))
 				.mapCheckedException(SomethingWentWrong::new)
 				.accept(doc));

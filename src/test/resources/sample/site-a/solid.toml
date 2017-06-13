@@ -1,7 +1,7 @@
 baseURL = "http://www.foo.de/blog"
 title = "Sample Blog"
 subtitle = "Es musste mal gesagt werden..."
-theme = "wpST"
+theme = "wpPB"
 defaultContentLanguage = "de"
 languageCode = "de-de"
 canonifyURLs = true 

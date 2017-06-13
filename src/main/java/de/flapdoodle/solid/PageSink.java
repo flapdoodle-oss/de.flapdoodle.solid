@@ -16,16 +16,17 @@
  */
 package de.flapdoodle.solid;
 
-import java.util.function.Consumer;
+import java.util.function.BiConsumer;
 
 import com.google.common.collect.ImmutableList;
 
 import de.flapdoodle.solid.generator.Document;
+import de.flapdoodle.solid.site.SiteConfig;
 
-public interface PageSink extends Consumer<ImmutableList<Document>> {
+public interface PageSink extends BiConsumer<SiteConfig, ImmutableList<Document>> {
 
 	@Override
-	default PageSink andThen(Consumer<? super ImmutableList<Document>> after) {
-		return (t) -> { accept(t); after.accept(t); };
+	default PageSink andThen(BiConsumer<? super SiteConfig, ? super ImmutableList<Document>> after) {
+		return (c,t) -> { accept(c,t); after.accept(c,t); };
 	}
 }

@@ -1,4 +1,4 @@
-package de.flapdoodle.solid.theme.stringtemplate;
+package de.flapdoodle.solid.theme.pebble;
 
 import org.immutables.value.Value.Auxiliary;
 import org.immutables.value.Value.Immutable;
@@ -10,18 +10,17 @@ import de.flapdoodle.solid.content.render.MarkupRendererFactory;
 import de.flapdoodle.solid.content.render.RenderContext;
 import de.flapdoodle.solid.parser.content.Blob;
 import de.flapdoodle.solid.types.Maybe;
-import de.flapdoodle.solid.types.tree.PropertyTree;
 
 @Immutable
-public abstract class StringtemplateBlobWrapper {
+public abstract class PebbleBlobWrapper {
 	@Parameter
 	protected abstract Blob blob();
 	@Parameter
 	protected abstract MarkupRenderer markupRenderer();
 	
 	@Auxiliary
-	public PropertyTree getMeta() {
-		return blob().meta();
+	public PebblePropertyTreeWrapper getMeta() {
+		return PebblePropertyTreeWrapper.of(blob().meta());
 	}
 	
 	@Lazy
@@ -40,7 +39,7 @@ public abstract class StringtemplateBlobWrapper {
 	}
 	
 	
-	public static StringtemplateBlobWrapper of(Blob src, MarkupRendererFactory factory) {
-		return ImmutableStringtemplateBlobWrapper.of(src, factory.rendererFor(src.contentType()));
+	public static PebbleBlobWrapper of(Blob src, MarkupRendererFactory factory) {
+		return ImmutablePebbleBlobWrapper.of(src, factory.rendererFor(src.contentType()));
 	}
 }
