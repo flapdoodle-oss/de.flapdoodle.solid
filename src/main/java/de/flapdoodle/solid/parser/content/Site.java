@@ -21,6 +21,7 @@ import org.immutables.value.Value;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableSet;
 
+import de.flapdoodle.solid.generator.Document;
 import de.flapdoodle.solid.site.SiteConfig;
 import de.flapdoodle.solid.theme.Theme;
 
@@ -31,6 +32,7 @@ public interface Site {
 	
 	ImmutableList<Blob> blobs();
 	ImmutableSet<String> ignoredFiles();
+	ImmutableList<Document> staticFiles(); 
 	
 	public static ImmutableSite.Builder builder() {
 		return ImmutableSite.builder();

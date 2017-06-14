@@ -16,7 +16,16 @@
  */
 package de.flapdoodle.solid.generator;
 
+import java.io.IOException;
+import java.nio.file.Path;
+import java.util.function.Function;
+
 import org.immutables.value.Value.Immutable;
+
+import com.google.common.collect.ImmutableList;
+
+import de.flapdoodle.solid.io.In;
+import de.flapdoodle.solid.types.Maybe;
 
 @Immutable
 public interface Document {
@@ -26,5 +35,17 @@ public interface Document {
 	
 	public static ImmutableDocument.Builder builder() {
 		return ImmutableDocument.builder();
+	}
+	
+	public static ImmutableList<Document> of(Path rootDir, Function<Path, String> pathMapping) throws IOException {
+		return In.walk(rootDir, (path,content) -> {
+			return Maybe.of((Document) Document.builder()
+					.path(pathMapping.apply(rootDir.relativize(path)))
+					.content(Binary.builder()
+							.mimeType(In.mimeTypeOf(path))
+							.data(content)
+					.build())
+					.build());
+			});
 	}
 }

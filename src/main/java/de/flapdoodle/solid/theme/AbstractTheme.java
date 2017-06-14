@@ -5,10 +5,7 @@ import java.nio.file.Path;
 import com.google.common.collect.ImmutableList;
 
 import de.flapdoodle.solid.content.render.MarkupRendererFactory;
-import de.flapdoodle.solid.generator.Binary;
 import de.flapdoodle.solid.generator.Document;
-import de.flapdoodle.solid.io.In;
-import de.flapdoodle.solid.types.Maybe;
 import de.flapdoodle.solid.types.tree.PropertyTree;
 import de.flapdoodle.types.Try;
 
@@ -29,15 +26,7 @@ public abstract class AbstractTheme implements Theme {
 	private static ImmutableList<Document> staticFilesOf(Path rootDir) {
 		return Try.supplier(() -> {
 			Path staticContentPath = rootDir.resolve("static");
-			return In.walk(staticContentPath, (path,content) -> {
-				return Maybe.of((Document) Document.builder()
-						.path(staticContentPath.relativize(path).toString())
-						.content(Binary.builder()
-								.mimeType(In.mimeTypeOf(path))
-								.data(content)
-						.build())
-						.build());
-				});
+			return Document.of(staticContentPath, path -> path.toString());
 		})
 			.onCheckedException(ex -> ImmutableList.of())
 			.get();

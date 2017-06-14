@@ -15,10 +15,13 @@ import com.mitchellbosecke.pebble.extension.Filter;
 import com.mitchellbosecke.pebble.template.PebbleTemplate;
 
 import de.flapdoodle.solid.content.render.MarkupRendererFactory;
+import de.flapdoodle.solid.content.render.RenderContext;
 import de.flapdoodle.solid.generator.Text;
+import de.flapdoodle.solid.parser.content.Blob;
 import de.flapdoodle.solid.theme.AbstractTheme;
 import de.flapdoodle.solid.theme.Renderer;
 import de.flapdoodle.solid.theme.Renderer.Renderable;
+import de.flapdoodle.solid.types.Maybe;
 import de.flapdoodle.solid.types.tree.PropertyTree;
 
 public class PebbleTheme extends AbstractTheme {
@@ -31,7 +34,7 @@ public class PebbleTheme extends AbstractTheme {
 		this.engine = new PebbleEngine.Builder()
 			.loader(new TemplateLoader(rootDir))
 			.autoEscaping(false)
-			.extension(new CustomExtension())
+			.extension(new CustomExtension(markupRenderFactory))
 			.build();
 	}
 
@@ -69,13 +72,26 @@ public class PebbleTheme extends AbstractTheme {
 	}
 
 	private static class CustomExtension extends AbstractExtension {
+		
+		private final MarkupRendererFactory markupRendererFactory;
+
+		public CustomExtension(MarkupRendererFactory markupRendererFactory) {
+			this.markupRendererFactory = markupRendererFactory;
+		}
+		
 		@Override
 		public Map<String, Filter> getFilters() {
-			return ImmutableMap.of("html",new BlobHtmlFilter());
+			return ImmutableMap.of("html",new BlobHtmlFilter(markupRendererFactory));
 		}
 	}
 	
 	private static class BlobHtmlFilter implements Filter {
+
+		private final MarkupRendererFactory markupRendererFactory;
+
+		public BlobHtmlFilter(MarkupRendererFactory markupRendererFactory) {
+			this.markupRendererFactory = markupRendererFactory;
+		}
 
 		@Override
 		public List<String> getArgumentNames() {
@@ -86,17 +102,27 @@ public class PebbleTheme extends AbstractTheme {
 		public Object apply(Object input, Map<String, Object> args) {
 			if (input instanceof PebbleBlobWrapper) {
 				PebbleBlobWrapper blob=(PebbleBlobWrapper) input;
-				Object olevel = args.get("level");
-				if (olevel instanceof Integer) {
-					return blob.getHtml(((Integer) olevel).intValue());
-				}
-				if (olevel instanceof Long) {
-					return blob.getHtml(((Long) olevel).intValue());
-				}
-				return blob.getHtml(0);
+				return blob.getHtml(getLevel(args.get("level")));
+			}
+			if (input instanceof Blob) {
+				Blob blob=(Blob) input;
+				markupRendererFactory.rendererFor(blob.contentType())
+						.asHtml(RenderContext.builder()
+						.urlMapping(s -> Maybe.absent())
+						.incrementHeading(getLevel(args.get("level")))
+						.build(), blob.content());
 			}
 			return input;
 		}
 		
+		private static int getLevel(Object olevel) {
+			if (olevel instanceof Integer) {
+				return ((Integer) olevel).intValue();
+			}
+			if (olevel instanceof Long) {
+				return ((Long) olevel).intValue();
+			}
+			return 0;
+		}
 	}
 }

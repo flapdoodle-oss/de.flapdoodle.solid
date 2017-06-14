@@ -23,9 +23,11 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import com.google.common.base.Charsets;
+import com.google.common.collect.ImmutableList;
 
 import de.flapdoodle.solid.exceptions.NotASolidSite;
 import de.flapdoodle.solid.exceptions.SomethingWentWrong;
+import de.flapdoodle.solid.generator.Document;
 import de.flapdoodle.solid.io.Filenames;
 import de.flapdoodle.solid.io.In;
 import de.flapdoodle.solid.parser.content.Blob;
@@ -68,15 +70,22 @@ public class DefaultSiteFactory implements SiteFactory {
 		SiteConfigPostProcessor postProcessor = SiteConfigPostProcessor.of(siteConfig.postProcessing());
 		
 		Try.runable(() ->	In.walk(siteRoot.resolve(siteConfig.contentDirectory()), (relativePath,content) -> {
-			Maybe<Blob> blob = blobParser.parse(relativePath, new String(content.data(), Charsets.UTF_8));
-			if (blob.isPresent()) {
-				siteBuilder.addBlobs(postProcessor.process(blob.get()));
-			} else {
-				siteBuilder.addIgnoredFiles(relativePath.toString());
-			}
-		}))
-		.mapCheckedException(SomethingWentWrong::new)
-		.run();
+				Maybe<Blob> blob = blobParser.parse(relativePath, new String(content.data(), Charsets.UTF_8));
+				if (blob.isPresent()) {
+					siteBuilder.addBlobs(postProcessor.process(blob.get()));
+				} else {
+					siteBuilder.addIgnoredFiles(relativePath.toString());
+				}
+			}))
+			.mapCheckedException(SomethingWentWrong::new)
+			.run();
+		
+		siteBuilder.addAllStaticFiles(Try.supplier(() -> {
+			Path staticContentPath = siteRoot.resolve(siteConfig.staticDirectory());
+			return Document.of(staticContentPath, path -> path.toString());
+		})
+			.onCheckedException(ex -> ImmutableList.of())
+			.get());
 		
 		return siteBuilder.build();
 	}
