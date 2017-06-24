@@ -171,8 +171,8 @@
 					<strictCheck>true</strictCheck>
 					<aggregate>false</aggregate>
 					<includes>
-						<include>src/**</include>
-						<include>**/test/**</include>
+						<include>src/**/flapdoodle/**</include>
+						<include>**/test/**/flapdoodle/**</include>
 					</includes>
 					<!-- <excludes> <exclude>target/**</exclude> <exclude>.clover/**</exclude> 
 						</excludes> <useDefaultExcludes>true</useDefaultExcludes> -->
