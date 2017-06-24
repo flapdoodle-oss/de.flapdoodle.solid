@@ -12,6 +12,7 @@ import com.mitchellbosecke.pebble.PebbleEngine;
 import com.mitchellbosecke.pebble.error.PebbleException;
 import com.mitchellbosecke.pebble.extension.AbstractExtension;
 import com.mitchellbosecke.pebble.extension.Filter;
+import com.mitchellbosecke.pebble.template.EvaluationContext;
 import com.mitchellbosecke.pebble.template.PebbleTemplate;
 
 import de.flapdoodle.solid.content.render.MarkupRendererFactory;
@@ -97,9 +98,9 @@ public class PebbleTheme extends AbstractTheme {
 		public List<String> getArgumentNames() {
 			return ImmutableList.of("level");
 		}
-
+		
 		@Override
-		public Object apply(Object input, Map<String, Object> args) {
+		public Object apply(Object input, Map<String, Object> args, PebbleTemplate self, EvaluationContext context, int lineNumber) throws PebbleException {
 			if (input instanceof PebbleBlobWrapper) {
 				PebbleBlobWrapper blob=(PebbleBlobWrapper) input;
 				return blob.getHtml(getLevel(args.get("level")));
