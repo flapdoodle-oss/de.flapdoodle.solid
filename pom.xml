@@ -172,8 +172,14 @@
 					<aggregate>false</aggregate>
 					<includes>
 						<include>src/**/flapdoodle/**</include>
-						<include>**/test/**/flapdoodle/**</include>
+						<include>**/test/**/flapdoodle/**.java</include>
 					</includes>
+					<excludes>
+						<exclude>target/**</exclude>
+						<exclude>src/test/resources/**</exclude>
+					</excludes>
+					<useDefaultExcludes>true</useDefaultExcludes>
+
 					<!-- <excludes> <exclude>target/**</exclude> <exclude>.clover/**</exclude> 
 						</excludes> <useDefaultExcludes>true</useDefaultExcludes> -->
 					<!-- <mapping> <jwc>XML_STYLE</jwc> <application>XML_STYLE</application> 
