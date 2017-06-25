@@ -20,6 +20,7 @@ public class DefaultAttributeResolver implements AttributeResolver {
             new ArrayResolver(),
             new ListResolver(),
             
+            new MethodResolver(),
             new MemberResolver()
             ));
     

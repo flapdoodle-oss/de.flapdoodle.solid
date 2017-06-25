@@ -36,6 +36,10 @@ import com.mitchellbosecke.pebble.loader.ClasspathLoader;
 import com.mitchellbosecke.pebble.loader.Loader;
 import com.mitchellbosecke.pebble.template.PebbleTemplate;
 
+import de.flapdoodle.solid.types.tree.FixedPropertyTree;
+import de.flapdoodle.solid.types.tree.PropertyTree;
+import de.flapdoodle.types.Try;
+
 public class PebbleThemeTest {
 
 	@Test
@@ -104,6 +108,36 @@ public class PebbleThemeTest {
 		
 	}
 	
+	@Test
+	public void testPropertyTreeSupport() throws PebbleException, IOException {
+		ClasspathLoader loader = new ClasspathLoader();
+		loader.setPrefix(getClass().getPackage().getName().replace('.', '/'));
+		
+		PebbleEngine engine = engineWithExtensions(loader);
+		
+		PebbleTemplate template = engine.getTemplate("sample.html");
+		StringWriter result = new StringWriter();
+		PropertyTree propertyTree = FixedPropertyTree.builder()
+			.put("bar", "bar")
+			.build();
+		template.evaluate(result, ImmutableMap.of("foo",propertyTree));
+		assertEquals("-->bar<--", result.toString());
+	}
+
+	@Test
+	public void testMethodCall() {
+		StringMapLoader loader=new StringMapLoader(ImmutableMap.of("sample.html","{{ foo.html(2) }}"));
+		PebbleEngine engine = engineWithExtensions(loader);
+		String result = render(engine, "sample.html", ImmutableMap.of("foo",new GetMethodSample()));
+		assertEquals("html with 2", result.toString());
+	}
+	
+	public static class GetMethodSample {
+		public String getHtml(int offset) {
+			return "html with "+offset;
+		}
+	}
+	
 	public static class Fake implements DynamicAttributeProvider {
 
 		private final ImmutableMap<String, Object> values;
@@ -122,6 +156,24 @@ public class PebbleThemeTest {
 			return values.get(attributeName);
 		}
 		
+	}
+	
+	private static PebbleEngine engineWithExtensions(Loader loader) {
+		return new PebbleEngine.Builder()
+			.loader(loader)
+			.extension(new CustomPebbleAttributeResolver().asExtension())
+			.build();
+	}
+	
+	private static String render(PebbleEngine engine, String templateName, Map<String, Object> context) {
+		return Try.supplier(() -> {
+				PebbleTemplate template = engine.getTemplate(templateName);
+				StringWriter result = new StringWriter();
+				template.evaluate(result, context);
+				return result.toString();
+			})
+			.mapCheckedException(RuntimeException::new)
+			.get();
 	}
 	
 }

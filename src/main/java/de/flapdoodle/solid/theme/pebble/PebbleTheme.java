@@ -51,7 +51,7 @@ public class PebbleTheme extends AbstractTheme {
 		this.engine = new PebbleEngine.Builder()
 			.loader(new TemplateLoader(rootDir))
 			.autoEscaping(false)
-			.extension(new CustomExtension(markupRenderFactory))
+			.extension(new CustomExtension(markupRenderFactory), new CustomPebbleAttributeResolver().asExtension())
 			.build();
 	}
 
@@ -88,6 +88,7 @@ public class PebbleTheme extends AbstractTheme {
 		}
 	}
 
+	@Deprecated
 	private static class CustomExtension extends AbstractExtension {
 		
 		private final MarkupRendererFactory markupRendererFactory;
