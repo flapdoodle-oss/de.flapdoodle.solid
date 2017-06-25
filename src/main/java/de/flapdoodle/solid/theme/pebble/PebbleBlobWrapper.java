@@ -26,6 +26,7 @@ import de.flapdoodle.solid.content.render.MarkupRendererFactory;
 import de.flapdoodle.solid.content.render.RenderContext;
 import de.flapdoodle.solid.parser.content.Blob;
 import de.flapdoodle.solid.types.Maybe;
+import de.flapdoodle.solid.types.tree.PropertyTree;
 
 @Immutable
 public abstract class PebbleBlobWrapper {
@@ -35,8 +36,8 @@ public abstract class PebbleBlobWrapper {
 	protected abstract MarkupRenderer markupRenderer();
 	
 	@Auxiliary
-	public PebblePropertyTreeWrapper getMeta() {
-		return PebblePropertyTreeWrapper.of(blob().meta());
+	public PropertyTree getMeta() {
+		return blob().meta();
 	}
 	
 	@Lazy
