@@ -20,6 +20,7 @@ import de.flapdoodle.solid.types.Maybe;
 import de.flapdoodle.solid.types.properties.TypePropertiesLookup;
 import de.flapdoodle.solid.types.tree.PropertyTree;
 
+@Deprecated
 public interface PropertyResolver {
 	Maybe<?> resolve(PropertyTree tree, Iterable<String> path);
 	

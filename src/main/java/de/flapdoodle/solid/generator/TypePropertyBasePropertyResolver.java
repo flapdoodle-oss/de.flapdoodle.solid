@@ -41,6 +41,8 @@ public class TypePropertyBasePropertyResolver implements PropertyResolver {
 			String part = iterator.next();
 			
 			Maybe<Either<Object, ? extends PropertyTree>> found = current.find(e -> Maybe.of(e), part);
+//			ImmutableList<Either<Object, ? extends PropertyTree>> foundList = current.findList(e -> Maybe.of(e), part);
+			
 			if (found.isPresent()) {
 				Either<Object, ? extends PropertyTree> either = found.get();
 				if (either.isLeft()) {
