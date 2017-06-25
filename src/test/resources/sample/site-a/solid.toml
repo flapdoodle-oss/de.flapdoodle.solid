@@ -37,10 +37,15 @@ relativeURLs = true
 		pageSize = 10		
 		filter = "posts"
 
+	[urls.tags]
+		path = "/tag/:pathTags/"
+		pageSize = 10		
+		filter = "posts"
 
 [pathProperties]
 	pathTitle = [ "post_url", "title" ]
-
+	pathTags = [ "tags" ]
+	
 [filters.posts]
 	property = "type"
 	value = "post"

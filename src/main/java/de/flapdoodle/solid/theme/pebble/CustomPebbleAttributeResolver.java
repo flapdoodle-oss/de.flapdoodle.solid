@@ -41,7 +41,12 @@ public class CustomPebbleAttributeResolver implements AttributeResolver {
 				
 				@Override
 				public Object evaluate() throws PebbleException {
-					return propertyTree.find(Object.class, String.valueOf(attribute));
+					ImmutableList<Object> ret = propertyTree.findList(Object.class, String.valueOf(attribute));
+					return ret.isEmpty() 
+							? null 
+							: ret.size() == 1 
+								? ret.get(0) 
+								: ret;
 				}
 			});
 		}

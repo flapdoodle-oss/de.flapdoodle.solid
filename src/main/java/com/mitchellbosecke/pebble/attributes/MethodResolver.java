@@ -1,5 +1,6 @@
 package com.mitchellbosecke.pebble.attributes;
 
+import java.lang.reflect.Array;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.Arrays;
@@ -43,13 +44,17 @@ public class MethodResolver implements AttributeResolver {
 	
 	private MethodCalls methodCallsOf(MethodCacheKey key) {
 		List<Method> matchingMethods = Stream.of(key.clazz.getMethods())
-			.filter(m -> m.getParameterTypes().length == key.arguments)
+			.filter(m -> parameterLengthMatches(m, key))
 			.filter(m -> methodNameMatches(m.getName(), key.name))
 			.sorted((a,b) -> a.getName().compareTo(b.getName()))
 			.sorted((a,b) -> a.getReturnType().getName().compareTo(b.getReturnType().getName()))
 			.collect(Collectors.toList());
 		
 		return new MethodCalls(key, matchingMethods);
+	}
+
+	private static boolean parameterLengthMatches(Method m, MethodCacheKey key) {
+		return m.isVarArgs() || m.getParameterTypes().length == key.arguments;
 	}
 
 	private static class MethodCalls {
@@ -65,7 +70,7 @@ public class MethodResolver implements AttributeResolver {
 
 		public Optional<ResolvedAttribute> resolve(Object instance, String attributeName, Object[] argumentValues) {
 			return matchingMethods.stream()
-				.filter(m -> matchingArgumentTypes(m.getParameterTypes(), argumentValues))
+				.filter(m -> matchingArgumentTypes(m.getParameterTypes(), m.isVarArgs(), argumentValues))
 				.findFirst()
 				.map(m -> resolveMethodCall(m,instance,argumentValues));
 		}
@@ -75,7 +80,7 @@ public class MethodResolver implements AttributeResolver {
 	private static ResolvedAttribute resolveMethodCall(Method m, Object instance, Object[] argumentValues) {
 		return () -> {
 			try {
-				return m.invoke(instance, convertAll(m.getParameterTypes(), argumentValues));
+				return m.invoke(instance, convertAll(m.getParameterTypes(), m.isVarArgs(), argumentValues));
 			}
 			catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException e) {
 				throw new RuntimeException("call "+m+" on "+instance+" with "+Arrays.asList(argumentValues), e);
@@ -83,27 +88,66 @@ public class MethodResolver implements AttributeResolver {
 		};
 	}
 
-	private static Object[] convertAll(Class<?>[] parameterTypes, Object[] argumentValues) {
+	private static Object[] convertAll(Class<?>[] parameterTypes, boolean varargs, Object[] argumentValues) {
 		Object[] ret = new Object[parameterTypes.length];
-		for (int i=0;i<ret.length;i++) {
-			Optional<TypeConverter.Converted<?>> converted = (Optional) TypeConverter.convertTo(parameterTypes[i], argumentValues[i]);
-			if (!converted.isPresent()) {
-				throw new IllegalArgumentException("could not convert "+ argumentValues[i]+" to "+parameterTypes[i]);
+		if (varargs) {
+			int varargTypeIndex = parameterTypes.length-1;
+			for (int i=0;i<varargTypeIndex;i++) {
+				Optional<TypeConverter.Converted<?>> converted = (Optional) TypeConverter.convertTo(parameterTypes[i], argumentValues[i]);
+				if (!converted.isPresent()) {
+					throw new IllegalArgumentException("could not convert "+ argumentValues[i]+" to "+parameterTypes[i]);
+				}
+				ret[i]=converted.get().value();
 			}
-			ret[i]=converted.get().value();
+			Class<?> varargType = parameterTypes[varargTypeIndex].getComponentType();
+			Object varargArray = Array.newInstance(varargType, argumentValues.length-varargTypeIndex);
+			ret[varargTypeIndex] = varargArray;
+			for (int v=varargTypeIndex;v<argumentValues.length;v++) {
+				Optional<TypeConverter.Converted<?>> converted = (Optional) TypeConverter.convertTo(varargType, argumentValues[v]);
+				if (!converted.isPresent()) {
+					throw new IllegalArgumentException("could not convert "+ argumentValues[v]+" to "+varargType);
+				}
+				Array.set(varargArray, v-varargTypeIndex,converted.get().value());
+			}
+		} else {
+			for (int i=0;i<ret.length;i++) {
+				Optional<TypeConverter.Converted<?>> converted = (Optional) TypeConverter.convertTo(parameterTypes[i], argumentValues[i]);
+				if (!converted.isPresent()) {
+					throw new IllegalArgumentException("could not convert "+ argumentValues[i]+" to "+parameterTypes[i]);
+				}
+				ret[i]=converted.get().value();
+			}
 		}
 		return ret;
 	}
 
-	private static boolean matchingArgumentTypes(Class<?>[] parameterTypes, Object[] argumentValues) {
-		if (parameterTypes.length!=argumentValues.length) {
-			throw new IllegalArgumentException("arg lenth mismatch: "+parameterTypes.length+"!="+argumentValues.length);
+	private static boolean matchingArgumentTypes(Class<?>[] parameterTypes, boolean varargs, Object[] argumentValues) {
+		if (parameterTypes.length!=argumentValues.length && !varargs) {
+			throw new IllegalArgumentException("arg length mismatch: "+parameterTypes.length+"!="+argumentValues.length);
 		}
 		
-		for (int i=0;i<parameterTypes.length;i++) {
-			Optional<TypeConverter.Converted<?>> converted = (Optional) TypeConverter.convertTo(parameterTypes[i], argumentValues[i]);
-			if (!converted.isPresent()) {
-				return false;
+		if (varargs) {
+			int varargTypeIndex = parameterTypes.length-1;
+			
+			for (int i=0;i<varargTypeIndex;i++) {
+				Optional<TypeConverter.Converted<?>> converted = (Optional) TypeConverter.convertTo(parameterTypes[i], argumentValues[i]);
+				if (!converted.isPresent()) {
+					return false;
+				}
+			}
+			Class<?> varargType = parameterTypes[varargTypeIndex].getComponentType();
+			for (int v=varargTypeIndex;v<argumentValues.length;v++) {
+				Optional<TypeConverter.Converted<?>> converted = (Optional) TypeConverter.convertTo(varargType, argumentValues[v]);
+				if (!converted.isPresent()) {
+					return false;
+				}
+			}
+		} else {
+			for (int i=0;i<parameterTypes.length;i++) {
+				Optional<TypeConverter.Converted<?>> converted = (Optional) TypeConverter.convertTo(parameterTypes[i], argumentValues[i]);
+				if (!converted.isPresent()) {
+					return false;
+				}
 			}
 		}
 		return true;

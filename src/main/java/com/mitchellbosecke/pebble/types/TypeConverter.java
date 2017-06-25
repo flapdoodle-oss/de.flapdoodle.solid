@@ -43,6 +43,9 @@ public class TypeConverter {
 					: converted((T) instance);
 
 		}
+		if (type.isInstance(instance)) {
+			return converted((T) instance);
+		}
 		return castTo(asNonPrimitive(type),instance);
 	}
 

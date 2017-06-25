@@ -5,6 +5,9 @@ type: post
 date: 2006-12-01T17:35:40+00:00
 categories:
   - Wahnsinn
+tags:
+  - tagA
+  - tagB
 
 ---
 .. ah.. nix neues

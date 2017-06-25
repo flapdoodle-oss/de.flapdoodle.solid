@@ -6,6 +6,8 @@ date: 2006-11-15T17:35:40+00:00
 url: /2006/11/15/zuhause-ist-es-grausam/
 categories:
   - Wahnsinn
+tags:
+  - tagB
 
 ---
 Es ist schon eine Weile her, aber kürzlich musste ich daran denken.
