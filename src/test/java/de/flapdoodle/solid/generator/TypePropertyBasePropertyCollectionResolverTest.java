@@ -7,6 +7,7 @@ import static org.junit.Assert.assertTrue;
 import org.junit.Test;
 
 import com.google.common.collect.ImmutableList;
+import com.google.common.collect.ImmutableSet;
 
 import de.flapdoodle.solid.types.Maybe;
 import de.flapdoodle.solid.types.properties.TypeProperties;
@@ -22,7 +23,7 @@ public class TypePropertyBasePropertyCollectionResolverTest {
 		PropertyTree tree=FixedPropertyTree.builder()
 				.put("foo", "bar")
 				.build();
-		ImmutableList<?> resolved = resolver.resolve(tree, ImmutableList.of("no"));
+		ImmutableSet<?> resolved = resolver.resolve(tree, ImmutableList.of("no"));
 		assertTrue(resolved.isEmpty());
 	}
 	
@@ -33,7 +34,7 @@ public class TypePropertyBasePropertyCollectionResolverTest {
 		PropertyTree tree=FixedPropertyTree.builder()
 				.put("foo", "bar")
 				.build();
-		ImmutableList<?> resolved = resolver.resolve(tree, ImmutableList.of("foo", "no"));
+		ImmutableSet<?> resolved = resolver.resolve(tree, ImmutableList.of("foo", "no"));
 		assertTrue(resolved.isEmpty());
 	}
 	
@@ -44,9 +45,9 @@ public class TypePropertyBasePropertyCollectionResolverTest {
 		PropertyTree tree=FixedPropertyTree.builder()
 				.put("foo", "bar")
 				.build();
-		ImmutableList<?> resolved = resolver.resolve(tree, ImmutableList.of("foo"));
+		ImmutableSet<?> resolved = resolver.resolve(tree, ImmutableList.of("foo"));
 		assertFalse(resolved.isEmpty());
-		assertEquals(ImmutableList.of("bar"), resolved);
+		assertEquals(ImmutableSet.of("bar"), resolved);
 	}
 	
 	@Test
@@ -58,9 +59,9 @@ public class TypePropertyBasePropertyCollectionResolverTest {
 						.put("bar", "blob")
 						.build())
 				.build();
-		ImmutableList<?> resolved = resolver.resolve(tree, ImmutableList.of("foo","bar"));
+		ImmutableSet<?> resolved = resolver.resolve(tree, ImmutableList.of("foo","bar"));
 		assertFalse(resolved.isEmpty());
-		assertEquals(ImmutableList.of("blob"), resolved);
+		assertEquals(ImmutableSet.of("blob"), resolved);
 	}
 	
 	@Test
@@ -74,9 +75,9 @@ public class TypePropertyBasePropertyCollectionResolverTest {
 						.put("bar", "blob")
 						.build())
 				.build();
-		ImmutableList<?> resolved = resolver.resolve(tree, ImmutableList.of("foo","bar","len"));
+		ImmutableSet<?> resolved = resolver.resolve(tree, ImmutableList.of("foo","bar","len"));
 		assertFalse(resolved.isEmpty());
-		assertEquals(ImmutableList.of(4), resolved);
+		assertEquals(ImmutableSet.of(4), resolved);
 	}
 	
 	@Test
@@ -92,9 +93,9 @@ public class TypePropertyBasePropertyCollectionResolverTest {
 						.put("bar", "ccc")
 						.build())
 				.build();
-		ImmutableList<?> resolved = resolver.resolve(tree, ImmutableList.of("foo","bar","len"));
+		ImmutableSet<?> resolved = resolver.resolve(tree, ImmutableList.of("foo","bar","len"));
 		assertFalse(resolved.isEmpty());
-		assertEquals(ImmutableList.of(1,2,3), resolved);
+		assertEquals(ImmutableSet.of(1,2,3), resolved);
 	}
 	@Test
 	public void secondLevelAndUnkownTypeProperty() {
@@ -107,7 +108,7 @@ public class TypePropertyBasePropertyCollectionResolverTest {
 						.put("bar", "blob")
 						.build())
 				.build();
-		ImmutableList<?> resolved = resolver.resolve(tree, ImmutableList.of("foo","bar","width"));
+		ImmutableSet<?> resolved = resolver.resolve(tree, ImmutableList.of("foo","bar","width"));
 		assertTrue(resolved.isEmpty());
 	}
 	

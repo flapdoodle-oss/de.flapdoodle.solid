@@ -24,6 +24,6 @@ public interface SiteGenerator {
 	ImmutableList<Document> generate(Site site);
 	
 	public static SiteGenerator defaultGenerator() {
-		return new DefaultSiteGenerator(PropertyResolver.defaultResolver(), PathRenderer.defaultPathRenderer(), FilterFactory.defaultFilterFactory());
+		return new DefaultSiteGenerator(PropertyCollectionResolver.defaultResolver(), PathRenderer.defaultPathRenderer(), FilterFactory.defaultFilterFactory());
 	}
 }

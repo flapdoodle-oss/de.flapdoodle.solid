@@ -28,12 +28,15 @@ import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.ImmutableMultimap;
 import com.google.common.collect.ImmutableMultimap.Builder;
+import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Iterables;
 import com.google.common.collect.Ordering;
 
+import de.flapdoodle.solid.generator.PropertyCollectionResolver;
 import de.flapdoodle.solid.generator.PropertyResolver;
 import de.flapdoodle.solid.parser.path.Path;
 import de.flapdoodle.solid.types.Maybe;
+import de.flapdoodle.solid.types.Multimaps;
 import de.flapdoodle.solid.types.Pair;
 
 public abstract class Blobs {
@@ -66,6 +69,46 @@ public abstract class Blobs {
 			.collect(ImmutableMap.toImmutableMap(Pair::a, Pair::b));
 		
 		return blopPathPropertyMap;
+	}
+
+	public static ImmutableSet<?> propertyOf(Blob blob, Function<String, Collection<String>> pathPropertyMapping, PropertyCollectionResolver propertyResolver,
+			String propertyName) {
+		Collection<String> aliasList = pathPropertyMapping.apply(propertyName);
+		for (String alias : aliasList) {
+			ImmutableSet<?> resolved = propertyResolver.resolve(blob.meta(), Splitter.on('.').split(alias));
+			if (!resolved.isEmpty()) {
+				return resolved;
+			}
+		}
+		return ImmutableSet.of();
+	}
+
+	public static ImmutableList<ImmutableMap<String, Object>> pathPropertiesOf(Blob blob, Function<String, Collection<String>> pathPropertyMapping, Path path, PropertyCollectionResolver propertyResolver) {
+		ImmutableMultimap<String, Object> multiMap = pathPropertiesOfAsMultimap(blob, pathPropertyMapping, path, propertyResolver);
+		return Multimaps.flatten(multiMap);
+	}
+	
+	public static ImmutableMultimap<String, Object> pathPropertiesOfAsMultimap(Blob blob, Function<String, Collection<String>> pathPropertyMapping, Path path, PropertyCollectionResolver propertyResolver) {
+		ImmutableList<String> pathProperties = path.propertyNames().stream()
+			.filter(p -> !Path.PAGE.equals(p))
+			.collect(ImmutableList.toImmutableList());
+		
+		ImmutableMap<String, ImmutableSet<?>> blopPathPropertyMap = pathProperties.stream()
+			.map(p -> Pair.<String, ImmutableSet<?>>of(p, propertyOf(blob, pathPropertyMapping, propertyResolver, p)))
+			.filter(pair -> !pair.b().isEmpty())
+			.collect(ImmutableMap.toImmutableMap(Pair::a, Pair::b));
+		
+		if (blopPathPropertyMap.keySet().size()<pathProperties.size()) {
+			return ImmutableMultimap.of();
+		}
+		
+		Builder<String, Object> multiMapBuilder = ImmutableMultimap.builder();
+		
+		blopPathPropertyMap.forEach((key, values) -> {
+			multiMapBuilder.putAll(key, values);
+		});
+		
+		return multiMapBuilder.build();
 	}
 
 	public static ImmutableMultimap<ImmutableMap<String, Object>, Blob> groupByPage(ImmutableMultimap<ImmutableMap<String, Object>, Blob> src, String pageKey, int itemsPerPage) {

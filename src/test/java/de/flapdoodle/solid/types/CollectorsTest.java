@@ -24,6 +24,7 @@ import org.junit.Test;
 
 import com.google.common.collect.ImmutableCollection;
 import com.google.common.collect.ImmutableMultimap;
+import com.google.common.collect.ImmutableSet;
 
 public class CollectorsTest {
 
@@ -45,5 +46,18 @@ public class CollectorsTest {
 				assertEquals(key,v % 10);
 			});
 		}
+	}
+	
+	@Test
+	public void immutableMultiMapValuesCollector() {
+		ImmutableMultimap<Character, String> result = Stream.of("aaa","bbb","ccc","abc","bcd")
+				.parallel()
+				.collect(Collectors.groupingByValues((String s) -> ImmutableSet.of(s.charAt(0),s.charAt(1))));
+		
+		assertEquals(7,result.size());
+		assertEquals(3,result.asMap().size());
+		assertEquals("[aaa, abc]",result.asMap().get('a').toString());
+		assertEquals("[bbb, abc, bcd]",result.asMap().get('b').toString());
+		assertEquals("[ccc, bcd]",result.asMap().get('c').toString());
 	}
 }

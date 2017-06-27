@@ -44,12 +44,12 @@ import de.flapdoodle.solid.types.paging.Pager.KeyValue;
 
 public class DefaultSiteGenerator implements SiteGenerator {
 
-	private final PropertyResolver propertyResolver;
+	private final PropertyCollectionResolver propertyCollectionResolver;
 	private final PathRenderer pathRenderer;
 	private final FilterFactory filterFactory;
 
-	public DefaultSiteGenerator(PropertyResolver propertyResolver, PathRenderer pathRenderer, FilterFactory filterFactory) {
-		this.propertyResolver = propertyResolver;
+	public DefaultSiteGenerator(PropertyCollectionResolver propertyCollectionResolver, PathRenderer pathRenderer, FilterFactory filterFactory) {
+		this.propertyCollectionResolver = propertyCollectionResolver;
 		this.pathRenderer = pathRenderer;
 		this.filterFactory = filterFactory;
 	}
@@ -82,8 +82,9 @@ public class DefaultSiteGenerator implements SiteGenerator {
 
 			ImmutableList<Blob> sortedBlobs = Blobs.sort(site.blobs(), currentOrdering);
 			
-			ImmutableMultimap<ImmutableMap<String, Object>, Blob> groupedBlobs = Blobs.filter(sortedBlobs, filterFactory.filters(config.filters(), site.config().filters().filters())).stream()
-				.collect(Collectors.groupingBy(blob -> Blobs.pathPropertiesOf(blob, pathProperties::mapped, currentPath, propertyResolver)));
+			ImmutableMultimap<ImmutableMap<String, Object>, Blob> groupedBlobs = Blobs.filter(sortedBlobs, filterFactory.filters(config.filters(), site.config().filters().filters()))
+					.stream()
+					.collect(Collectors.groupingByValues(blob -> Blobs.pathPropertiesOf(blob, pathProperties::mapped, currentPath, propertyCollectionResolver)));
 
 			if (currentPath.propertyNames().contains(Path.PAGE)) {
 				groupedBlobs=Blobs.groupByPage(groupedBlobs, Path.PAGE, Maybe.fromOptional(config.itemsPerPage()).orElse(() -> 10));

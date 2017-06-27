@@ -41,6 +41,23 @@ public class Collectors {
 			.build();
 	}
 
+	public static <T, L, K> Collector<T, ?, ImmutableMultimap<K, T>> groupingByValues(Function<? super T, ? extends Iterable<? extends K>> classifier) {
+		return ImmutableGenericCollector.<T, LinkedListMultimap<K, T>, ImmutableMultimap<K, T>>builder()
+			.supplier(LinkedListMultimap::create)
+			.accumulator((map, t) -> {
+				classifier.apply(t).forEach(k -> {
+					map.put(k, t);
+				});
+			})
+			.combiner((a,b) -> {
+				LinkedListMultimap<K, T> ret = LinkedListMultimap.create(a);
+				ret.putAll(b);
+				return ret;
+			})
+			.finisher(map -> ImmutableMultimap.copyOf(map))
+			.build();
+	}
+
 	@Immutable
 	static abstract class GenericCollector<T, A, R> implements Collector<T, A, R> {
 		

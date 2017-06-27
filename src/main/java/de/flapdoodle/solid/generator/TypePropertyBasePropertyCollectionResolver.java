@@ -3,6 +3,7 @@ package de.flapdoodle.solid.generator;
 import java.util.Iterator;
 
 import com.google.common.collect.ImmutableList;
+import com.google.common.collect.ImmutableSet;
 
 import de.flapdoodle.solid.types.Maybe;
 import de.flapdoodle.solid.types.properties.TypeProperties;
@@ -21,13 +22,13 @@ public class TypePropertyBasePropertyCollectionResolver implements PropertyColle
 	
 
 	@Override
-	public ImmutableList<?> resolve(PropertyTree tree, Iterable<String> path) {
+	public ImmutableSet<?> resolve(PropertyTree tree, Iterable<String> path) {
 		ImmutableList<String> pathAsList = ImmutableList.copyOf(path);
 		return resolveInternal(tree, pathAsList);
 	}
 
 
-	private ImmutableList<?> resolveInternal(PropertyTree tree, ImmutableList<String> pathAsList) {
+	private ImmutableSet<?> resolveInternal(PropertyTree tree, ImmutableList<String> pathAsList) {
 		if (!pathAsList.isEmpty()) {
 			String currentPropertName = pathAsList.get(0);
 			ImmutableList<String> leftPath = pathAsList.subList(1, pathAsList.size());
@@ -39,17 +40,17 @@ public class TypePropertyBasePropertyCollectionResolver implements PropertyColle
 					.map((Object o) -> resolve(o, leftPath.iterator(), lookup))
 					.filter(Maybe::isPresent)
 					.map(Maybe::get)
-					.collect(ImmutableList.toImmutableList());
+					.collect(ImmutableSet.toImmutableSet());
 			} else {
 				if (valueCount==0) {
 					return result.stream()
 						.map(e -> e.right())
 						.flatMap(p -> resolveInternal(p, leftPath).stream())
-						.collect(ImmutableList.toImmutableList());
+						.collect(ImmutableSet.toImmutableSet());
 				}
 			}
 		}
-		return ImmutableList.of();
+		return ImmutableSet.of();
 	}
 
 	private static <T> Maybe<?> resolve(T instance, Iterator<? extends String> iterator, TypePropertiesLookup lookup) {
