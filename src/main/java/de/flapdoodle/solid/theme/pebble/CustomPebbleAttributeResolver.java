@@ -1,5 +1,6 @@
 package de.flapdoodle.solid.theme.pebble;
 
+import java.util.Iterator;
 import java.util.List;
 import java.util.Optional;
 
@@ -42,13 +43,32 @@ public class CustomPebbleAttributeResolver implements AttributeResolver {
 				@Override
 				public Object evaluate() throws PebbleException {
 					ImmutableList<Object> ret = propertyTree.findList(Object.class, String.valueOf(attribute));
-					return ret.isEmpty() 
-							? null 
-							: ret.size() == 1 
-								? ret.get(0) 
-								: ret;
+//					return ret.isEmpty() 
+//							? null 
+//							: ret.size() == 1 
+//								? ret.get(0) 
+//								: ret;
+					return ret;
 				}
 			});
+		}
+		if (instance instanceof Iterable) {
+			if (String.valueOf(attribute).equals("_single")) {
+				return Optional.of(new ResolvedAttribute() {
+					
+					@Override
+					public Object evaluate() throws PebbleException {
+						Iterator iterator = ((Iterable) instance).iterator();
+						if (iterator.hasNext()) {
+							Object value=iterator.next();
+							if (!iterator.hasNext()) {
+								return value;
+							}
+						}
+						return null;
+					}
+				});
+			}
 		}
 		
 		return Optional.empty();

@@ -89,9 +89,7 @@ public abstract class Blobs {
 	}
 	
 	public static ImmutableMultimap<String, Object> pathPropertiesOfAsMultimap(Blob blob, Function<String, Collection<String>> pathPropertyMapping, Path path, PropertyCollectionResolver propertyResolver) {
-		ImmutableList<String> pathProperties = path.propertyNames().stream()
-			.filter(p -> !Path.PAGE.equals(p))
-			.collect(ImmutableList.toImmutableList());
+		ImmutableList<String> pathProperties = path.propertyNamesWithoutPage();
 		
 		ImmutableMap<String, ImmutableSet<?>> blopPathPropertyMap = pathProperties.stream()
 			.map(p -> Pair.<String, ImmutableSet<?>>of(p, propertyOf(blob, pathPropertyMapping, propertyResolver, p)))

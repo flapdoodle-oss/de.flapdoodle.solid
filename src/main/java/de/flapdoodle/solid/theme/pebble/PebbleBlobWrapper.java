@@ -25,6 +25,8 @@ import de.flapdoodle.solid.content.render.MarkupRenderer;
 import de.flapdoodle.solid.content.render.MarkupRendererFactory;
 import de.flapdoodle.solid.content.render.RenderContext;
 import de.flapdoodle.solid.parser.content.Blob;
+import de.flapdoodle.solid.theme.BlobLinkFactory;
+import de.flapdoodle.solid.theme.LinkFactory;
 import de.flapdoodle.solid.types.Maybe;
 import de.flapdoodle.solid.types.tree.PropertyTree;
 
@@ -34,6 +36,8 @@ public abstract class PebbleBlobWrapper {
 	protected abstract Blob blob();
 	@Parameter
 	protected abstract MarkupRenderer markupRenderer();
+	@Parameter
+	protected abstract LinkFactory linkFactory();
 	
 	@Auxiliary
 	public PropertyTree getMeta() {
@@ -55,8 +59,13 @@ public abstract class PebbleBlobWrapper {
 				.build(), blob().content());
 	}
 	
+	@Auxiliary
+	public BlobLinkFactory getLinkTo(String id) {
+		return linkFactory().byId(id).flatMap(f -> f.filterBy(blob())).orElseNull();
+	}
 	
-	public static PebbleBlobWrapper of(Blob src, MarkupRendererFactory factory) {
-		return ImmutablePebbleBlobWrapper.of(src, factory.rendererFor(src.contentType()));
+	
+	public static PebbleBlobWrapper of(Blob src, MarkupRendererFactory factory, LinkFactory linkFactory) {
+		return ImmutablePebbleBlobWrapper.of(src, factory.rendererFor(src.contentType()), linkFactory);
 	}
 }

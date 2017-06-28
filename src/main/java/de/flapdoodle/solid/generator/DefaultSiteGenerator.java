@@ -19,8 +19,6 @@ package de.flapdoodle.solid.generator;
 import java.util.Collection;
 import java.util.Optional;
 
-import org.immutables.value.Value.Immutable;
-
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.ImmutableMultimap;
@@ -34,6 +32,8 @@ import de.flapdoodle.solid.parser.path.Path;
 import de.flapdoodle.solid.site.PathProperties;
 import de.flapdoodle.solid.site.Urls.Config;
 import de.flapdoodle.solid.theme.Context;
+import de.flapdoodle.solid.theme.DefaultLinkFactory;
+import de.flapdoodle.solid.theme.LinkFactory;
 import de.flapdoodle.solid.theme.Page;
 import de.flapdoodle.solid.theme.Paths;
 import de.flapdoodle.solid.theme.Renderer;
@@ -82,9 +82,16 @@ public class DefaultSiteGenerator implements SiteGenerator {
 
 			ImmutableList<Blob> sortedBlobs = Blobs.sort(site.blobs(), currentOrdering);
 			
-			ImmutableMultimap<ImmutableMap<String, Object>, Blob> groupedBlobs = Blobs.filter(sortedBlobs, filterFactory.filters(config.filters(), site.config().filters().filters()))
-					.stream()
-					.collect(Collectors.groupingByValues(blob -> Blobs.pathPropertiesOf(blob, pathProperties::mapped, currentPath, propertyCollectionResolver)));
+			ImmutableMultimap<ImmutableMap<String, Object>, Blob> groupedBlobs;
+			if (!currentPath.isPagedEmpty()) {
+				groupedBlobs = Blobs.filter(sortedBlobs, filterFactory.filters(config.filters(), site.config().filters().filters()))
+						.stream()
+						.collect(Collectors.groupingByValues(blob -> Blobs.pathPropertiesOf(blob, pathProperties::mapped, currentPath, propertyCollectionResolver)));
+			} else {
+				groupedBlobs=ImmutableMultimap.<ImmutableMap<String, Object>, Blob>builder()
+						.putAll(ImmutableMap.of(), sortedBlobs)
+						.build();
+			}
 
 			if (currentPath.propertyNames().contains(Path.PAGE)) {
 				groupedBlobs=Blobs.groupByPage(groupedBlobs, Path.PAGE, Maybe.fromOptional(config.itemsPerPage()).orElse(() -> 10));
@@ -98,6 +105,8 @@ public class DefaultSiteGenerator implements SiteGenerator {
 		
 		ImmutableMap<String, GroupedBlobs> groupedBlobsById = groupedBlobsBuilder.build();
 		
+		LinkFactory linkFactory=DefaultLinkFactory.of(groupedBlobsById, pathRenderer, propertyFormatter);
+
 		groupedBlobsById.forEach((name, grouped) -> {
 			System.out.println(name);
 			Path currentPath = grouped.currentPath();
@@ -120,6 +129,7 @@ public class DefaultSiteGenerator implements SiteGenerator {
 								.putAllPathProperties(key)
 								.site(site)
 								.paths(new PathsImpl(renderedPath,prev,next))
+								.linkFactory(linkFactory)
 								.build())
 						.build());
 				
@@ -160,17 +170,6 @@ public class DefaultSiteGenerator implements SiteGenerator {
 			.map(Maybe::get)
 			.collect(ImmutableList.toImmutableList());
 		return dates;
-	}
-	
-	@Immutable
-	static interface GroupedBlobs {
-		
-		Path currentPath();
-		ImmutableMultimap<ImmutableMap<String, Object>, Blob> groupedBlobs();
-		
-		public static ImmutableGroupedBlobs.Builder builder() {
-			return ImmutableGroupedBlobs.builder();
-		}
 	}
 	
 	private class PathsImpl implements Paths {

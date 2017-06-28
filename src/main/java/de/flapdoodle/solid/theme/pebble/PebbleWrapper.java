@@ -35,13 +35,13 @@ public abstract class PebbleWrapper {
 	
 	@Auxiliary
 	public PebbleBlobWrapper getSingle() {
-		return allBlobs().size()==1 ? PebbleBlobWrapper.of(allBlobs().get(0),markupRenderFactory()) : null;
+		return allBlobs().size()==1 ? PebbleBlobWrapper.of(allBlobs().get(0),markupRenderFactory(), context().linkFactory()) : null;
 	}
 	
 	@Lazy
 	public ImmutableList<PebbleBlobWrapper> getBlobs() {
 		return allBlobs().stream()
-				.map(b -> PebbleBlobWrapper.of(b, markupRenderFactory()))
+				.map(b -> PebbleBlobWrapper.of(b, markupRenderFactory(), context().linkFactory()))
 				.collect(ImmutableList.toImmutableList());
 	}
 	
@@ -59,7 +59,7 @@ public abstract class PebbleWrapper {
 	public Paths getPaths() {
 		return context().paths();
 	}
-
+	
 	public static ImmutablePebbleWrapper.Builder builder() {
 		return ImmutablePebbleWrapper.builder();
 	}

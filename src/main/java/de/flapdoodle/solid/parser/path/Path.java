@@ -18,7 +18,6 @@ package de.flapdoodle.solid.parser.path;
 
 import java.util.function.Predicate;
 import java.util.regex.Pattern;
-import java.util.stream.Collectors;
 
 import org.immutables.value.Value.Auxiliary;
 import org.immutables.value.Value.Check;
@@ -59,11 +58,22 @@ public abstract class Path {
 	}
 	
 	@Auxiliary
+	public boolean isPagedEmpty() {
+		return parts().isEmpty() || propertyNamesWithoutPage().isEmpty();
+	}
+	
+	public ImmutableList<String> propertyNamesWithoutPage() {
+		return propertyNames().stream()
+				.filter(n -> !n.equals(PAGE))
+				.collect(ImmutableList.toImmutableList());
+	}
+		
+	@Auxiliary
 	public ImmutableList<String> propertyNames() {
-		return ImmutableList.copyOf(parts().stream()
+		return parts().stream()
 			.filter(p -> p instanceof Property)
 			.map(p -> ((Property) p).property())
-			.collect(Collectors.toList()));
+			.collect(ImmutableList.toImmutableList());
 	}
 	
 	@Auxiliary

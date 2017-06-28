@@ -16,6 +16,8 @@
  */
 package de.flapdoodle.solid.formatter;
 
+import java.util.Collection;
+
 import de.flapdoodle.solid.types.Maybe;
 
 public class StringFormatFormatter implements Formatter {
@@ -28,6 +30,9 @@ public class StringFormatFormatter implements Formatter {
 	
 	@Override
 	public Maybe<String> format(Object value) {
+		if ((value instanceof Collection) && (((Collection) value).size()==1)) {
+			return Maybe.of(String.format(formatString, ((Collection) value).iterator().next()));
+		}
 		return Maybe.of(String.format(formatString, value));
 	}
 
