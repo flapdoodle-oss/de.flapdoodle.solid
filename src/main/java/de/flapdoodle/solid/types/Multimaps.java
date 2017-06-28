@@ -1,6 +1,5 @@
 package de.flapdoodle.solid.types;
 
-import java.lang.reflect.Array;
 import java.util.Collection;
 
 import com.google.common.collect.ImmutableList;
@@ -25,7 +24,7 @@ public class Multimaps {
 				
 				int fact=1;
 				for (Line<K,V> line: lines) {
-					mapBuilder.put(line.key, line.values[(i/fact) % line.values.length]);
+					mapBuilder.put(line.key, line.get((i/fact) % line.values.length));
 					fact=fact*line.values.length;
 				}
 				
@@ -41,11 +40,15 @@ public class Multimaps {
 	
 	static class Line<K,V> {
 		private final K key;
-		private final V[] values;
+		private final Object[] values;
 
 		public Line(K key, Collection<V> values) {
 			this.key = key;
-			this.values = values.toArray((V[]) Array.newInstance(values.iterator().next().getClass(), values.size()));
+			this.values = values.toArray();
+		}
+		
+		public V get(int idx) {
+			return (V) values[idx];
 		}
 	}
 }

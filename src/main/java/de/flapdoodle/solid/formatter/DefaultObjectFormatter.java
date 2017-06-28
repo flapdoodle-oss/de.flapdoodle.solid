@@ -28,6 +28,9 @@ public class DefaultObjectFormatter implements Formatter {
 		if (value instanceof Integer) {
 			return Maybe.of(value.toString());
 		}
+		if (value instanceof Double) {
+			return Maybe.of(value.toString());
+		}
 		return Maybe.absent();
 	}
 
