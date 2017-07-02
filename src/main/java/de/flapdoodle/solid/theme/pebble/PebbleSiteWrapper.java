@@ -24,6 +24,7 @@ import com.google.common.collect.ImmutableMap;
 import com.mitchellbosecke.pebble.extension.DynamicAttributeProvider;
 
 import de.flapdoodle.solid.formatter.Formatter;
+import de.flapdoodle.solid.parser.Tree;
 import de.flapdoodle.solid.site.SiteConfig;
 import de.flapdoodle.solid.types.Maybe;
 
@@ -54,6 +55,14 @@ public abstract class PebbleSiteWrapper implements DynamicAttributeProvider {
 	@Auxiliary
 	public ImmutableMap<String,Formatter> getFormatters() {
 		return config().formatters().formatters();
+	}
+	
+	@Auxiliary
+	public Tree tree(String id) {
+		return config().tree()
+				.flatMap(tree -> tree.find(id).asOptional())
+				.map(tree -> Tree.treeOf(tree))
+				.orElse(null);
 	}
 	
 	

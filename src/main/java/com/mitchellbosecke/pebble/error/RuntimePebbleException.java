@@ -10,8 +10,8 @@ package com.mitchellbosecke.pebble.error;
 
 public class RuntimePebbleException extends RuntimeException {
 
-    public RuntimePebbleException(PebbleException e){
-        super(e);
+    public RuntimePebbleException(String message, PebbleException e){
+        super(message, e);
     }
 
 }

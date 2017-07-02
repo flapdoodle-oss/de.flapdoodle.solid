@@ -9,6 +9,16 @@
 package com.mitchellbosecke.pebble;
 
 
+import static java.util.Objects.isNull;
+
+import java.io.Reader;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.List;
+import java.util.Locale;
+import java.util.concurrent.CompletionException;
+import java.util.concurrent.ExecutorService;
+
 import com.github.benmanes.caffeine.cache.Cache;
 import com.github.benmanes.caffeine.cache.Caffeine;
 import com.mitchellbosecke.pebble.cache.BaseTagCacheKey;
@@ -35,16 +45,6 @@ import com.mitchellbosecke.pebble.parser.Parser;
 import com.mitchellbosecke.pebble.parser.ParserImpl;
 import com.mitchellbosecke.pebble.template.PebbleTemplate;
 import com.mitchellbosecke.pebble.template.PebbleTemplateImpl;
-
-import java.io.Reader;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
-import java.util.Locale;
-import java.util.concurrent.CompletionException;
-import java.util.concurrent.ExecutorService;
-
-import static java.util.Objects.isNull;
 
 /**
  * The main class used for compiling templates. The PebbleEngine is responsible
@@ -129,7 +129,7 @@ public class PebbleEngine {
                     try {
                         return getPebbleTemplate(self, templateName, cacheKey);
                     } catch (PebbleException e) {
-                        throw new RuntimePebbleException(e);
+                        throw new RuntimePebbleException("template "+templateName, e);
                     }
                 });
             }
@@ -266,7 +266,7 @@ public class PebbleEngine {
 
         private Loader<?> loader;
 
-        private List<Extension> userProvidedExtensions = new ArrayList<>();
+        private final List<Extension> userProvidedExtensions = new ArrayList<>();
 
         private Syntax syntax;
 
@@ -284,7 +284,7 @@ public class PebbleEngine {
 
         private Cache<BaseTagCacheKey, Object> tagCache;
 
-        private EscaperExtension escaperExtension = new EscaperExtension();
+        private final EscaperExtension escaperExtension = new EscaperExtension();
 
         /**
          * Creates the builder.

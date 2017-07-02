@@ -8,6 +8,14 @@
  ******************************************************************************/
 package com.mitchellbosecke.pebble.node;
 
+import static java.util.Objects.isNull;
+
+import java.io.IOException;
+import java.io.StringWriter;
+import java.io.Writer;
+import java.util.Locale;
+import java.util.concurrent.CompletionException;
+
 import com.github.benmanes.caffeine.cache.Cache;
 import com.mitchellbosecke.pebble.cache.BaseTagCacheKey;
 import com.mitchellbosecke.pebble.error.PebbleException;
@@ -17,14 +25,6 @@ import com.mitchellbosecke.pebble.node.expression.Expression;
 import com.mitchellbosecke.pebble.template.EvaluationContextImpl;
 import com.mitchellbosecke.pebble.template.PebbleTemplateImpl;
 import com.mitchellbosecke.pebble.tokenParser.CacheTokenParser;
-
-import java.io.IOException;
-import java.io.StringWriter;
-import java.io.Writer;
-import java.util.Locale;
-import java.util.concurrent.CompletionException;
-
-import static java.util.Objects.isNull;
 
 /**
  * Node for the cache tag
@@ -137,7 +137,7 @@ public class CacheNode extends AbstractRenderableNode {
                     try {
                         return render(self, context);
                     } catch (PebbleException e) {
-                        throw new RuntimePebbleException(e);
+                        throw new RuntimePebbleException("template "+self.getName(), e);
                     } catch (IOException e) {
                         throw new RuntimeException(e);
                     }

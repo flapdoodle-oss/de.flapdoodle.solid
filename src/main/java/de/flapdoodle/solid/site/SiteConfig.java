@@ -16,6 +16,8 @@
  */
 package de.flapdoodle.solid.site;
 
+import java.util.Optional;
+
 import org.immutables.value.Value;
 import org.immutables.value.Value.Default;
 import org.immutables.value.Value.Style;
@@ -49,6 +51,7 @@ public interface SiteConfig {
 	String theme();
 	
 	ImmutableMap<String, String> properties();
+	Optional<PropertyTree> tree();
 	
 	Urls urls();
 	
@@ -83,6 +86,9 @@ public interface SiteConfig {
 			map.find(String.class, p)
 				.ifPresent(v -> builder.putProperties(p, v));
 		});
+		
+		builder.tree(map.find("tree").asOptional());
+		
 //		map.find(String.class, "title")
 //			.ifPresent(v -> builder.putProperties("title", v));
 //		map.find(String.class, "subtitle")
@@ -107,6 +113,9 @@ public interface SiteConfig {
 				.orElse(() -> Filters.empty()));
 		
 		builder.addAllDefaultOrdering(map.findList(String.class, "order"));
+		
+		map.find(String.class, "staticContent")
+			.ifPresent(s -> builder.staticDirectory(s));
 		
 		map.find("defaultFormatters")
 			.ifPresent(def -> {

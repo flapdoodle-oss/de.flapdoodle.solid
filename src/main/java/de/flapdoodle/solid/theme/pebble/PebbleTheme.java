@@ -24,6 +24,7 @@ import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Maps;
 import com.mitchellbosecke.pebble.PebbleEngine;
 import com.mitchellbosecke.pebble.error.PebbleException;
+import com.mitchellbosecke.pebble.error.RuntimePebbleException;
 import com.mitchellbosecke.pebble.template.PebbleTemplate;
 
 import de.flapdoodle.solid.content.render.MarkupRendererFactory;
@@ -75,8 +76,8 @@ public class PebbleTheme extends AbstractTheme {
 			
 			template.evaluate(writer, Maps.newLinkedHashMap(ImmutableMap.of("it",it)));
 			return writer.toString();
-		} catch (PebbleException | IOException px) {
-			throw new RuntimeException("rendering fails",px);
+		} catch (PebbleException | IOException | RuntimePebbleException px) {
+			throw new RuntimeException("rendering fails for "+template.getName(),px);
 		}
 	}
 }

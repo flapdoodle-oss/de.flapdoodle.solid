@@ -21,7 +21,6 @@ import java.nio.ByteBuffer;
 import java.util.concurrent.atomic.AtomicReference;
 
 import com.google.common.annotations.VisibleForTesting;
-import com.google.common.base.Joiner;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
@@ -34,6 +33,7 @@ import de.flapdoodle.solid.generator.ImmutableDocument;
 import de.flapdoodle.solid.generator.ImmutableText;
 import de.flapdoodle.solid.generator.Text;
 import de.flapdoodle.solid.site.SiteConfig;
+import de.flapdoodle.solid.types.Maybe;
 import de.flapdoodle.solid.types.Pair;
 import de.flapdoodle.types.Try;
 import io.undertow.Undertow;
@@ -71,7 +71,10 @@ public class UndertowPageSink implements PageSink {
 						} else {
 							ImmutableMap<String, Document> documentMap = docSet.documentMap;
 						
-							Document document = documentMap.get(requestPath);
+							Document document = Maybe.ofNullable(documentMap.get(requestPath))
+									.or(() -> Maybe.ofNullable(documentMap.get(requestPath+"/")))
+									.orElseNull();
+							
 							if (document!=null) {
 								Content content = document.content();
 								if (content instanceof Text) {
@@ -89,9 +92,7 @@ public class UndertowPageSink implements PageSink {
 								}
 								
 							} else {
-		            exchange.setStatusCode(404);
-								exchange.getResponseHeaders().put(Headers.CONTENT_TYPE, "text/plain");
-		            exchange.getResponseSender().send("page not found: \n"+Joiner.on("\n").join(documentMap.keySet()));
+		            pageNotFound(exchange, documentMap);
 							}
 						}
 					} else {
@@ -99,6 +100,23 @@ public class UndertowPageSink implements PageSink {
 						exchange.getResponseHeaders().put(Headers.CONTENT_TYPE, "text/plain");
             exchange.getResponseSender().send("no content at all");
 					}
+				}
+
+				private void pageNotFound(HttpServerExchange exchange, ImmutableMap<String, Document> documentMap) {
+					exchange.setStatusCode(404);
+					exchange.getResponseHeaders().put(Headers.CONTENT_TYPE, "text/html");
+					exchange.getResponseSender().send(pageNotFoundMessage(documentMap));
+				}
+
+				private String pageNotFoundMessage(ImmutableMap<String, Document> documentMap) {
+					StringBuilder sb=new StringBuilder();
+					sb.append("<html><head><title>Page Not Found</title></head><body>");
+					sb.append("<h1>Page Not Found</h1>");
+					documentMap.keySet().forEach(d -> {
+						sb.append("<a href=\"").append(d).append("\">").append(d).append("</a><br>\n");
+					});
+					sb.append("</body></html>");
+					return sb.toString();
 				}
 			})
 			.build();
@@ -152,7 +170,7 @@ public class UndertowPageSink implements PageSink {
 		}
 		return doc;
 	}
-
+	
 	private String asValidUrl(String path) {
 		if (!path.startsWith("/")) {
 			return "/"+path;
