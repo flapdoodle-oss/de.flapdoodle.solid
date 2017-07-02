@@ -21,6 +21,7 @@ import java.io.StringWriter;
 import java.nio.file.Path;
 
 import com.google.common.collect.ImmutableMap;
+import com.google.common.collect.Maps;
 import com.mitchellbosecke.pebble.PebbleEngine;
 import com.mitchellbosecke.pebble.error.PebbleException;
 import com.mitchellbosecke.pebble.template.PebbleTemplate;
@@ -72,7 +73,7 @@ public class PebbleTheme extends AbstractTheme {
 					.addAllAllBlobs(renderable.blobs())
 					.build();
 			
-			template.evaluate(writer, ImmutableMap.of("it",it));
+			template.evaluate(writer, Maps.newLinkedHashMap(ImmutableMap.of("it",it)));
 			return writer.toString();
 		} catch (PebbleException | IOException px) {
 			throw new RuntimeException("rendering fails",px);

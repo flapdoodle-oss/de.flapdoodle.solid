@@ -31,17 +31,17 @@ public class DefaultPathRendererTest {
 
 	@Test
 	public void pagePathShouldOmitFirstPage() {
-		DefaultPathRenderer renderer = new DefaultPathRenderer();
+		DefaultPathRenderer renderer = new DefaultPathRenderer("base/");
 		FormatterOfProperty formatter=(property, formatterName) -> new DefaultObjectFormatter();
 		Maybe<String> result = renderer.render(Path.parse("foo/:bar/:page/"), ImmutableMap.of("bar","baz","page",1), formatter);
-		assertEquals("foo/baz/",result.get());
+		assertEquals("base/foo/baz/",result.get());
 	}
 
 	@Test
 	public void doublePropertyShouldRender() {
-		DefaultPathRenderer renderer = new DefaultPathRenderer();
+		DefaultPathRenderer renderer = new DefaultPathRenderer("base/");
 		FormatterOfProperty formatter=(property, formatterName) -> new DefaultObjectFormatter();
 		Maybe<String> result = renderer.render(Path.parse("foo/:bar/:page/"), ImmutableMap.of("bar",3.0,"page",1), formatter);
-		assertEquals("foo/3.0/",result.get());
+		assertEquals("base/foo/3.0/",result.get());
 	}
 }

@@ -21,10 +21,12 @@ import org.immutables.value.Value.Immutable;
 import org.immutables.value.Value.Lazy;
 
 import com.google.common.collect.ImmutableList;
+import com.google.common.collect.ImmutableMap;
 
 import de.flapdoodle.solid.content.render.MarkupRendererFactory;
 import de.flapdoodle.solid.parser.content.Blob;
 import de.flapdoodle.solid.theme.Context;
+import de.flapdoodle.solid.theme.LinkFactories.Blobs;
 import de.flapdoodle.solid.theme.Paths;
 
 @Immutable
@@ -58,6 +60,16 @@ public abstract class PebbleWrapper {
 	@Auxiliary
 	public Paths getPaths() {
 		return context().paths();
+	}
+	
+	@Auxiliary
+	public ImmutableMap<String,Object> getProperties() {
+		return context().pathProperties();
+	}
+	
+	@Auxiliary
+	public Blobs linksTo(String id) {
+		return context().linkFactory().byId(id).orElseNull();
 	}
 	
 	public static ImmutablePebbleWrapper.Builder builder() {

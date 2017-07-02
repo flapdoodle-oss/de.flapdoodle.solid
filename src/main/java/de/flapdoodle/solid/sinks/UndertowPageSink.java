@@ -16,8 +16,13 @@
  */
 package de.flapdoodle.solid.sinks;
 
+import java.net.URL;
 import java.nio.ByteBuffer;
+import java.util.concurrent.atomic.AtomicReference;
 
+import com.google.common.annotations.VisibleForTesting;
+import com.google.common.base.Joiner;
+import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
 
@@ -29,6 +34,8 @@ import de.flapdoodle.solid.generator.ImmutableDocument;
 import de.flapdoodle.solid.generator.ImmutableText;
 import de.flapdoodle.solid.generator.Text;
 import de.flapdoodle.solid.site.SiteConfig;
+import de.flapdoodle.solid.types.Pair;
+import de.flapdoodle.types.Try;
 import io.undertow.Undertow;
 import io.undertow.server.HttpHandler;
 import io.undertow.server.HttpServerExchange;
@@ -38,7 +45,8 @@ public class UndertowPageSink implements PageSink {
 
 	private final Undertow server;
 	private final String serverUrl;
-	private ImmutableMap<String, Document> documentMap=ImmutableMap.of();
+//	private ImmutableMap<String, Document> documentMap=ImmutableMap.of();
+	private final AtomicReference<DocumentSet> documents=new AtomicReference<>();
 
 	public UndertowPageSink() {
 		this.serverUrl = "http://localhost:8080";
@@ -48,27 +56,48 @@ public class UndertowPageSink implements PageSink {
 				
 				@Override
 				public void handleRequest(HttpServerExchange exchange) throws Exception {
-					Document document = documentMap.get(exchange.getRequestPath());
-					if (document!=null) {
-						Content content = document.content();
-						if (content instanceof Text) {
-							exchange.getResponseHeaders().put(Headers.CONTENT_TYPE, content.mimeType()+"; charset=UTF-8");
-	            exchange.getResponseSender().send(((Text) content).text());
+					String requestPath = exchange.getRequestPath();
+					System.out.println("? "+requestPath);
+					
+					DocumentSet docSet = documents.get();
+					if (docSet!=null) {
+						if (requestPath.equals("/")) {
+							if (!docSet.basePath.equals(requestPath)) {
+								System.out.println("Roooooooooooooooooooooot -> "+docSet.basePath);
+		            exchange.setStatusCode(302);
+								exchange.getResponseHeaders().put(Headers.LOCATION, docSet.basePath);
+		            exchange.getResponseSender().send("redirect to basePath");
+							}
 						} else {
-							if (content instanceof Binary) {
-								exchange.getResponseHeaders().put(Headers.CONTENT_TYPE, content.mimeType());
-		            exchange.getResponseSender().send(ByteBuffer.wrap(((Binary) content).data().data()));
+							ImmutableMap<String, Document> documentMap = docSet.documentMap;
+						
+							Document document = documentMap.get(requestPath);
+							if (document!=null) {
+								Content content = document.content();
+								if (content instanceof Text) {
+									exchange.getResponseHeaders().put(Headers.CONTENT_TYPE, content.mimeType()+"; charset=UTF-8");
+			            exchange.getResponseSender().send(((Text) content).text());//
+								} else {
+									if (content instanceof Binary) {
+										exchange.getResponseHeaders().put(Headers.CONTENT_TYPE, content.mimeType());
+				            exchange.getResponseSender().send(ByteBuffer.wrap(((Binary) content).data().data()));
+									} else {
+				            exchange.setStatusCode(500);
+										exchange.getResponseHeaders().put(Headers.CONTENT_TYPE, "text/plain");
+				            exchange.getResponseSender().send("unknown content type: "+content.getClass());
+									}
+								}
+								
 							} else {
-		            exchange.setStatusCode(500);
+		            exchange.setStatusCode(404);
 								exchange.getResponseHeaders().put(Headers.CONTENT_TYPE, "text/plain");
-		            exchange.getResponseSender().send("unknown content type: "+content.getClass());
+		            exchange.getResponseSender().send("page not found: \n"+Joiner.on("\n").join(documentMap.keySet()));
 							}
 						}
-						
 					} else {
             exchange.setStatusCode(404);
 						exchange.getResponseHeaders().put(Headers.CONTENT_TYPE, "text/plain");
-            exchange.getResponseSender().send("page not found");
+            exchange.getResponseSender().send("no content at all");
 					}
 				}
 			})
@@ -79,15 +108,47 @@ public class UndertowPageSink implements PageSink {
 	
 	@Override
 	public void accept(SiteConfig siteConfig, ImmutableList<Document> documents) {
-		this.documentMap = documents.stream()
-				.map(doc -> replaceBaseUrl(siteConfig.baseUrl(), this.serverUrl, doc))
-				.collect(ImmutableMap.toImmutableMap(doc -> asValidUrl(doc.path()), doc -> doc));
+//		this.documentMap = documents.stream()
+//				.map(doc -> replaceBaseUrl(siteConfig.baseUrl(), this.serverUrl, doc))
+//				.collect(ImmutableMap.toImmutableMap(doc -> asValidUrl(doc.path()), doc -> doc));
+		
+		Pair<String, String> hostAndBasePath = hostAndBasePath(siteConfig.baseUrl());
+		
+		this.documents.set(new DocumentSet(siteConfig, hostAndBasePath.b(), documents.stream()
+			.map(doc -> replaceBaseUrl(hostAndBasePath.a(), this.serverUrl, doc))
+			.collect(ImmutableMap.toImmutableMap(doc -> asValidUrl(doc.path()), doc -> doc))));
+	}
+
+	private String rewriteUrl(String basePath, String path) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@VisibleForTesting
+	protected static Pair<String, String> hostAndBasePath(String baseUrl) {
+		URL asUrl = Try.supplier(() -> new URL(baseUrl))
+			.mapCheckedException(RuntimeException::new)
+			.get();
+		
+		String basePath = asUrl.getPath();
+		int indexOfPath = baseUrl.indexOf(basePath);
+		Preconditions.checkArgument(indexOfPath!=1,"could not find %s in %s",basePath, baseUrl);
+		Preconditions.checkArgument(baseUrl.length()==indexOfPath+basePath.length(),"basepath %s is not the last thing in %s",basePath, baseUrl);
+		if (!basePath.endsWith("/")) {
+			basePath=basePath+"/";
+		}
+		return Pair.of(baseUrl.substring(0, indexOfPath), basePath);
 	}
 
 	private Document replaceBaseUrl(String baseUrl, String serverUrl, Document doc) {
+		doc =ImmutableDocument.copyOf(doc)
+				.withPath(doc.path().replace(baseUrl, ""));
+		
 		if (doc.content() instanceof Text) {
 			Text text=(Text) doc.content();
-			return ImmutableDocument.copyOf(doc).withContent(ImmutableText.copyOf(text).withText(text.text().replace(baseUrl, serverUrl)));
+			return ImmutableDocument.copyOf(doc)
+					.withContent(ImmutableText.copyOf(text)
+					.withText(text.text().replace(baseUrl, serverUrl)));
 		}
 		return doc;
 	}
@@ -97,6 +158,19 @@ public class UndertowPageSink implements PageSink {
 			return "/"+path;
 		}
 		return path;
+	}
+	
+	private static class DocumentSet {
+		
+		private final SiteConfig siteConfig;
+		private final ImmutableMap<String, Document> documentMap;
+		private final String basePath;
+
+		public DocumentSet(SiteConfig siteConfig, String basePath, ImmutableMap<String, Document> documentMap) {
+			this.siteConfig = siteConfig;
+			this.basePath = basePath;
+			this.documentMap = documentMap;
+		}
 	}
 
 }

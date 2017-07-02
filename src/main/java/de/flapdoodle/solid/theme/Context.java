@@ -27,7 +27,7 @@ public interface Context {
 	Site site();
 	ImmutableMap<String, Object> pathProperties();
 	Paths paths();
-	LinkFactory linkFactory();
+	LinkFactories.Named linkFactory();
 	
 	public static ImmutableContext.Builder builder() {
 		return ImmutableContext.builder();

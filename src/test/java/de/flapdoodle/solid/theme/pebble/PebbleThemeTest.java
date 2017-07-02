@@ -121,7 +121,7 @@ public class PebbleThemeTest {
 			.put("bar", "bar")
 			.build();
 		template.evaluate(result, ImmutableMap.of("foo",propertyTree));
-		assertEquals("-->bar<--", result.toString());
+		assertEquals("-->[bar]<--", result.toString());
 	}
 
 	@Test

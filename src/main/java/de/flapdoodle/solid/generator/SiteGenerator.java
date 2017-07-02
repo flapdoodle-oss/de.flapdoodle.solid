@@ -16,6 +16,8 @@
  */
 package de.flapdoodle.solid.generator;
 
+import java.util.function.Function;
+
 import com.google.common.collect.ImmutableList;
 
 import de.flapdoodle.solid.parser.content.Site;
@@ -23,7 +25,7 @@ import de.flapdoodle.solid.parser.content.Site;
 public interface SiteGenerator {
 	ImmutableList<Document> generate(Site site);
 	
-	public static SiteGenerator defaultGenerator() {
-		return new DefaultSiteGenerator(PropertyCollectionResolver.defaultResolver(), PathRenderer.defaultPathRenderer(), FilterFactory.defaultFilterFactory());
+	public static SiteGenerator defaultGenerator(Function<Site, PathRenderer> sitePathRender) {
+		return new DefaultSiteGenerator(PropertyCollectionResolver.defaultResolver(), sitePathRender, FilterFactory.defaultFilterFactory());
 	}
 }

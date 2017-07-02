@@ -18,6 +18,7 @@ package de.flapdoodle.solid.generator;
 
 import java.util.Collection;
 import java.util.Optional;
+import java.util.function.Function;
 
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
@@ -33,7 +34,7 @@ import de.flapdoodle.solid.site.PathProperties;
 import de.flapdoodle.solid.site.Urls.Config;
 import de.flapdoodle.solid.theme.Context;
 import de.flapdoodle.solid.theme.DefaultLinkFactory;
-import de.flapdoodle.solid.theme.LinkFactory;
+import de.flapdoodle.solid.theme.LinkFactories;
 import de.flapdoodle.solid.theme.Page;
 import de.flapdoodle.solid.theme.Paths;
 import de.flapdoodle.solid.theme.Renderer;
@@ -45,12 +46,12 @@ import de.flapdoodle.solid.types.paging.Pager.KeyValue;
 public class DefaultSiteGenerator implements SiteGenerator {
 
 	private final PropertyCollectionResolver propertyCollectionResolver;
-	private final PathRenderer pathRenderer;
+	private final Function<Site, PathRenderer> pathRendererFactory;
 	private final FilterFactory filterFactory;
 
-	public DefaultSiteGenerator(PropertyCollectionResolver propertyCollectionResolver, PathRenderer pathRenderer, FilterFactory filterFactory) {
+	public DefaultSiteGenerator(PropertyCollectionResolver propertyCollectionResolver, Function<Site, PathRenderer> pathRendererFactory, FilterFactory filterFactory) {
 		this.propertyCollectionResolver = propertyCollectionResolver;
-		this.pathRenderer = pathRenderer;
+		this.pathRendererFactory = pathRendererFactory;
 		this.filterFactory = filterFactory;
 	}
 	
@@ -105,7 +106,9 @@ public class DefaultSiteGenerator implements SiteGenerator {
 		
 		ImmutableMap<String, GroupedBlobs> groupedBlobsById = groupedBlobsBuilder.build();
 		
-		LinkFactory linkFactory=DefaultLinkFactory.of(groupedBlobsById, pathRenderer, propertyFormatter);
+		PathRenderer pathRenderer = pathRendererFactory.apply(site);
+		
+		LinkFactories.Named linkFactory=DefaultLinkFactory.of(groupedBlobsById, pathRenderer, propertyFormatter);
 
 		groupedBlobsById.forEach((name, grouped) -> {
 			System.out.println(name);
@@ -117,9 +120,9 @@ public class DefaultSiteGenerator implements SiteGenerator {
 				
 				String renderedPath = Maybe.isPresent(pathRenderer.render(currentPath, key, propertyFormatter),"could not render path for: %s with %s",currentPath,key).get();
 				
-				Maybe<Page> prev = pageOf(currentPath, before, propertyFormatter);
+				Maybe<Page> prev = pageOf(pathRenderer, currentPath, before, propertyFormatter);
 				
-				Maybe<Page> next=pageOf(currentPath, after, propertyFormatter);
+				Maybe<Page> next=pageOf(pathRenderer, currentPath, after, propertyFormatter);
 				
 				System.out.println(" "+key+" -> "+blobs.size()+" --> "+renderedPath+"(prev:"+prev.isPresent()+",next"+next.isPresent()+")");
 				
@@ -141,13 +144,19 @@ public class DefaultSiteGenerator implements SiteGenerator {
 			});
 		});
 		
-		documents.addAll(site.theme().staticFiles());
-		documents.addAll(site.staticFiles());
+		documents.addAll(applyBaseUrl(site.config().baseUrl(), site.theme().staticFiles()));
+		documents.addAll(applyBaseUrl(site.config().baseUrl(), site.staticFiles()));
 		
 		return documents.build();
 	}
 
-	private Maybe<Page> pageOf(Path currentPath, Maybe<KeyValue<ImmutableMap<String, Object>, Collection<Blob>>> pageBlobs, FormatterOfProperty propertyFormatter) {
+	private Iterable<? extends Document> applyBaseUrl(String baseUrl, ImmutableList<Document> src) {
+		return src.stream()
+			.map(d -> ImmutableDocument.copyOf(d).withPath(baseUrl+"/"+d.path()))
+			.collect(ImmutableList.toImmutableList());
+	}
+
+	private static Maybe<Page> pageOf(PathRenderer pathRenderer, Path currentPath, Maybe<KeyValue<ImmutableMap<String, Object>, Collection<Blob>>> pageBlobs, FormatterOfProperty propertyFormatter) {
 		Maybe<String> title = pageBlobs.map(KeyValue::value)
 			.flatMap(blobs -> {
 				return blobs.size()==1 ? blobs.iterator().next().meta()

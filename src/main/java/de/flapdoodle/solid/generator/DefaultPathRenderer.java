@@ -24,10 +24,18 @@ import de.flapdoodle.solid.types.Maybe;
 
 public class DefaultPathRenderer implements PathRenderer {
 
+	private final String baseUrl;
+
+	public DefaultPathRenderer(String baseUrl) {
+		this.baseUrl = baseUrl;
+	}
+	
 	@Override
 	public Maybe<String> render(Path path, ImmutableMap<String, Object> properties, FormatterOfProperty propertyFormatter) {
 		if (path.propertyNames().size()<=properties.keySet().size()) {
 			StringBuilder sb=new StringBuilder();
+			sb.append(baseUrl);
+			
 			for (Path.Part part : path.parts()) {
 				if (part instanceof Path.Static) {
 					sb.append(urlify(((Path.Static) part).fixed()));

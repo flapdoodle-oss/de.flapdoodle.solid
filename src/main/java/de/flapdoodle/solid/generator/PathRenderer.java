@@ -25,8 +25,8 @@ import de.flapdoodle.solid.types.Maybe;
 public interface PathRenderer {
 	Maybe<String> render(Path path, ImmutableMap<String, Object> properties,FormatterOfProperty propertyFormatter);
 	
-	public static PathRenderer defaultPathRenderer() {
-		return new DefaultPathRenderer();
+	public static PathRenderer defaultPathRenderer(String baseUrl) {
+		return new DefaultPathRenderer(baseUrl);
 	}
 	
 	interface FormatterOfProperty {

@@ -21,6 +21,7 @@ import java.nio.file.Paths;
 
 import com.google.common.base.Preconditions;
 
+import de.flapdoodle.solid.generator.PathRenderer;
 import de.flapdoodle.solid.generator.SiteGenerator;
 import de.flapdoodle.solid.sinks.DebuggingPageSink;
 import de.flapdoodle.solid.sinks.StaticHttpServerPageSink;
@@ -37,13 +38,13 @@ public class Solid {
 		Path target = Paths.get(args[1]);
 		
 		StaticPageGenerator.onChange(siteRoot, target)
-			.generator(SiteSpring.withPath(siteRoot), SiteGenerator.defaultGenerator(), new StaticHttpServerPageSink(target)
+			.generator(SiteSpring.withPath(siteRoot), SiteGenerator.defaultGenerator(site -> PathRenderer.defaultPathRenderer(site.config().baseUrl())), new StaticHttpServerPageSink(target)
 					.andThen(new DebuggingPageSink(false))
 					.andThen(new UndertowPageSink()))
 			.run();
 	}
 
 	public static Runnable testing(Path siteRoot) {
-		return StaticPageGenerator.once().generator(SiteSpring.withPath(siteRoot), SiteGenerator.defaultGenerator(), new DebuggingPageSink(true));
+		return StaticPageGenerator.once().generator(SiteSpring.withPath(siteRoot), SiteGenerator.defaultGenerator(site -> PathRenderer.defaultPathRenderer(site.config().baseUrl())), new DebuggingPageSink(true));
 	}
 }

@@ -1,17 +1,22 @@
 package de.flapdoodle.solid.theme;
 
+import java.util.Collection;
+
 import com.google.common.collect.ImmutableCollection;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
+import com.google.common.collect.ImmutableSet;
+import com.google.common.collect.Ordering;
 
 import de.flapdoodle.solid.generator.GroupedBlobs;
 import de.flapdoodle.solid.generator.PathRenderer;
 import de.flapdoodle.solid.generator.PathRenderer.FormatterOfProperty;
 import de.flapdoodle.solid.parser.content.Blob;
 import de.flapdoodle.solid.parser.path.Path;
+import de.flapdoodle.solid.theme.LinkFactories.Filtered;
 import de.flapdoodle.solid.types.Maybe;
 
-public class DefaultLinkFactory implements LinkFactory {
+public class DefaultLinkFactory implements LinkFactories.Named {
 	
 	private final ImmutableMap<String, GroupedBlobs> groupedBlobsById;
 	private final PathRenderer pathRenderer;
@@ -24,15 +29,15 @@ public class DefaultLinkFactory implements LinkFactory {
 	}
 	
 	@Override
-	public Maybe<? extends BlobsLinkFactory> byId(String id) {
+	public Maybe<LinkFactories.Blobs> byId(String id) {
 		return Maybe.ofNullable(groupedBlobsById.get(id)).map(grouped -> new DefaultBlobsLinkFactory(pathRenderer, propertyFormatter, grouped));
 	}
 
-	public static LinkFactory of(ImmutableMap<String,GroupedBlobs> groupedBlobsById, PathRenderer pathRenderer, FormatterOfProperty propertyFormatter) {
+	public static LinkFactories.Named of(ImmutableMap<String,GroupedBlobs> groupedBlobsById, PathRenderer pathRenderer, FormatterOfProperty propertyFormatter) {
 		return new DefaultLinkFactory(groupedBlobsById, pathRenderer, propertyFormatter);
 	}
 	
-	private static class DefaultBlobsLinkFactory implements BlobsLinkFactory {
+	private static class DefaultBlobsLinkFactory implements LinkFactories.Blobs {
 
 		private final PathRenderer pathRenderer;
 		private final FormatterOfProperty propertyFormatter;
@@ -45,7 +50,7 @@ public class DefaultLinkFactory implements LinkFactory {
 		}
 		
 		@Override
-		public Maybe<BlobLinkFactory> filterBy(Blob blob) {
+		public Maybe<LinkFactories.OneBlob> filterBy(Blob blob) {
 			ImmutableCollection<ImmutableMap<String, Object>> keys = grouped.keysOf(blob);
 			if (!keys.isEmpty()) {
 				return Maybe.of(new DefaultBlobLinkFactory(pathRenderer, propertyFormatter, grouped.currentPath(), keys));
@@ -53,10 +58,97 @@ public class DefaultLinkFactory implements LinkFactory {
 			return Maybe.absent();
 		}
 		
+		@Override
+		public LinkFactories.Filtered filter() {
+			return new DefaultGroupLinkFactory(pathRenderer, propertyFormatter, grouped.currentPath(), grouped.groupedBlobs().asMap());
+		}
+	}
+	
+	private static class DefaultGroupLinkFactory implements LinkFactories.Filtered {
+
+		private final PathRenderer pathRenderer;
+		private final FormatterOfProperty propertyFormatter;
+		private final Path currentPath;
+		private final ImmutableMap<ImmutableMap<String,Object>,Collection<Blob>> groupedBlobs;
+
+		public DefaultGroupLinkFactory(PathRenderer pathRenderer, FormatterOfProperty propertyFormatter, Path currentPath,
+				ImmutableMap<ImmutableMap<String,Object>,Collection<Blob>> immutableMap) {
+					this.pathRenderer = pathRenderer;
+					this.propertyFormatter = propertyFormatter;
+					this.currentPath = currentPath;
+					this.groupedBlobs = immutableMap;
+		}
+		
+		@Override
+		public LinkFactories.Filtered by(String key, Object value) {
+			ImmutableMap<ImmutableMap<String, Object>, Collection<Blob>> filteredMap = filter(groupedBlobs, key, value);
+			return new DefaultGroupLinkFactory(pathRenderer, propertyFormatter, currentPath, filteredMap);
+		}
+		
+		@Override
+		public LinkFactories.Filtered orderBy(String key) {
+			ImmutableMap<ImmutableMap<String, Object>, Collection<Blob>> orderedMap = order(groupedBlobs, key);
+			return new DefaultGroupLinkFactory(pathRenderer, propertyFormatter, currentPath, orderedMap);
+		}
+
+		private static ImmutableMap<ImmutableMap<String, Object>, Collection<Blob>> order(ImmutableMap<ImmutableMap<String, Object>, Collection<Blob>> src, String key) {
+			ImmutableMap.Builder<ImmutableMap<String, Object>, Collection<Blob>> builder=ImmutableMap.builder();
+			src.entrySet()
+				.stream()
+				.sorted(Ordering.natural().onResultOf(e -> {
+					Object val = e.getKey().get(key);
+					return (val instanceof Comparable) 
+							? (Comparable) val 
+							: null;
+				}))
+				.forEach((e) -> {
+					builder.put(e.getKey(), e.getValue());
+				});
+			return builder.build();
+		}
+		
+		private static ImmutableMap<ImmutableMap<String, Object>, Collection<Blob>> filter(ImmutableMap<ImmutableMap<String, Object>, Collection<Blob>> src, String key,
+				Object value) {
+			ImmutableMap.Builder<ImmutableMap<String, Object>, Collection<Blob>> builder=ImmutableMap.builder();
+			src.forEach((k,blobs) -> {
+				if (value.equals(k.get(key))) {
+					builder.put(k, blobs);
+				}
+			});
+			return builder.build();
+		}
+		
+		@Override
+		public ImmutableSet<Object> values(String key) {
+			return groupedBlobs.keySet().stream()
+				.map(k -> k.get(key))
+				.filter(o -> o!=null)
+				.collect(ImmutableSet.toImmutableSet());
+		}
+		
+		@Override
+		public String getLink() {
+			if (groupedBlobs.keySet().size()==1) {
+				return pathRenderer.render(currentPath, groupedBlobs.keySet().iterator().next(), propertyFormatter).orElseNull();
+			}
+			return null;
+		}
+
+		@Override
+		public Filtered firstPage() {
+			return by(Path.PAGE,1);
+		}
+
+		@Override
+		public int count() {
+			return groupedBlobs.values().stream()
+					.map(c -> c.size())
+					.reduce(0, (a,b) -> a+b);
+		}
 	}
 	
 	
-	private static class DefaultBlobLinkFactory implements BlobLinkFactory {
+	private static class DefaultBlobLinkFactory implements LinkFactories.OneBlob {
 
 		private final PathRenderer pathRenderer;
 		private final FormatterOfProperty propertyFormatter;
