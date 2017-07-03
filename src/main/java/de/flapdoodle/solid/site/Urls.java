@@ -38,7 +38,7 @@ public interface Urls {
 		Optional<Integer> itemsPerPage();
 		ImmutableSet<String> filters();
 		ImmutableList<String> ordering();
-
+		Optional<Paging> paging();
 		
 		public static ImmutableConfig.Builder builder() {
 			return ImmutableConfig.builder();

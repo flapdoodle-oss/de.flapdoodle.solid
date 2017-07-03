@@ -59,11 +59,15 @@ public interface SiteConfig {
 	
 	PostProcessing postProcessing();
 	
+	UrlRewrite urlRewrite();
+	
 	Formatters formatters();
 	
 	Filters filters();
 	
 	ImmutableList<String> defaultOrdering();
+	
+	Optional<Paging> paging();
 	
 	ImmutableMap<String, String> defaultFormatter();
 	
@@ -101,8 +105,12 @@ public interface SiteConfig {
 				.orElse(() -> PathProperties.empty()));
 
 		builder.postProcessing(map.find("postProcessing")
-			.map(PostProcessing::of)
-			.orElse(() -> PostProcessing.empty()));
+				.map(PostProcessing::of)
+				.orElse(() -> PostProcessing.empty()));
+		
+		builder.urlRewrite(map.find("urlRewrite")
+				.map(UrlRewrite::of)
+				.orElse(() -> UrlRewrite.empty()));
 		
 		builder.formatters(map.find("formatters")
 				.map(Formatters::of)

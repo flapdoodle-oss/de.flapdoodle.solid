@@ -137,7 +137,7 @@ public class CacheNode extends AbstractRenderableNode {
                     try {
                         return render(self, context);
                     } catch (PebbleException e) {
-                        throw new RuntimePebbleException("template "+self.getName(), e);
+                        throw new RuntimePebbleException(e);
                     } catch (IOException e) {
                         throw new RuntimeException(e);
                     }

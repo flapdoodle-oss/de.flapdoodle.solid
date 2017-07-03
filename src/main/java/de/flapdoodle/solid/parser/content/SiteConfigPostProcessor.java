@@ -20,6 +20,7 @@ import com.google.common.base.Splitter;
 import com.google.common.collect.ImmutableList;
 
 import de.flapdoodle.solid.site.PostProcessing;
+import de.flapdoodle.solid.site.PostProcessing.BlobRegex;
 import de.flapdoodle.solid.site.PostProcessing.Regex;
 import de.flapdoodle.solid.types.Maybe;
 import de.flapdoodle.solid.types.tree.FixedPropertyTree;
@@ -36,11 +37,24 @@ public class SiteConfigPostProcessor implements PostProcessor {
 
 	@Override
 	public Blob process(Blob src) {
-		if (!config.regex().isEmpty()) {
-			return ImmutableBlob.copyOf(src)
-					.withMeta(process(src.meta(),config.regex()));
+		Blob ret=src;
+		if (!config.blobRegex().isEmpty()) {
+			ret=ImmutableBlob.copyOf(ret)
+					.withContent(process(ret.content(), config.blobRegex()));
 		}
-		return src;
+		if (!config.regex().isEmpty()) {
+			ret=ImmutableBlob.copyOf(ret)
+					.withMeta(process(ret.meta(),config.regex()));
+		}
+		return ret;
+	}
+
+	private static String process(String content, ImmutableList<BlobRegex> blobRegex) {
+		String ret=content;
+		for (BlobRegex r : blobRegex) {
+			ret=r.pattern().matcher(ret).replaceAll(r.replacement());
+		}
+		return ret;
 	}
 
 	private static PropertyTree process(PropertyTree meta, ImmutableList<Regex> regex) {
@@ -51,7 +65,7 @@ public class SiteConfigPostProcessor implements PostProcessor {
 			Maybe<String> sourceVal = meta.find(String.class, Splitter.on(".").split(r.source()));
 			if (sourceVal.isPresent()) {
 				String source=sourceVal.get();
-				String result = r.pattern().matcher(source).replaceAll(r.replacement());
+				String result = r.rewrite(source);
 				builder.put(r.name(), result);
 			}
 		}

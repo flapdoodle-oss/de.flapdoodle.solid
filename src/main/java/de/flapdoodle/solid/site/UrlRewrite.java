@@ -16,27 +16,33 @@
  */
 package de.flapdoodle.solid.site;
 
+import java.util.function.Function;
 import java.util.regex.Pattern;
 
 import org.immutables.value.Value.Auxiliary;
 import org.immutables.value.Value.Immutable;
+import org.immutables.value.Value.Lazy;
 
 import com.google.common.collect.ImmutableList;
 
 import de.flapdoodle.legacy.Optionals;
-import de.flapdoodle.solid.site.ImmutablePostProcessing.Builder;
+import de.flapdoodle.solid.site.ImmutableUrlRewrite.Builder;
+import de.flapdoodle.solid.types.Maybe;
 import de.flapdoodle.solid.types.tree.PropertyTree;
 
 @Immutable
-public interface PostProcessing {
+public interface UrlRewrite {
 	
-	ImmutableList<Regex> regex();
-	ImmutableList<BlobRegex> blobRegex();
+	ImmutableList<UrlRegex> regex();
+	
+	@Lazy
+	default Function<String, Maybe<String>> rewriter() {
+		return new Rewriter(regex());
+	}
 	
 	@Immutable
-	interface Regex {
+	interface UrlRegex {
 		String name();
-		String source();
 		Pattern pattern();
 		String replacement();
 		
@@ -45,46 +51,25 @@ public interface PostProcessing {
 			return pattern().matcher(source).replaceAll(replacement());
 		}
 		
-		public static ImmutableRegex.Builder builder() {
-			return ImmutableRegex.builder();
+		@Auxiliary
+		default boolean matches(String source) {
+			return pattern().matcher(source).matches();
 		}
-	}
-	
-	@Immutable
-	interface BlobRegex {
-		String name();
-		Pattern pattern();
-		String replacement();
 		
-		public static ImmutableBlobRegex.Builder builder() {
-			return ImmutableBlobRegex.builder();
+		public static ImmutableUrlRegex.Builder builder() {
+			return ImmutableUrlRegex.builder();
 		}
 	}
 	
-	public static PostProcessing of(PropertyTree tree) {
-		Builder builder = ImmutablePostProcessing.builder();
+	public static UrlRewrite of(PropertyTree tree) {
+		ImmutableUrlRewrite.Builder builder = builder();
 		tree.find("regex").ifPresent(regex -> {
 			regex.properties().forEach(name -> {
 				PropertyTree regexConfig = Optionals.checkPresent(regex.find(name),"not a valid regex config: %s",name).get();
-				String source = Optionals.checkPresent(regexConfig.find(String.class, "source"),"source not set for %s",name).get();
 				String pattern = Optionals.checkPresent(regexConfig.find(String.class, "pattern"),"pattern not set for %s",name).get();
 				String replacement = Optionals.checkPresent(regexConfig.find(String.class, "replacement"),"replacement not set for %s",name).get();
 				
-				builder.addRegex(Regex.builder()
-					.name(name)
-					.source(source)
-					.pattern(Pattern.compile(pattern))
-					.replacement(replacement)
-					.build());
-			});
-		});
-		tree.find("blob").ifPresent(regex -> {
-			regex.properties().forEach(name -> {
-				PropertyTree regexConfig = Optionals.checkPresent(regex.find(name),"not a valid regex config: %s",name).get();
-				String pattern = Optionals.checkPresent(regexConfig.find(String.class, "pattern"),"pattern not set for %s",name).get();
-				String replacement = Optionals.checkPresent(regexConfig.find(String.class, "replacement"),"replacement not set for %s",name).get();
-				
-				builder.addBlobRegex(BlobRegex.builder()
+				builder.addRegex(UrlRegex.builder()
 					.name(name)
 					.pattern(Pattern.compile(pattern))
 					.replacement(replacement)
@@ -94,8 +79,31 @@ public interface PostProcessing {
 		return builder.build();
 	}
 
-	public static PostProcessing empty() {
-		return ImmutablePostProcessing.builder()
-				.build();
+	public static UrlRewrite empty() {
+		return builder().build();
+	}
+
+	public static Builder builder() {
+		return ImmutableUrlRewrite.builder();
+	}
+	
+	public static class Rewriter implements Function<String, Maybe<String>> {
+
+		private final ImmutableList<UrlRegex> regex;
+
+		public Rewriter(ImmutableList<UrlRegex> regex) {
+			this.regex = regex;
+		}
+
+		@Override
+		public Maybe<String> apply(String source) {
+			for (UrlRegex r : regex) {
+				if (r.matches(source)) {
+					return Maybe.of(r.rewrite(source));
+				}
+			}
+			return Maybe.absent();
+		}
+		
 	}
 }

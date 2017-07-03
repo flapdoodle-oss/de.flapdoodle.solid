@@ -16,6 +16,8 @@
  */
 package de.flapdoodle.solid.theme.pebble;
 
+import java.util.function.Function;
+
 import org.immutables.value.Value.Auxiliary;
 import org.immutables.value.Value.Immutable;
 import org.immutables.value.Value.Lazy;
@@ -37,6 +39,8 @@ public abstract class PebbleBlobWrapper {
 	protected abstract MarkupRenderer markupRenderer();
 	@Parameter
 	protected abstract LinkFactories.Named linkFactory();
+	@Parameter
+	protected abstract Function<String, Maybe<String>> urlMapping();
 	
 	@Auxiliary
 	public PropertyTree getMeta() {
@@ -46,14 +50,14 @@ public abstract class PebbleBlobWrapper {
 	@Lazy
 	public String getAsHtml() {
 		return markupRenderer().asHtml(RenderContext.builder()
-				.urlMapping(s -> Maybe.absent())
+				.urlMapping(urlMapping())
 				.build(), blob().content());
 	}
 	
 	@Lazy
 	public String getHtml(int incrementHeading) {
 		return markupRenderer().asHtml(RenderContext.builder()
-				.urlMapping(s -> Maybe.absent())
+				.urlMapping(urlMapping())
 				.incrementHeading(incrementHeading)
 				.build(), blob().content());
 	}
@@ -64,7 +68,7 @@ public abstract class PebbleBlobWrapper {
 	}
 	
 	
-	public static PebbleBlobWrapper of(Blob src, MarkupRendererFactory factory, LinkFactories.Named linkFactory) {
-		return ImmutablePebbleBlobWrapper.of(src, factory.rendererFor(src.contentType()), linkFactory);
+	public static PebbleBlobWrapper of(Blob src, MarkupRendererFactory factory, LinkFactories.Named linkFactory, Function<String, Maybe<String>> urlMapping) {
+		return ImmutablePebbleBlobWrapper.of(src, factory.rendererFor(src.contentType()), linkFactory, urlMapping);
 	}
 }

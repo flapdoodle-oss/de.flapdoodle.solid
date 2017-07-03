@@ -21,6 +21,7 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 import com.google.common.collect.Sets;
+import com.vladsch.flexmark.ast.BlockQuote;
 import com.vladsch.flexmark.ast.Document;
 import com.vladsch.flexmark.ast.Heading;
 import com.vladsch.flexmark.ast.Node;
@@ -52,6 +53,8 @@ public class Markdown2Html implements MarkupRenderer {
 
     // uncomment to convert soft-breaks to hard breaks
     //options.set(HtmlRenderer.SOFT_BREAK, "<br />\n");
+//		options.set(HtmlRenderer.SOFT_BREAK, "<br />\n");
+		options.set(HtmlRenderer.ESCAPE_HTML_BLOCKS, true);
 		
 		this.parser = Parser.builder(options).build();
 	}
@@ -115,10 +118,26 @@ public class Markdown2Html implements MarkupRenderer {
                     	CustomCoreNodeRenderer.this.renderHeading(node, context, html);
                     }
                 }));
+			ret.add(new NodeRenderingHandler<BlockQuote>(BlockQuote.class, new CustomNodeRenderer<BlockQuote>() {
+                    @Override
+                    public void render(BlockQuote node, NodeRendererContext context, HtmlWriter html) {
+                    	CustomCoreNodeRenderer.this.renderBlockQuote(node, context, html);
+                    }
+                }));
 			return ret;
 		}
 		
-    private void renderHeading(final Heading node, final NodeRendererContext context, final HtmlWriter html) {
+    protected void renderBlockQuote(BlockQuote node, NodeRendererContext context, HtmlWriter html) {
+    	html.withAttr().tagLineIndent("blockquote", new Runnable() {
+        @Override
+        public void run() {
+//        	html.text(Escaping.escapeHtml(node.getChars(), false));
+            context.renderChildren(node);
+        }
+    	});
+		}
+
+		private void renderHeading(final Heading node, final NodeRendererContext context, final HtmlWriter html) {
       if (context.getHtmlOptions().renderHeaderId) {
           String id = context.getNodeId(node);
           if (id != null) {

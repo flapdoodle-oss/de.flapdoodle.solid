@@ -16,6 +16,8 @@
  */
 package de.flapdoodle.solid.theme.pebble;
 
+import java.util.function.Function;
+
 import org.immutables.value.Value.Auxiliary;
 import org.immutables.value.Value.Immutable;
 import org.immutables.value.Value.Lazy;
@@ -28,6 +30,7 @@ import de.flapdoodle.solid.parser.content.Blob;
 import de.flapdoodle.solid.theme.Context;
 import de.flapdoodle.solid.theme.LinkFactories.Blobs;
 import de.flapdoodle.solid.theme.Paths;
+import de.flapdoodle.solid.types.Maybe;
 
 @Immutable
 public abstract class PebbleWrapper {
@@ -36,14 +39,19 @@ public abstract class PebbleWrapper {
 	public abstract Context context();
 	
 	@Auxiliary
+	protected Function<String, Maybe<String>> urlMapping() {
+		return context().site().config().urlRewrite().rewriter();
+	}
+	
+	@Auxiliary
 	public PebbleBlobWrapper getSingle() {
-		return allBlobs().size()==1 ? PebbleBlobWrapper.of(allBlobs().get(0),markupRenderFactory(), context().linkFactory()) : null;
+		return allBlobs().size()==1 ? PebbleBlobWrapper.of(allBlobs().get(0),markupRenderFactory(), context().linkFactory(), urlMapping()) : null;
 	}
 	
 	@Lazy
 	public ImmutableList<PebbleBlobWrapper> getBlobs() {
 		return allBlobs().stream()
-				.map(b -> PebbleBlobWrapper.of(b, markupRenderFactory(), context().linkFactory()))
+				.map(b -> PebbleBlobWrapper.of(b, markupRenderFactory(), context().linkFactory(), urlMapping()))
 				.collect(ImmutableList.toImmutableList());
 	}
 	

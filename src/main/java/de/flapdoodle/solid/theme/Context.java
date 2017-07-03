@@ -29,6 +29,7 @@ public interface Context {
 	Paths paths();
 	LinkFactories.Named linkFactory();
 	
+	
 	public static ImmutableContext.Builder builder() {
 		return ImmutableContext.builder();
 	}

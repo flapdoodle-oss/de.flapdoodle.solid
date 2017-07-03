@@ -129,7 +129,7 @@ public class PebbleEngine {
                     try {
                         return getPebbleTemplate(self, templateName, cacheKey);
                     } catch (PebbleException e) {
-                        throw new RuntimePebbleException("template "+templateName, e);
+                        throw new RuntimePebbleException(e);
                     }
                 });
             }

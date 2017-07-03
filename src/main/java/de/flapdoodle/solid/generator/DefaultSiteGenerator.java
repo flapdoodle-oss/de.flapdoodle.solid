@@ -30,6 +30,7 @@ import de.flapdoodle.solid.parser.content.Blobs;
 import de.flapdoodle.solid.parser.content.Site;
 import de.flapdoodle.solid.parser.content.Sites;
 import de.flapdoodle.solid.parser.path.Path;
+import de.flapdoodle.solid.site.Paging;
 import de.flapdoodle.solid.site.PathProperties;
 import de.flapdoodle.solid.site.Urls.Config;
 import de.flapdoodle.solid.theme.Context;
@@ -70,6 +71,10 @@ public class DefaultSiteGenerator implements SiteGenerator {
 		final ImmutableList<String> defaultOrdering=site.config().defaultOrdering().isEmpty() 
 				? ImmutableList.of("!date")
 				: site.config().defaultOrdering();
+		
+		Paging paging = site.config().paging().isPresent()
+				? site.config().paging().get()
+				: Paging.Reversed;
 				
 		ImmutableMap.Builder<String, GroupedBlobs> groupedBlobsBuilder=ImmutableMap.builder();
 				
@@ -96,6 +101,10 @@ public class DefaultSiteGenerator implements SiteGenerator {
 
 			if (currentPath.propertyNames().contains(Path.PAGE)) {
 				groupedBlobs=Blobs.groupByPage(groupedBlobs, Path.PAGE, Maybe.fromOptional(config.itemsPerPage()).orElse(() -> 10));
+			}
+			
+			if (config.paging().orElse(paging)==Paging.Reversed) {
+				groupedBlobs=reverse(groupedBlobs);
 			}
 			
 			groupedBlobsBuilder.put(name, GroupedBlobs.builder()
@@ -148,6 +157,14 @@ public class DefaultSiteGenerator implements SiteGenerator {
 		documents.addAll(applyBaseUrl(site.config().baseUrl(), site.staticFiles()));
 		
 		return documents.build();
+	}
+
+	private ImmutableMultimap<ImmutableMap<String, Object>, Blob> reverse(ImmutableMultimap<ImmutableMap<String, Object>, Blob> src) {
+		ImmutableMultimap.Builder<ImmutableMap<String,Object>, Blob> builder=ImmutableMultimap.builder();
+		src.keySet().asList().reverse().forEach(key -> {
+			builder.putAll(key, src.get(key));
+		});
+		return builder.build();
 	}
 
 	private Iterable<? extends Document> applyBaseUrl(String baseUrl, ImmutableList<Document> src) {
