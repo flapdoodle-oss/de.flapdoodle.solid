@@ -33,7 +33,6 @@ import com.google.common.collect.Iterables;
 import com.google.common.collect.Ordering;
 
 import de.flapdoodle.solid.generator.PropertyCollectionResolver;
-import de.flapdoodle.solid.generator.PropertyResolver;
 import de.flapdoodle.solid.parser.path.Path;
 import de.flapdoodle.solid.types.Maybe;
 import de.flapdoodle.solid.types.Multimaps;
@@ -43,32 +42,6 @@ public abstract class Blobs {
 	
 	private Blobs() {
 		// no instance
-	}
-
-	public static Maybe<?> propertyOf(Blob blob, Function<String, Collection<String>> pathPropertyMapping, PropertyResolver propertyResolver,
-			String propertyName) {
-		Collection<String> aliasList = pathPropertyMapping.apply(propertyName);
-		for (String alias : aliasList) {
-			Maybe<?> resolved = propertyResolver.resolve(blob.meta(), Splitter.on('.').split(alias));
-			if (resolved.isPresent()) {
-				return resolved;
-			}
-		}
-		return Maybe.empty();
-	}
-
-	public static ImmutableMap<String, Object> pathPropertiesOf(Blob blob, Function<String, Collection<String>> pathPropertyMapping, Path path, PropertyResolver propertyResolver) {
-		ImmutableList<String> pathProperties = path.propertyNames().stream()
-			.filter(p -> !Path.PAGE.equals(p))
-			.collect(ImmutableList.toImmutableList());
-		
-		ImmutableMap<String, Object> blopPathPropertyMap = pathProperties.stream()
-			.map(p -> Pair.<String, Maybe<?>>of(p, propertyOf(blob, pathPropertyMapping, propertyResolver, p)))
-			.filter(pair -> pair.b().isPresent())
-			.map(pair -> Pair.<String, Object>of(pair.a(), pair.b().get()))
-			.collect(ImmutableMap.toImmutableMap(Pair::a, Pair::b));
-		
-		return blopPathPropertyMap;
 	}
 
 	public static ImmutableSet<?> propertyOf(Blob blob, Function<String, Collection<String>> pathPropertyMapping, PropertyCollectionResolver propertyResolver,
