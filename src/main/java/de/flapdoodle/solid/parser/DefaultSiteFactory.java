@@ -69,14 +69,17 @@ public class DefaultSiteFactory implements SiteFactory {
 		
 		SiteConfigPostProcessor postProcessor = SiteConfigPostProcessor.of(siteConfig.postProcessing());
 		
-		Try.runable(() ->	In.walk(siteRoot.resolve(siteConfig.contentDirectory()), (relativePath,content) -> {
-				Maybe<Blob> blob = blobParser.parse(relativePath, new String(content.data(), Charsets.UTF_8));
-				if (blob.isPresent()) {
-					siteBuilder.addBlobs(postProcessor.process(blob.get()));
-				} else {
-					siteBuilder.addIgnoredFiles(relativePath.toString());
-				}
-			}))
+		Try.runable(() ->	{
+			Path contentRoot = siteRoot.resolve(siteConfig.contentDirectory());
+			In.walk(contentRoot, (relativePath,content) -> {
+					Maybe<Blob> blob = blobParser.parse(contentRoot.relativize(relativePath), new String(content.data(), Charsets.UTF_8));
+					if (blob.isPresent()) {
+						siteBuilder.addBlobs(postProcessor.process(blob.get()));
+					} else {
+						siteBuilder.addIgnoredFiles(relativePath.toString());
+					}
+				});
+		})
 			.mapCheckedException(SomethingWentWrong::new)
 			.run();
 		

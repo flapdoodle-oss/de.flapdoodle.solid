@@ -36,7 +36,9 @@ public interface PathProperties {
 	
 	@Auxiliary
 	default ImmutableCollection<String> mapped(String src) {
-		return Maybe.ofNullable(alias().get(src)).orElse(() -> ImmutableList.of(src));
+		return Maybe.ofNullable(alias().get(src))
+				.flatMap(l -> !l.isEmpty() ? Maybe.of(l) : Maybe.empty())
+				.orElse(() -> ImmutableList.of(src));
 	}
 	
 	@Auxiliary

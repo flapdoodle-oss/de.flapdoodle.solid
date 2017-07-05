@@ -22,6 +22,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Function;
 import java.util.function.Predicate;
 
+import com.google.common.base.Joiner;
 import com.google.common.base.Preconditions;
 import com.google.common.base.Splitter;
 import com.google.common.collect.ImmutableList;
@@ -48,6 +49,12 @@ public abstract class Blobs {
 			String propertyName) {
 		Collection<String> aliasList = pathPropertyMapping.apply(propertyName);
 		for (String alias : aliasList) {
+			if (alias.equals("filename")) {
+				return ImmutableSet.of(blob.filename());
+			}
+			if (alias.equals("path")) {
+				return ImmutableSet.of(Joiner.on('/').join(blob.path()));
+			}
 			ImmutableSet<?> resolved = propertyResolver.resolve(blob.meta(), Splitter.on('.').split(alias));
 			if (!resolved.isEmpty()) {
 				return resolved;
