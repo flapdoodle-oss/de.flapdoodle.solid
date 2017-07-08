@@ -50,18 +50,20 @@ public class DefaultBlobParser implements BlobParser {
 		String extension = Filenames.extensionOf(filename);
 		Maybe<ContentType> contentType = ContentType.ofExtension(extension);
 		if (contentType.isPresent()) {
-			Maybe<ParsedMetaAndContent> metaAndContent = findToml(parserFactory, content);
-			if (!metaAndContent.isPresent()) {
-				metaAndContent = findYaml(parserFactory, content);
+			Maybe<ParsedMetaAndContent> optMetaAndContent = findToml(parserFactory, content);
+			if (!optMetaAndContent.isPresent()) {
+				optMetaAndContent = findYaml(parserFactory, content);
 			}
 			
-			if (metaAndContent.isPresent()) {
+			if (optMetaAndContent.isPresent()) {
+				ParsedMetaAndContent metaAndContent = optMetaAndContent.get();
+				
 				return Maybe.of(Blob.builder()
 					.addAllPath(Filenames.pathAsList(path.getParent()))
 					.filename(filename)
-					.meta(metaAndContent.get().meta())
+					.meta(metaAndContent.meta())
 					.contentType(contentType.get())
-					.content(metaAndContent.get().content())
+					.content(metaAndContent.content())
 					.build());
 			}
 		}

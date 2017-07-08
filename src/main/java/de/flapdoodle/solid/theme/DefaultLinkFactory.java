@@ -9,11 +9,13 @@ import com.google.common.collect.ImmutableSet;
 import com.google.common.collect.Ordering;
 
 import de.flapdoodle.solid.generator.GroupedBlobs;
+import de.flapdoodle.solid.generator.Menu;
 import de.flapdoodle.solid.generator.PathRenderer;
 import de.flapdoodle.solid.generator.PathRenderer.FormatterOfProperty;
 import de.flapdoodle.solid.parser.content.Blob;
 import de.flapdoodle.solid.parser.path.Path;
 import de.flapdoodle.solid.theme.LinkFactories.Filtered;
+import de.flapdoodle.solid.theme.LinkFactories.MenuItem;
 import de.flapdoodle.solid.types.Maybe;
 
 public class DefaultLinkFactory implements LinkFactories.Named {
@@ -62,8 +64,67 @@ public class DefaultLinkFactory implements LinkFactories.Named {
 		public LinkFactories.Filtered filter() {
 			return new DefaultGroupLinkFactory(pathRenderer, propertyFormatter, grouped.currentPath(), grouped.groupedBlobs().asMap());
 		}
+		
+		@Override
+		public LinkFactories.Menu asMenu() {
+			return new DefaultMenuLinkFactory(pathRenderer, propertyFormatter, grouped.currentPath(), Menu.of(grouped.groupedBlobs()));
+		}
 	}
 	
+	private static class DefaultMenuLinkFactory implements LinkFactories.Menu {
+
+		private final PathRenderer pathRenderer;
+		private final FormatterOfProperty propertyFormatter;
+		private final ImmutableList<Menu> menuList;
+		private final Path currentPath;
+
+		public DefaultMenuLinkFactory(PathRenderer pathRenderer, FormatterOfProperty propertyFormatter, Path currentPath, ImmutableList<Menu> menuList) {
+			this.pathRenderer = pathRenderer;
+			this.propertyFormatter = propertyFormatter;
+			this.currentPath = currentPath;
+			this.menuList = menuList;
+		}
+		
+		@Override
+		public ImmutableList<MenuItem> items() {
+			return menuList.stream()
+					.map(m -> new DefaultMenuItemLinkFactory(pathRenderer, propertyFormatter, currentPath, m))
+					.collect(ImmutableList.toImmutableList());
+		}
+	}
+
+	private static class DefaultMenuItemLinkFactory implements LinkFactories.MenuItem {
+
+		private final PathRenderer pathRenderer;
+		private final FormatterOfProperty propertyFormatter;
+		private final Menu menu;
+		private final Path currentPath;
+		
+		public DefaultMenuItemLinkFactory(PathRenderer pathRenderer, FormatterOfProperty propertyFormatter, Path currentPath, Menu menu) {
+			this.pathRenderer = pathRenderer;
+			this.propertyFormatter = propertyFormatter;
+			this.currentPath = currentPath;
+			this.menu = menu;
+		}
+
+		@Override
+		public String title() {
+			return menu.blob().meta().find(String.class, "title").orElseNull();
+		}
+
+		@Override
+		public String getLink() {
+			return pathRenderer.render(currentPath, menu.key(), propertyFormatter).orElseNull();
+		}
+
+		@Override
+		public ImmutableList<MenuItem> children() {
+			return menu.getChildren().stream()
+					.map(c -> new DefaultMenuItemLinkFactory(pathRenderer, propertyFormatter, currentPath, c))
+					.collect(ImmutableList.toImmutableList());
+		}
+	}
+
 	private static class DefaultGroupLinkFactory implements LinkFactories.Filtered {
 
 		private final PathRenderer pathRenderer;

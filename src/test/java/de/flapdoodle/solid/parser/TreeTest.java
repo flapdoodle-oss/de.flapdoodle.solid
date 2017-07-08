@@ -6,7 +6,6 @@ import org.junit.Test;
 
 import com.google.common.collect.ImmutableList;
 
-import de.flapdoodle.solid.parser.Tree.Node;
 import de.flapdoodle.solid.types.tree.FixedPropertyTree;
 import de.flapdoodle.solid.types.tree.PropertyTree;
 
@@ -33,7 +32,7 @@ public class TreeTest {
 		Tree tree = Tree.treeOf(src);
 		assertEquals("Tree{relation={A=[A-a, A-b, A-c], B=[], A-a=[A-a-0]}}",tree.toString());
 		
-		ImmutableList<Node> mappedTree = tree.mapAsTree(ImmutableList.of("A-a-0","C","A-a","B","A"));
+		ImmutableList<Tree.Node> mappedTree = tree.mapAsTree(ImmutableList.of("A-a-0","C","A-a","B","A"));
 		assertEquals("[Node{name=C, children=[]}, Node{name=B, children=[]}, Node{name=A, children=[Node{name=A-a, children=[Node{name=A-a-0, children=[]}]}]}]", mappedTree.toString());
 	}
 

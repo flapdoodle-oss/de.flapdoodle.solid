@@ -124,10 +124,9 @@ public abstract class Tree {
 		
 		return builder.build();
 	}
-
 	
 	@Immutable
-	public static interface Node {
+	public interface Node {
 		String name();
 		
 		ImmutableList<Node> children();

@@ -1,5 +1,6 @@
 package de.flapdoodle.solid.theme;
 
+import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableSet;
 
 import de.flapdoodle.solid.parser.content.Blob;
@@ -15,6 +16,21 @@ public abstract class LinkFactories {
 		Maybe<OneBlob> filterBy(Blob blob);
 
 		Filtered filter();
+
+		Menu asMenu();
+	}
+	
+	public interface Menu {
+		
+		ImmutableList<MenuItem> items();
+	}
+	
+	public interface MenuItem {
+		String title();
+		
+		String getLink();
+		
+		ImmutableList<MenuItem> children();
 	}
 	
 	public interface OneBlob {
