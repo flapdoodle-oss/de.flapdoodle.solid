@@ -18,6 +18,7 @@ package de.flapdoodle.solid.types.paging;
 
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.function.BiFunction;
 
 import org.immutables.value.Value.Immutable;
 import org.immutables.value.Value.Parameter;
@@ -29,6 +30,10 @@ import de.flapdoodle.solid.types.Maybe;
 public interface Pager {
 	
 	public static <T> void forEach(Iterable<T> src, PagingConsumer<T> consumer) {
+		forEach(src, (a,b) -> false, consumer);
+	}
+	
+	public static <T> void forEach(Iterable<T> src, BiFunction<T, T, Boolean> isPageBreak, PagingConsumer<T> consumer) {
 		T last=null;
 		T current=null;
 		T next=null;
@@ -41,16 +46,33 @@ public interface Pager {
 			if (first) {
 				first=false;
 			} else {
-				consumer.accept(Maybe.ofNullable(last), current, Maybe.ofNullable(next));
+				Maybe<T> prevPage = Maybe.ofNullable(last);
+				Maybe<T> nextPage = Maybe.ofNullable(next);
+				if (prevPage.isPresent()) {
+					if (isPageBreak.apply(prevPage.get(), current)) {
+						prevPage=Maybe.not();
+					}
+				}
+				if (nextPage.isPresent()) {
+					if (isPageBreak.apply(current, nextPage.get())) {
+						nextPage=Maybe.not();
+					}
+				}
+				consumer.accept(prevPage, current, nextPage);
 			}
 		}
 		if (next!=null) {
-			consumer.accept(Maybe.ofNullable(current), next, Maybe.absent());
+			Maybe<T> prevPage = Maybe.ofNullable(current);
+			consumer.accept(prevPage, next, Maybe.not());
 		}
 	}
 	
 	public static <K,V> void forEach(Map<K, V> src, PagingConsumer<KeyValue<K, V>> consumer) {
-		forEach(src.entrySet(), (before,current,after) -> {
+		forEach(src, (a,b) -> false, consumer);
+	}
+	
+	public static <K,V> void forEach(Map<K, V> src, BiFunction<Entry<K, V>, Entry<K, V>, Boolean> isPageBreak, PagingConsumer<KeyValue<K, V>> consumer) {
+		forEach(src.entrySet(), isPageBreak, (Maybe<Entry<K, V>> before,Entry<K, V> current,Maybe<Entry<K, V>> after) -> {
 			consumer.accept(before.map(KeyValue::of), KeyValue.of(current), after.map(KeyValue::of));
 		});
 	}

@@ -17,12 +17,18 @@
 package de.flapdoodle.solid.generator;
 
 import java.util.Collection;
+import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Optional;
+import java.util.Set;
+import java.util.function.BiFunction;
 import java.util.function.Function;
 
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.ImmutableMultimap;
+import com.google.common.collect.MapDifference.ValueDifference;
+import com.google.common.collect.Maps;
 
 import de.flapdoodle.solid.generator.PathRenderer.FormatterOfProperty;
 import de.flapdoodle.solid.parser.content.Blob;
@@ -123,7 +129,7 @@ public class DefaultSiteGenerator implements SiteGenerator {
 			System.out.println(name);
 			Path currentPath = grouped.currentPath();
 			
-			Pager.forEach(grouped.groupedBlobs().asMap(), (before,current,after) -> {
+			Pager.forEach(grouped.groupedBlobs().asMap(), isPageBreak(), (Maybe<KeyValue<ImmutableMap<String, Object>, Collection<Blob>>> before,KeyValue<ImmutableMap<String, Object>, Collection<Blob>> current,Maybe<KeyValue<ImmutableMap<String, Object>, Collection<Blob>>> after) -> {
 				ImmutableMap<String, Object> key = current.key();
 				Collection<Blob> blobs = current.value();
 				
@@ -158,6 +164,21 @@ public class DefaultSiteGenerator implements SiteGenerator {
 		
 		return documents.build();
 	}
+
+	private BiFunction<Entry<ImmutableMap<String, Object>, Collection<Blob>>, Entry<ImmutableMap<String, Object>, Collection<Blob>>, Boolean> isPageBreak() {
+		return (a,b) -> {
+			ImmutableMap<String, Object> keysA = a.getKey();
+			ImmutableMap<String, Object> keysB = b.getKey();
+			
+			Map<String, ValueDifference<Object>> diff = Maps.difference(keysA, keysB).entriesDiffering();
+			Set<String> keySet = diff.keySet();
+			
+			boolean isPageBreak = !((keySet.size()==1) && (keySet.contains(Path.PAGE)));
+			
+			return isPageBreak;
+		};
+	}
+
 
 	private ImmutableMultimap<ImmutableMap<String, Object>, Blob> reverse(ImmutableMultimap<ImmutableMap<String, Object>, Blob> src) {
 		ImmutableMultimap.Builder<ImmutableMap<String,Object>, Blob> builder=ImmutableMultimap.builder();

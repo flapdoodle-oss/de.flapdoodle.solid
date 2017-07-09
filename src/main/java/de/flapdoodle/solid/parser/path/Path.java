@@ -41,6 +41,7 @@ public abstract class Path {
 	
 	private static final Pattern PATH_PROP_PATTERN=Pattern.compile("(:((?<name>([a-zA-Z0-9]+))(#(?<formatter>[a-zA-Z0-9]+))?))");
 	public static final String PAGE = "page";
+	public static final Integer FIRST_PAGE = 1;
 	
 	public abstract ImmutableList<Part> parts();
 	public abstract Optional<String> pathPrefix();

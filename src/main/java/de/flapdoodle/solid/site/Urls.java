@@ -61,6 +61,7 @@ public interface Urls {
 					.asOptional()))
 				.addAllFilters(config.findList(String.class, "filter"))
 				.addAllOrdering(config.findList(String.class, "order"))
+				.itemsPerPage(config.find(Number.class, "pageSize").map(n -> n.intValue()).asOptional())
 				.paging(config.find(String.class, "paging").map(s -> pagingOf(s)).asOptional());
 			urlsBuilder.putConfigs(label, configBuilder.build());
 		});

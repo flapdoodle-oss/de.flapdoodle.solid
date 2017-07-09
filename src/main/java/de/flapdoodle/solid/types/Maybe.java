@@ -138,6 +138,11 @@ public abstract class Maybe<T> {
 	
 	private static final None ABSENT=new None();
 	
+	public static <T> Maybe<T> not() {
+		return absent();
+	}
+	
+	@Deprecated
 	public static <T> Maybe<T> absent() {
 		return ABSENT;
 	}
