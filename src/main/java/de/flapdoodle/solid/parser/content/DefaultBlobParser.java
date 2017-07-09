@@ -24,12 +24,16 @@ import org.immutables.value.Value;
 import org.immutables.value.Value.Parameter;
 
 import com.google.common.annotations.VisibleForTesting;
+import com.google.common.base.Joiner;
+import com.google.common.collect.ImmutableList;
 
 import de.flapdoodle.solid.io.Filenames;
 import de.flapdoodle.solid.parser.meta.Toml;
 import de.flapdoodle.solid.parser.meta.Yaml;
 import de.flapdoodle.solid.parser.types.PropertyTreeParserFactory;
 import de.flapdoodle.solid.types.Maybe;
+import de.flapdoodle.solid.types.tree.FixedPropertyTree;
+import de.flapdoodle.solid.types.tree.PropertyTree;
 
 public class DefaultBlobParser implements BlobParser {
 
@@ -57,11 +61,20 @@ public class DefaultBlobParser implements BlobParser {
 			
 			if (optMetaAndContent.isPresent()) {
 				ParsedMetaAndContent metaAndContent = optMetaAndContent.get();
+				PropertyTree meta = metaAndContent.meta();
+				
+				ImmutableList<String> blobPath = Filenames.pathAsList(path.getParent());
+				
+				PropertyTree blobMetaData = FixedPropertyTree.builder()
+					.put("path", Joiner.on('/').join(blobPath)+"/")
+					.put("filename", filename)
+					.build()
+					.overriding(meta);
 				
 				return Maybe.of(Blob.builder()
-					.addAllPath(Filenames.pathAsList(path.getParent()))
-					.filename(filename)
-					.meta(metaAndContent.meta())
+//					.addAllPath(blobPath)
+//					.filename(filename)
+					.meta(blobMetaData)
 					.contentType(contentType.get())
 					.content(metaAndContent.content())
 					.build());

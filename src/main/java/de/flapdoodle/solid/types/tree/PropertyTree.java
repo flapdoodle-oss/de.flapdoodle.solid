@@ -41,6 +41,10 @@ public interface PropertyTree {
 	Set<String> properties();
 	List<Either<Object, ? extends PropertyTree>> get(String key);
 	
+	default PropertyTree overriding(PropertyTree tree) {
+		return new FallbackPropertyTree(this, tree);
+	}
+	
 	default String prettyPrinted() {
 		return PropertyTreePrinter.prettyPrinted(this);
 	}
