@@ -34,7 +34,6 @@ import java.util.Map;
 import java.util.concurrent.TimeUnit;
 import java.util.function.Function;
 
-import com.google.common.base.Preconditions;
 import com.google.common.collect.LinkedHashMultimap;
 import com.google.common.collect.Maps;
 import com.google.common.collect.Multimap;
@@ -98,36 +97,37 @@ public class PathWatcher {
 
 			if (key!=null) {
 				Path dir = keys.get(key);
-				Preconditions.checkNotNull(dir,"got change for unknown directory: %s",key);
-//				if (dir == null) {
-//					System.err.println("WatchKey not recognized!!");
-//					continue;
-//				}
-				
-				for (WatchEvent<?> event : key.pollEvents()) {
-					@SuppressWarnings("rawtypes")
-					WatchEvent.Kind kind = event.kind();
-	
-					// Context for directory entry event is the file name of entry
-					@SuppressWarnings("unchecked")
-					Path name = ((WatchEvent<Path>) event).context();
-					Path child = dir.resolve(name);
-	
-					events.put(event.kind().name(), child);
+				if (dir!=null) {
+	//				if (dir == null) {
+	//					System.err.println("WatchKey not recognized!!");
+	//					continue;
+	//				}
 					
-					// print out event
-//					System.out.format("%s: %s\n", event.kind().name(), child);
-	
-					// if directory is created, and watching recursively, then register it
-					// and its sub-directories
-					if (kind == ENTRY_CREATE) {
-						try {
-							if (Files.isDirectory(child)) {
-								walkAndRegisterDirectories(child);
+					for (WatchEvent<?> event : key.pollEvents()) {
+						@SuppressWarnings("rawtypes")
+						WatchEvent.Kind kind = event.kind();
+		
+						// Context for directory entry event is the file name of entry
+						@SuppressWarnings("unchecked")
+						Path name = ((WatchEvent<Path>) event).context();
+						Path child = dir.resolve(name);
+		
+						events.put(event.kind().name(), child);
+						
+						// print out event
+	//					System.out.format("%s: %s\n", event.kind().name(), child);
+		
+						// if directory is created, and watching recursively, then register it
+						// and its sub-directories
+						if (kind == ENTRY_CREATE) {
+							try {
+								if (Files.isDirectory(child)) {
+									walkAndRegisterDirectories(child);
+								}
 							}
-						}
-						catch (IOException x) {
-							// do something useful
+							catch (IOException x) {
+								// do something useful
+							}
 						}
 					}
 				}

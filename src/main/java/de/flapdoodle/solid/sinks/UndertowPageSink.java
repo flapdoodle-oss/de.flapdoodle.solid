@@ -57,7 +57,6 @@ public class UndertowPageSink implements PageSink {
 				@Override
 				public void handleRequest(HttpServerExchange exchange) throws Exception {
 					String requestPath = exchange.getRequestPath();
-					System.out.println("? "+requestPath);
 					
 					DocumentSet docSet = documents.get();
 					if (docSet!=null) {

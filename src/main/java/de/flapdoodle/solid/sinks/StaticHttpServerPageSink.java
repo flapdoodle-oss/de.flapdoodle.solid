@@ -21,9 +21,12 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardOpenOption;
+import java.util.List;
+import java.util.regex.Pattern;
 
 import com.google.common.annotations.VisibleForTesting;
 import com.google.common.base.Preconditions;
+import com.google.common.base.Splitter;
 import com.google.common.collect.ImmutableList;
 
 import de.flapdoodle.solid.PageSink;
@@ -36,6 +39,7 @@ import de.flapdoodle.types.Try;
 
 public class StaticHttpServerPageSink implements PageSink {
 
+	private static final Pattern VALID_FS_NAME=Pattern.compile("[a-zA-Z0-9_\\-+\\.]+");
 	private final Path exportDirectory;
 
 	public StaticHttpServerPageSink(Path exportDirectory) {
@@ -44,13 +48,15 @@ public class StaticHttpServerPageSink implements PageSink {
 	
 	@Override
 	public void accept(SiteConfig siteConfig, ImmutableList<Document> documents) {
-		documents.forEach(doc -> Try.consumer((Document d) -> write(d, exportDirectory))
+		String baseUrl = siteConfig.baseUrl();
+		
+		documents.forEach(doc -> Try.consumer((Document d) -> write(baseUrl, d, exportDirectory))
 				.mapCheckedException(SomethingWentWrong::new)
 				.accept(doc));
 	}
 
-	private static void write(Document doc, Path exportDirectory) throws IOException {
-		Path documentPath=resolve(exportDirectory, doc.path());
+	private static void write(String baseUrl, Document doc, Path exportDirectory) throws IOException {
+		Path documentPath=resolve(exportDirectory, baseUrl, doc.path());
 		if (doc.content() instanceof Text) {
 			Text text=(Text) doc.content();
 			Files.createDirectories(documentPath.getParent());
@@ -67,14 +73,26 @@ public class StaticHttpServerPageSink implements PageSink {
 	}
 
 	@VisibleForTesting
-	static Path resolve(Path base, String url) {
-		String[] parts = url.split("/");
-		Path filePath = base.resolve(Paths.get(".", parts)).normalize();
+	static Path resolve(Path base, String baseUrl, String url) {
+		String documentPath = url;
+		if (url.startsWith(baseUrl)) {
+			documentPath=url.substring(baseUrl.length());
+		}
+		
+		List<String> parts = Splitter.on('/').omitEmptyStrings().splitToList(documentPath);
+		assertValidFilesystemPaths(parts);
+		Path filePath = base.resolve(Paths.get(".", parts.toArray(new String[parts.size()]))).normalize();
 		if (url.endsWith("/")) {
 			filePath=filePath.resolve("index.html");
 		} else {
 			Preconditions.checkArgument(filePath.getFileName().toString().indexOf('.')!=-1,"invalid url: %s",url);
 		}
 		return filePath;
+	}
+
+	private static void assertValidFilesystemPaths(List<String> parts) {
+		for (String part : parts) {
+			Preconditions.checkArgument(VALID_FS_NAME.matcher(part).matches(),"invalid fs name: '%s' (%s)",part, parts);
+		}
 	}
 }

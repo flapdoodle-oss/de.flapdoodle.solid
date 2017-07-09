@@ -27,7 +27,7 @@ public class StaticHttpServerPageSinkTest {
 
 	@Test
 	public void resolvePathForUrl() {
-		Path resolved = StaticHttpServerPageSink.resolve(Paths.get("foo", "bar"), "/this/is/a/path/");
+		Path resolved = StaticHttpServerPageSink.resolve(Paths.get("foo", "bar"), "http:/foo.de/", "http:/foo.de/this/is/a/path/");
 		assertEquals("foo/bar/this/is/a/path/index.html",resolved.toString());
 	}
 }
