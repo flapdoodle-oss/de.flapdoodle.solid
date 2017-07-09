@@ -61,7 +61,22 @@ public abstract class PebbleBlobWrapper {
 				.incrementHeading(incrementHeading)
 				.build(), blob().content());
 	}
-	
+
+	@Lazy
+	public String getIntroHtml(int incrementHeading) {
+		return markupRenderer().asHtml(RenderContext.builder()
+				.urlMapping(urlMapping())
+				.incrementHeading(incrementHeading)
+				.build(), introOf(blob().content()));
+	}
+
+	private static String introOf(String content) {
+		int idx=content.indexOf("<!--more-->");
+		if (idx!=-1) {
+			return content.substring(0, idx);
+		}
+		return content;
+	}
 	@Auxiliary
 	public LinkFactories.OneBlob getLinkTo(String id) {
 		return linkFactory().byId(id).flatMap(f -> f.filterBy(blob())).orElseNull();

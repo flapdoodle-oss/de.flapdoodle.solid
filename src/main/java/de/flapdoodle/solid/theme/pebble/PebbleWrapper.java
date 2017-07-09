@@ -38,7 +38,7 @@ public abstract class PebbleWrapper {
 	protected abstract ImmutableList<Blob> allBlobs();
 	public abstract Context context();
 	
-	@Auxiliary
+	@Lazy
 	protected Function<String, Maybe<String>> urlMapping() {
 		return context().site().config().urlRewrite().rewriter();
 	}
@@ -48,7 +48,7 @@ public abstract class PebbleWrapper {
 		return allBlobs().size()==1 ? PebbleBlobWrapper.of(allBlobs().get(0),markupRenderFactory(), context().linkFactory(), urlMapping()) : null;
 	}
 	
-	@Lazy
+	@Auxiliary
 	public ImmutableList<PebbleBlobWrapper> getBlobs() {
 		return allBlobs().stream()
 				.map(b -> PebbleBlobWrapper.of(b, markupRenderFactory(), context().linkFactory(), urlMapping()))
@@ -60,17 +60,17 @@ public abstract class PebbleWrapper {
 		return PebbleSiteWrapper.of(context().site().config());
 	}
 	
-	@Auxiliary
+	@Lazy
 	public String getUrl() {
 		return context().paths().currentUrl();
 	}
 
-	@Auxiliary
+	@Lazy
 	public Paths getPaths() {
 		return context().paths();
 	}
 	
-	@Auxiliary
+	@Lazy
 	public ImmutableMap<String,Object> getProperties() {
 		return context().pathProperties();
 	}

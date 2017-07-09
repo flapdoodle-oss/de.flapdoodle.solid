@@ -16,6 +16,7 @@
  */
 package de.flapdoodle.solid.parser.path;
 
+import java.util.Optional;
 import java.util.function.Predicate;
 import java.util.regex.Pattern;
 
@@ -42,6 +43,7 @@ public abstract class Path {
 	public static final String PAGE = "page";
 	
 	public abstract ImmutableList<Part> parts();
+	public abstract Optional<String> pathPrefix();
 	
 	@Check
 	protected void check() {

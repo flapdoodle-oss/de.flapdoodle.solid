@@ -42,6 +42,8 @@ public abstract class LinkFactories {
 	
 	public interface Filtered {
 
+		Filtered reversed();
+		
 		Filtered by(String key, Object value);
 		
 		Filtered firstPage();

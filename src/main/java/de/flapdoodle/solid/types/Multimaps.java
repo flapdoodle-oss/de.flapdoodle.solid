@@ -1,6 +1,7 @@
 package de.flapdoodle.solid.types;
 
 import java.util.Collection;
+import java.util.Map;
 
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
@@ -51,4 +52,15 @@ public class Multimaps {
 			return (V) values[idx];
 		}
 	}
+	
+	public static <K,V> ImmutableMap<K, V> reverseOrdering(Map<K, V> src) {
+		ImmutableMap.Builder<K, V> builder=ImmutableMap.builder();
+		
+		ImmutableList.copyOf(src.entrySet()).reverse().forEach(e -> {
+			builder.put(e.getKey(), e.getValue());
+		});
+		
+		return builder.build();
+	}
+	
 }

@@ -45,10 +45,15 @@ public class DefaultPathRenderer implements PathRenderer {
 						Maybe<Object> mappedValue = Maybe.ofNullable(properties.get(property.property()));
 						Maybe<String> urlPart = mappedValue.flatMap(v -> propertyFormatter.of(property.property(), property.formatter()).format(v));
 						if (urlPart.isPresent()) {
-							if ((property.property().equals(Path.PAGE)) && urlPart.get().equals("1")) {
-								break;
+							String renderedPart = urlPart.get();
+							
+							if (property.property().equals(Path.PAGE)) {
+								if (renderedPart.equals("1")) {
+									break;
+								}
+								renderedPart=path.pathPrefix().orElse("")+renderedPart;
 							}
-							sb.append(urlify(urlPart.get()));
+							sb.append(urlify(renderedPart));
 						} else {
 							return Maybe.empty();
 						}

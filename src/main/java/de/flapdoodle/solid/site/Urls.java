@@ -25,6 +25,7 @@ import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.ImmutableSet;
 
 import de.flapdoodle.legacy.Optionals;
+import de.flapdoodle.solid.parser.path.ImmutablePath;
 import de.flapdoodle.solid.parser.path.Path;
 import de.flapdoodle.solid.types.tree.PropertyTree;
 
@@ -55,11 +56,21 @@ public interface Urls {
 			ImmutableConfig.Builder configBuilder = Urls.Config.builder();
 			PropertyTree config = urls.find(label).get();
 			String path = Optionals.checkPresent(config.find(String.class, "path"),"could not get propery path from %s in %s",config,label).get();
-			configBuilder.path(Path.parse(path))
+			configBuilder.path(ImmutablePath.copyOf(Path.parse(path))
+					.withPathPrefix(config.find(String.class,"pagePrefix")
+					.asOptional()))
 				.addAllFilters(config.findList(String.class, "filter"))
-				.addAllOrdering(config.findList(String.class, "order"));
+				.addAllOrdering(config.findList(String.class, "order"))
+				.paging(config.find(String.class, "paging").map(s -> pagingOf(s)).asOptional());
 			urlsBuilder.putConfigs(label, configBuilder.build());
 		});
 		return urlsBuilder.build();
+	}
+
+	public static Paging pagingOf(String s) {
+		if (s.equalsIgnoreCase("reversed"))  {
+			return Paging.Reversed;
+		}
+		return Paging.Normal;
 	}
 }

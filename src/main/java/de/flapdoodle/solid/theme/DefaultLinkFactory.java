@@ -1,5 +1,7 @@
 package de.flapdoodle.solid.theme;
 
+import static de.flapdoodle.solid.types.Multimaps.reverseOrdering;
+
 import java.util.Collection;
 
 import com.google.common.collect.ImmutableCollection;
@@ -150,6 +152,11 @@ public class DefaultLinkFactory implements LinkFactories.Named {
 		public LinkFactories.Filtered orderBy(String key) {
 			ImmutableMap<ImmutableMap<String, Object>, Collection<Blob>> orderedMap = order(groupedBlobs, key);
 			return new DefaultGroupLinkFactory(pathRenderer, propertyFormatter, currentPath, orderedMap);
+		}
+		
+		@Override
+		public Filtered reversed() {
+			return new DefaultGroupLinkFactory(pathRenderer, propertyFormatter, currentPath, reverseOrdering(groupedBlobs));
 		}
 
 		private static ImmutableMap<ImmutableMap<String, Object>, Collection<Blob>> order(ImmutableMap<ImmutableMap<String, Object>, Collection<Blob>> src, String key) {
