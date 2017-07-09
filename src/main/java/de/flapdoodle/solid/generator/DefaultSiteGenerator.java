@@ -104,6 +104,10 @@ public class DefaultSiteGenerator implements SiteGenerator {
 						.putAll(ImmutableMap.of(), sortedBlobs)
 						.build();
 			}
+			
+			if (!config.pathOrdering().isEmpty()) {
+				groupedBlobs=Blobs.orderByKey(groupedBlobs, config.pathOrdering());
+			}
 
 			if (currentPath.propertyNames().contains(Path.PAGE)) {
 				groupedBlobs=Blobs.groupByPage(groupedBlobs, Path.PAGE, Maybe.fromOptional(config.itemsPerPage()).orElse(() -> 10));
@@ -129,7 +133,7 @@ public class DefaultSiteGenerator implements SiteGenerator {
 			System.out.println(name);
 			Path currentPath = grouped.currentPath();
 			
-			Pager.forEach(grouped.groupedBlobs().asMap(), isPageBreak(), (Maybe<KeyValue<ImmutableMap<String, Object>, Collection<Blob>>> before,KeyValue<ImmutableMap<String, Object>, Collection<Blob>> current,Maybe<KeyValue<ImmutableMap<String, Object>, Collection<Blob>>> after) -> {
+			Pager.forEach(grouped.groupedBlobs().asMap(), isPageBreak(currentPath), (Maybe<KeyValue<ImmutableMap<String, Object>, Collection<Blob>>> before,KeyValue<ImmutableMap<String, Object>, Collection<Blob>> current,Maybe<KeyValue<ImmutableMap<String, Object>, Collection<Blob>>> after) -> {
 				ImmutableMap<String, Object> key = current.key();
 				Collection<Blob> blobs = current.value();
 				
@@ -139,7 +143,7 @@ public class DefaultSiteGenerator implements SiteGenerator {
 				
 				Maybe<Page> next=pageOf(pathRenderer, currentPath, after, propertyFormatter);
 				
-				System.out.println(" "+key+" -> "+blobs.size()+" --> "+renderedPath+"(prev:"+prev.isPresent()+",next"+next.isPresent()+")");
+				System.out.println(" "+key+" -> "+blobs.size()+" --> "+renderedPath+"(prev:"+prev.isPresent()+",next:"+next.isPresent()+")");
 				
 				Content renderedResult = site.theme().rendererFor(name).render(Renderer.Renderable.builder()
 						.addAllBlobs(blobs)
@@ -165,17 +169,22 @@ public class DefaultSiteGenerator implements SiteGenerator {
 		return documents.build();
 	}
 
-	private BiFunction<Entry<ImmutableMap<String, Object>, Collection<Blob>>, Entry<ImmutableMap<String, Object>, Collection<Blob>>, Boolean> isPageBreak() {
+	private BiFunction<Entry<ImmutableMap<String, Object>, Collection<Blob>>, Entry<ImmutableMap<String, Object>, Collection<Blob>>, Boolean> isPageBreak(Path path) {
+		if (!path.isPaging()) {
+			return (a,b) -> false;
+		}
+			
 		return (a,b) -> {
 			ImmutableMap<String, Object> keysA = a.getKey();
 			ImmutableMap<String, Object> keysB = b.getKey();
 			
+			
 			Map<String, ValueDifference<Object>> diff = Maps.difference(keysA, keysB).entriesDiffering();
 			Set<String> keySet = diff.keySet();
 			
-			boolean isPageBreak = !((keySet.size()==1) && (keySet.contains(Path.PAGE)));
+			boolean onlyDifferentPage = keySet.size()==1 && keySet.contains(Path.PAGE);
 			
-			return isPageBreak;
+			return !onlyDifferentPage;
 		};
 	}
 

@@ -17,7 +17,10 @@
 package de.flapdoodle.solid.parser.content;
 
 import java.util.Collection;
+import java.util.Comparator;
 import java.util.List;
+import java.util.Map.Entry;
+import java.util.Objects;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Function;
 import java.util.function.Predicate;
@@ -146,5 +149,35 @@ public abstract class Blobs {
 	public static ImmutableList<Blob> sort(ImmutableList<Blob> blobs, ImmutableList<String> currentOrdering) {
 		Ordering<Blob> comparator=comparatorOf(currentOrdering);
 		return comparator.immutableSortedCopy(blobs);
+	}
+
+	public static ImmutableMultimap<ImmutableMap<String, Object>, Blob> orderByKey(ImmutableMultimap<ImmutableMap<String, Object>, Blob> src,
+			ImmutableList<String> pathOrdering) {
+		ImmutableMultimap.Builder<ImmutableMap<String, Object>, Blob> builder=ImmutableMultimap.builder();
+		
+		src.asMap().entrySet()
+			.stream()
+			.sorted(pathOrderingOf(pathOrdering))
+			.forEach(e -> {
+				builder.putAll(e.getKey(), e.getValue());
+			});
+		
+		return builder.build();
+	}
+
+	private static Comparator<? super Entry<ImmutableMap<String, Object>, Collection<Blob>>> pathOrderingOf(ImmutableList<String> pathOrdering) {
+		return (Entry<ImmutableMap<String, Object>, Collection<Blob>> l,Entry<ImmutableMap<String, Object>, Collection<Blob>> r) -> {
+			for (String key : pathOrdering) {
+				int ret=Objects.compare(asString(l.getKey().get(key)), asString(r.getKey().get(key)), Ordering.natural());
+				if (ret!=0) {
+					return ret;
+				}
+			}
+			return 0;
+		};
+	}
+
+	private static String asString(Object src) {
+		return src != null ? src.toString() : "";
 	}
 }

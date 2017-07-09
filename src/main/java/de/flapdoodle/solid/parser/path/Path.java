@@ -23,6 +23,7 @@ import java.util.regex.Pattern;
 import org.immutables.value.Value.Auxiliary;
 import org.immutables.value.Value.Check;
 import org.immutables.value.Value.Immutable;
+import org.immutables.value.Value.Lazy;
 import org.immutables.value.Value.Parameter;
 
 import com.google.common.base.Preconditions;
@@ -46,6 +47,11 @@ public abstract class Path {
 	public abstract ImmutableList<Part> parts();
 	public abstract Optional<String> pathPrefix();
 	
+	@Lazy
+	public boolean isPaging() {
+		return propertyNames().contains(PAGE);
+	}
+	
 	@Check
 	protected void check() {
 		ImmutableList<String> names = propertyNames();
@@ -55,23 +61,24 @@ public abstract class Path {
 		Preconditions.checkArgument(indexOfPageProperty==-1 || indexOfPageProperty==(names.size()-1),"page property is not last in path: %s",names);
 	}
 	
-	@Auxiliary
+	@Lazy
 	public boolean isEmpty() {
 		return parts().isEmpty();
 	}
 	
-	@Auxiliary
+	@Lazy
 	public boolean isPagedEmpty() {
 		return parts().isEmpty() || propertyNamesWithoutPage().isEmpty();
 	}
 	
+	@Lazy
 	public ImmutableList<String> propertyNamesWithoutPage() {
 		return propertyNames().stream()
 				.filter(n -> !n.equals(PAGE))
 				.collect(ImmutableList.toImmutableList());
 	}
 		
-	@Auxiliary
+	@Lazy
 	public ImmutableList<String> propertyNames() {
 		return parts().stream()
 			.filter(p -> p instanceof Property)
