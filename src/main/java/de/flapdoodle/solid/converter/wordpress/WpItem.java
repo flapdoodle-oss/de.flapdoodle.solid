@@ -6,6 +6,7 @@ import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Consumer;
 
 import org.immutables.value.Value.Immutable;
+import org.immutables.value.Value.Lazy;
 
 import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableMap;
@@ -40,6 +41,7 @@ Schön kurz.]]></content:encoded>
 		<wp:is_sticky>0</wp:is_sticky>
 		<category domain="post_tag" nicename="cascading"><![CDATA[cascading]]></category>
 		<category domain="post_tag" nicename="detach"><![CDATA[detach]]></category>
+		<category domain="category" nicename="wicket"><![CDATA[Wicket]]></category>
 		...
 		<wp:postmeta>
 			<wp:meta_key><![CDATA[aktt_notify_twitter]]></wp:meta_key>
@@ -56,6 +58,7 @@ public abstract class WpItem {
 	public abstract String id();
 	public abstract LocalDateTime date();
 	
+	public abstract String author();
 	public abstract String title();
 	public abstract String link();
 	public abstract String urlName();
@@ -80,6 +83,7 @@ public abstract class WpItem {
 				.put("wp:post_id", (visitor, builder) -> builder.id(visitor.dataAsType(String.class)))
 				.put("wp:post_date", (visitor, builder) -> builder.date(WordpressRssConverter.parseWpDate(visitor.dataAsType(String.class))))
 				
+				.put("dc:creator", (visitor, builder) -> builder.author(visitor.dataAsType(String.class)))
 				.put("title", (visitor, builder) -> builder.title(visitor.dataAsType(String.class)))
 				.put("link", (visitor, builder) -> builder.link(visitor.dataAsType(String.class)))
 				.put("wp:post_name", (visitor, builder) -> builder.urlName(visitor.dataAsType(String.class)))
@@ -116,6 +120,16 @@ public abstract class WpItem {
 		String name = visitor.dataAsType(String.class);
 		String domain = visitor.current().attribute("domain").getData().toString();
 		builder.putCategories(domain, name);
+	}
+	
+	@Lazy
+	public boolean isPost() {
+		return type().equals("post");
+	}
+	
+	@Lazy
+	public boolean isPage() {
+		return type().equals("page");
 	}
 	
 	/*

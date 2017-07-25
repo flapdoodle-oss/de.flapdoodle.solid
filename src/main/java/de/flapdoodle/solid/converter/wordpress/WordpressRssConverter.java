@@ -1,31 +1,70 @@
 package de.flapdoodle.solid.converter.wordpress;
 
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.Reader;
+import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.nio.file.StandardOpenOption;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+
+import org.dom4j.DocumentException;
 
 import com.google.common.annotations.VisibleForTesting;
 import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableList;
+import com.google.common.collect.ImmutableSet;
 
 import de.flapdoodle.solid.converter.wordpress.ImmutableWordpressRss.Builder;
+import de.flapdoodle.solid.generator.Binary;
+import de.flapdoodle.solid.generator.Content;
+import de.flapdoodle.solid.generator.Document;
+import de.flapdoodle.solid.generator.Text;
 import de.flapdoodle.solid.xml.Visitor;
 import de.flapdoodle.solid.xml.XmlParser;
+import de.flapdoodle.types.Try;
 
 @SuppressWarnings("ucd")
 public class WordpressRssConverter {
 
-	public static void main(String[] args) {
+	public static void main(String[] args) throws IOException, DocumentException {
 		System.out.println("solid wordpress converter");
-		Preconditions.checkArgument(args.length>=2,"usage: <siteRoot> <exportDirectory>");
+		Preconditions.checkArgument(args.length>=2,"usage: <rss-xml> <exportDirectory>");
 		
-		Path siteRoot = Paths.get(args[0]);
+		Path rssXml = Paths.get(args[0]);
 		Path target = Paths.get(args[1]);
-
 		
+		try (Reader reader = new InputStreamReader(Files.newInputStream(rssXml, StandardOpenOption.READ))) {
+			WordpressRss wordpressRss = WordpressRssConverter.build(XmlParser.of(reader));
+			ImmutableList<Document> documents = WordpressRss2Solid.convert(wordpressRss);
+			ImmutableSet<String> allPaths = documents.stream()
+				.map(Document::path)
+				.collect(ImmutableSet.toImmutableSet());
+			Preconditions.checkArgument(allPaths.size()==documents.size(),"path collisions");
+			documents.forEach((Document d) -> {
+				Path filePath = target.resolve(d.path());
+				Try.runable(() -> {
+					Files.write(filePath, asBytes(d.content()), StandardOpenOption.CREATE, StandardOpenOption.TRUNCATE_EXISTING);
+				})
+				.mapCheckedException(RuntimeException::new)
+				.run();
+			});
+		}
 	}
 	
+	private static byte[] asBytes(Content content) {
+		if (content instanceof Text) {
+			Text text = (Text) content;
+			return text.text().getBytes(text.encoding());
+		}
+		if (content instanceof Binary) {
+			return ((Binary) content).data().data();
+		}
+		throw new IllegalArgumentException("unknown content: "+content);
+	}
+
 	@VisibleForTesting
 	protected static WordpressRss build(XmlParser xml) {
 		return xml.collect(WordpressRssConverter::root);

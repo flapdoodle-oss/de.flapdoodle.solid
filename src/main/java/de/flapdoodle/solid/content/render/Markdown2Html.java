@@ -71,7 +71,7 @@ public class Markdown2Html implements MarkupRenderer {
 					public ResolvedLink resolveLink(Node node, NodeRendererContext context, ResolvedLink link) {
 						Maybe<String> mappedUrl = renderContext.urlMapping().apply(link.getUrl());
 						if (mappedUrl.isPresent()) {
-							return new ResolvedLink(link.getLinkType(), mappedUrl.get(), link.getStatus());
+							return new ResolvedLink(link.getLinkType(), mappedUrl.get(), link.getTitle(), link.getStatus());
 						}
 						return link;
 					}
