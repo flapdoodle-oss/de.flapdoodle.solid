@@ -1,12 +1,26 @@
 package de.flapdoodle.solid.converter.wordpress;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
+import java.util.Optional;
+
+import org.jsoup.Jsoup;
+import org.jsoup.nodes.Document;
 import org.junit.Ignore;
 import org.junit.Test;
 
+import de.flapdoodle.solid.converter.segments.Replacement;
+
 public class Html2MarkdownTest {
 
+	@Test
+	public void codeMatcherMustMatch() {
+		Optional<Replacement> replacement = Html2Markdown.codeMatcher("pre", "lang").find("  <pre lang=\"java\">java code</pre>", 0);
+		assertTrue(replacement.isPresent());
+		assertEquals("\n```java\njava code\n```\n\n",replacement.get().content());
+	}
+	
 	@Test
 	public void sample() {
 		String src="Interessante Statistik:\n" + 
@@ -462,9 +476,53 @@ public class Html2MarkdownTest {
 				"\n" + 
 				"Der hier vorgeschlagene Ansatz ist sicher a) verbesserungswürdig und b) ausbaufähig. Er soll als Anregung dienen, wie man dieses und möglicherweise ähnliche Probleme lösen kann und dabei besonders von der Komponentenarchitektur von Wicket profitieren kann.\n" + 
 				"";
-		
+
+//    Document document = Jsoup.parse(src);
+//
+//    System.out.println(document);
 		String result = Html2Markdown.newInstance().convert(src);
-		
+    
+//    String result = Html2Markdown.convert(src, Html2Markdown.newInstance(), Pair.of("<pre", "</pre>"));
+//		
 		assertEquals("", result);
 	}
+	
+	@Test
+	public void parseCodeSegments() {
+		String src="Text ... Text.\n" + 
+				"\n" + 
+				"<pre lang=\"java\">\n" + 
+				"java.lang.Double x=1.23;\n" + 
+				"\n" + 
+				"public static <T> T foo() {\n" + 
+				"...\n" + 
+				"}\n" + 
+				"</pre>\n" + 
+				"\n" + 
+				"Other text.\n" + 
+				"\n" + 
+				"<code lang=\"java\">\n" + 
+				"java.lang.Double x=1.23;\n" + 
+				"\n" + 
+				"public static <T> T foo() {\n" + 
+				"...\n" + 
+				"}\n" + 
+				"</code>\n" + 
+				"\n" + 
+				"<pre><code lang=\"java\">\n" + 
+				"java.lang.Double x=1.23;\n" + 
+				"\n" + 
+				"public static <T> T foo() {\n" + 
+				"...\n" + 
+				"}\n" + 
+				"</code></pre>\n" + 
+				"\n" + 
+				"End.\n" + 
+				"";
+		
+		Document document = Jsoup.parse(src);
+		
+		System.out.println(document);
+	}
+	
 }
