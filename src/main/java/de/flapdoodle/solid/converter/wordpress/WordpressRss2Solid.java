@@ -51,8 +51,8 @@ public class WordpressRss2Solid {
 	private static String asMarkDown(String content) {
 //		System.out.println("--------------------------");
 //		System.out.println(content);
-//		return HTML2MARKDOWN.convert(content);
-		return content;
+		return HTML2MARKDOWN.convert(content);
+//		return content;
 	}
 
 	private static String urlOf(WordpressRss src, WpItem item) {
