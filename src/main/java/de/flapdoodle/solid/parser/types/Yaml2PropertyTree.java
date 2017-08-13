@@ -38,7 +38,9 @@ public class Yaml2PropertyTree implements AsPropertyTree<Yaml> {
 
 	private static void fill(Builder builder, Map<String, Object> map) {
 		map.forEach((key, value) -> {
-			builder.putAllMap(key, map(value));
+			if (value!=null) {
+				builder.putAllMap(key, map(value));
+			}
 		});
 	}
 

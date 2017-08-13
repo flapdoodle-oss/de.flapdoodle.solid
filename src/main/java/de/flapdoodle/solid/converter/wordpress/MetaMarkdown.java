@@ -1,11 +1,13 @@
 package de.flapdoodle.solid.converter.wordpress;
 
 import java.util.Collection;
+import java.util.regex.Pattern;
 
 import org.immutables.value.Value.Auxiliary;
 import org.immutables.value.Value.Default;
 import org.immutables.value.Value.Immutable;
 
+import com.google.common.annotations.VisibleForTesting;
 import com.google.common.base.Charsets;
 import com.google.common.collect.ImmutableMultimap;
 import com.google.common.collect.ImmutableSet;
@@ -98,13 +100,18 @@ public abstract class MetaMarkdown {
 		sb.append("\n---\n");
 		return sb.toString();
 	}
-	
 	private static final ImmutableSet<String> VALID_META_KEYS=ImmutableSet.of("aktt_tweeted", "aktt_notify_twitter");
 	private boolean validMetaKey(String key) {
 		return VALID_META_KEYS.contains(key);
 	}
 	
-	private static void property(StringBuilder sb, String label, String value) {
+	private static Pattern INVALID_YAML_CONTENT_PATTERN=Pattern.compile(":\\s+");
+	
+	@VisibleForTesting
+	protected static void property(StringBuilder sb, String label, String value) {
+		if (INVALID_YAML_CONTENT_PATTERN.matcher(value).find()) {
+			value="'"+value+"'";
+		}
 		sb.append(label).append(": ").append(value).append("\n");
 	}
 	

@@ -27,6 +27,7 @@ import com.google.common.annotations.VisibleForTesting;
 import com.google.common.base.Joiner;
 import com.google.common.collect.ImmutableList;
 
+import de.flapdoodle.solid.exceptions.RuntimeExceptions;
 import de.flapdoodle.solid.io.Filenames;
 import de.flapdoodle.solid.parser.meta.Toml;
 import de.flapdoodle.solid.parser.meta.Yaml;
@@ -50,6 +51,11 @@ public class DefaultBlobParser implements BlobParser {
 
 	@Override
 	public Maybe<Blob> parse(Path path, String content) {
+		return RuntimeExceptions.onException(() -> interalParse(path, content), ex -> new RuntimeException("could not parse "+path,ex))
+				.get();
+	}
+
+	private Maybe<Blob> interalParse(Path path, String content) {
 		String filename = Filenames.filenameOf(path);
 		String extension = Filenames.extensionOf(filename);
 		Maybe<ContentType> contentType = ContentType.ofExtension(extension);
