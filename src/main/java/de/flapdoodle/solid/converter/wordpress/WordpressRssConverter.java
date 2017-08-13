@@ -43,6 +43,11 @@ public class WordpressRssConverter {
 				.map(Document::path)
 				.collect(ImmutableSet.toImmutableSet());
 			Preconditions.checkArgument(allPaths.size()==documents.size(),"path collisions");
+			
+			// create directory for page and post
+			createDirectoryIfNotExist(target.resolve("post"));
+			createDirectoryIfNotExist(target.resolve("page"));
+			
 			documents.forEach((Document d) -> {
 				Path filePath = target.resolve(d.path());
 				Try.runable(() -> {
@@ -51,6 +56,12 @@ public class WordpressRssConverter {
 				.mapCheckedException(RuntimeException::new)
 				.run();
 			});
+		}
+	}
+
+	private static void createDirectoryIfNotExist(Path dir) throws IOException {
+		if (!dir.toFile().exists()) {
+			Files.createDirectory(dir);
 		}
 	}
 	

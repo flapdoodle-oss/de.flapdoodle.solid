@@ -19,6 +19,7 @@ package de.flapdoodle.solid.types.tree;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
+import java.util.function.BiConsumer;
 import java.util.function.Function;
 
 import com.google.common.base.Preconditions;
@@ -119,6 +120,13 @@ public interface PropertyTree {
 		}
 		
 		return ImmutableList.of();
+	}
+	
+	default void forEach(BiConsumer<String, List<Either<Object, ? extends PropertyTree>>> consumer) {
+		properties().forEach(key -> {
+			List<Either<Object, ? extends PropertyTree>> values = get(key);
+			consumer.accept(key, values);
+		});
 	}
 	
 	public static <T> Function<Either<Object, ? extends PropertyTree>, Maybe<T>> matchingType(Class<T> type) {

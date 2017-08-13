@@ -3,9 +3,16 @@ package de.flapdoodle.solid.converter.wordpress;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 
+import com.google.common.base.Charsets;
 import com.google.common.collect.ImmutableList;
 
+import de.flapdoodle.solid.generator.Content;
 import de.flapdoodle.solid.generator.Document;
+import de.flapdoodle.solid.generator.Text;
+import de.flapdoodle.solid.types.tree.FixedPropertyTree;
+import de.flapdoodle.solid.types.tree.FixedPropertyTree.Builder;
+import de.flapdoodle.solid.types.tree.ImmutableFixedPropertyTree;
+import de.flapdoodle.solid.types.tree.PropertyTree;
 
 public class WordpressRss2Solid {
 	
@@ -13,6 +20,8 @@ public class WordpressRss2Solid {
 
 	public static ImmutableList<Document> convert(WordpressRss src) {
 		ImmutableList.Builder<Document> builder=ImmutableList.builder(); 
+		
+		builder.add(solidConfig(src));
 		
 		src.channel().items().stream()
 			.filter(item -> item.isPost())
@@ -27,6 +36,62 @@ public class WordpressRss2Solid {
 		});
 		
 		return builder.build();
+	}
+
+	private static Document solidConfig(WordpressRss src) {
+		return Document.builder()
+				.path("solid.toml")
+				.content(solidConfigAsToml(src))
+				.build();
+	}
+
+	private static Content solidConfigAsToml(WordpressRss src) {
+		return Text.builder()
+				.encoding(Charsets.UTF_8)
+				.mimeType("text/text")
+				.text(PropertyTreeAsText.asToml(solidConfigAsPropertyTree(src)))
+				.build();
+	}
+
+	private static PropertyTree solidConfigAsPropertyTree(WordpressRss src) {
+		WpChannel channel = src.channel();
+		
+		return FixedPropertyTree.builder()
+				.put("baseURL", channel.baseUrl())
+				.put("title", channel.title())
+				.put("subtitle", channel.description())
+				.put("languageCode", channel.language())
+				.put("tree", categoryTree(channel.categories()))
+				.build();
+	}
+	
+	private static PropertyTree categoryTree(ImmutableList<WpCategory> categories) {
+		return FixedPropertyTree.builder()
+				.put("category", categoryTreeList(categories))
+				.build();
+	}
+
+	private static PropertyTree categoryTreeList(ImmutableList<WpCategory> categories) {
+		Builder builder = FixedPropertyTree.builder();
+		
+		categories.forEach(c -> {
+			Builder entryBuilder = FixedPropertyTree.builder();
+			entryBuilder.put("name", c.name());
+			childNames(c, categories).forEach(n -> {
+				entryBuilder.put("children", n);
+			});
+			ImmutableFixedPropertyTree entry = entryBuilder.build();
+			builder.put(c.urlName(), entry);
+		});
+		
+		return builder.build();
+	}
+
+	private static ImmutableList<String> childNames(WpCategory parent, ImmutableList<WpCategory> categories) {
+		return categories.stream()
+				.filter(c -> c.parent().isPresent() && c.parent().get().equals(parent.urlName()))
+				.map(c -> c.name())
+				.collect(ImmutableList.toImmutableList());
 	}
 
 	private static Document asDocument(WordpressRss src, WpItem item) {
@@ -73,6 +138,7 @@ public class WordpressRss2Solid {
 	private static final DateTimeFormatter POST_FILE_PATTERN=DateTimeFormatter.ofPattern("yyyy-MM-dd");
 
 	private static String pathOf(WpItem item) {
-		return item.date().format(POST_FILE_PATTERN)+"-"+item.urlName()+".md";
+		String prefix = item.isPage() ? "page/" : "post/";
+ 		return prefix + item.date().format(POST_FILE_PATTERN)+"-"+item.urlName()+".md";
 	}
 }

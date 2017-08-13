@@ -4,8 +4,10 @@ import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.util.Optional;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
 import com.google.common.annotations.VisibleForTesting;
+import com.google.common.io.CharSource;
 import com.vladsch.flexmark.convert.html.FlexmarkHtmlParser;
 import com.vladsch.flexmark.util.html.FormattingAppendable;
 import com.vladsch.flexmark.util.html.FormattingAppendableImpl;
@@ -14,6 +16,7 @@ import com.vladsch.flexmark.util.options.MutableDataSet;
 import de.flapdoodle.solid.converter.segments.Matcher;
 import de.flapdoodle.solid.converter.segments.Replacement;
 import de.flapdoodle.solid.converter.segments.Segments;
+import de.flapdoodle.types.Try;
 
 public class Html2Markdown {
 
@@ -44,9 +47,24 @@ public class Html2Markdown {
 	}
 	
 	public String convert(String src) {
-		return Segments.map(src, this::asMarkdown, codeMatcher("pre", "lang"), codeMatcher("code", "lang"), Matcher.of("<!--", "-->", s -> s));
+		return Segments.map(src, t -> asMarkdown(fixParagraph(t)), codeMatcher("pre", "lang"), codeMatcher("code", "lang"), Matcher.of("<!--", "-->", s -> s));
 	}
 
+	private static String fixParagraph(String src) {
+		String ret = Try.supplier(() -> CharSource.wrap(src)
+				.readLines().stream()
+				.map(s -> s.indexOf('<')==-1 ? "<p>"+s+"</p>" : s)
+				.collect(Collectors.joining("\n")))
+			.mapCheckedException(RuntimeException::new)
+			.get();
+//		System.out.println("----------------------------");
+//		System.out.println(src);
+//		System.out.println("----------------------------");
+//		System.out.println(ret);
+//		System.out.println("----------------------------");
+		return ret;
+	}
+	
 	private String asMarkdown(String src) {
 		FormattingAppendableImpl out = new FormattingAppendableImpl(FormattingAppendable.SUPPRESS_TRAILING_WHITESPACE | FormattingAppendable.COLLAPSE_WHITESPACE);
     instance.parse(out, src);

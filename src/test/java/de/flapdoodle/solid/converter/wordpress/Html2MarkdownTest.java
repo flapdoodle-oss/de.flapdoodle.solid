@@ -22,6 +22,31 @@ public class Html2MarkdownTest {
 	}
 	
 	@Test
+	public void partialHtmlSample() {
+		String src="Soeben habe ich eine Migration auf Wicket 1.4-rc2 durchgeführt. Ausschlaggebend für die Migration war die Überarbeitung im Model-Bereich. Typisierte Modelle sind sehr viel handlicher und machen den Code sehr viel lesbarer. Da man die Komponenten ja auch schon generisch angelegt hat, ging diese Information bisher in den Modellen verloren.\n" + 
+				"\n" + 
+				"Interessante Statistik:\n" + 
+				"<ul>\n" + 
+				"	<li>Anzahl der Java-Dateien im Webprojekt: 376</li>\n" + 
+				"	<li>Anzahl der Java-Dateien, die angepasst werden mussten: 32</li>\n" + 
+				"	<li>Zeitaufwand für die Umstellung: 1h,30min</li>\n" + 
+				"</ul>\n" + 
+				"Ich glaube, das Risiko ist gering und der Vorteil ist groß. Meine Empfehlung: Umsteigen.";
+		String result = Html2Markdown.newInstance().convert(src);
+		
+		assertEquals("Soeben habe ich eine Migration auf Wicket 1.4-rc2 durchgeführt. Ausschlaggebend für die Migration war die Überarbeitung im Model-Bereich. Typisierte Modelle sind sehr viel handlicher und machen den Code sehr viel lesbarer. Da man die Komponenten ja auch schon generisch angelegt hat, ging diese Information bisher in den Modellen verloren.\n" + 
+				"\n" + 
+				"Interessante Statistik:\n" + 
+				"* Anzahl der Java-Dateien im Webprojekt: 376\n" + 
+				"* Anzahl der Java-Dateien, die angepasst werden mussten: 32\n" + 
+				"* Zeitaufwand für die Umstellung: 1h,30min\n" + 
+				"\n" + 
+				"Ich glaube, das Risiko ist gering und der Vorteil ist groß. Meine Empfehlung: Umsteigen.\n" + 
+				"\n" + 
+				"", result);
+	}
+	
+	@Test
 	public void sample() {
 		String src="Interessante Statistik:\n" + 
 				"<ul>\n" + 
