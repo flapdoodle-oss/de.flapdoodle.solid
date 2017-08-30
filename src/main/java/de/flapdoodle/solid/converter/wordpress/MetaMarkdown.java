@@ -95,8 +95,8 @@ public abstract class MetaMarkdown {
 				property(sb, key, values);
 			}
 		});
-		property(sb, "categories", categories());
-		property(sb, "tags", tags());
+		stringProperty(sb, "categories", categories());
+		stringProperty(sb, "tags", tags());
 		sb.append("\n---\n");
 		return sb.toString();
 	}
@@ -124,6 +124,25 @@ public abstract class MetaMarkdown {
 		}
 	}
 
+	private static void stringProperty(StringBuilder sb, String label, Collection<String> values) {
+		if (!values.isEmpty()) {
+			sb.append(label).append(":").append("\n");
+			values.forEach(v -> {
+				sb.append("  - ").append(numberAsEscapedString(v)).append("\n");
+			});
+		}
+	}
+	
+	private static String numberAsEscapedString(String src) {
+		try {
+			Double.parseDouble(src);
+			return "\""+src+"\"";
+		} catch (NumberFormatException nx) {
+			// not a number
+		}
+		return src;
+	}
+	
 	public static ImmutableMetaMarkdown.Builder builder() {
 		return ImmutableMetaMarkdown.builder();
 	}

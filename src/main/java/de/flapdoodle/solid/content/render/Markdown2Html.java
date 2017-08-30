@@ -78,6 +78,8 @@ public class Markdown2Html implements MarkupRenderer {
 				};
 			}
 		};
+		options.set(HtmlRenderer.FENCED_CODE_LANGUAGE_CLASS_PREFIX, "");
+		
 		HtmlRenderer renderer = HtmlRenderer.builder(options)
 				.nodeRendererFactory(o -> new CustomCoreNodeRenderer(o, renderContext))
     		.linkResolverFactory(linkResolverFactory)
@@ -126,8 +128,8 @@ public class Markdown2Html implements MarkupRenderer {
                 }));
 			return ret;
 		}
-		
-    protected void renderBlockQuote(BlockQuote node, NodeRendererContext context, HtmlWriter html) {
+
+		protected void renderBlockQuote(BlockQuote node, NodeRendererContext context, HtmlWriter html) {
     	html.withAttr().tagLineIndent("blockquote", new Runnable() {
         @Override
         public void run() {
@@ -163,6 +165,5 @@ public class Markdown2Html implements MarkupRenderer {
           });
       }
   }
-
 	}
 }

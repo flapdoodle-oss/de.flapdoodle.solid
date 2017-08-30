@@ -114,6 +114,22 @@ public class Markdown2HtmlTest {
 				"  &amp;gt; &amp;lt;title /&amp;gt;\n" + 
 				"</blockquote>\n", html);
 	}
+	
+	@Test
+	public void codeAsHtml() {
+		String src="Text Text Text:\n" + 
+				"\n" + 
+				"\n" + 
+				"```java5\n" + 
+				"public class BookmarkablePageDestination<T extends WebPage> {\n" + 
+				"```\n\n";
+		
+		String html = asHtml(src);
+		assertEquals("<p>Text Text Text:</p>\n" + 
+				"<pre><code class=\"java5\">public class BookmarkablePageDestination&lt;T extends WebPage&gt; {\n" + 
+				"</code></pre>\n" + 
+				"", html);
+	}
 
 	private static String asHtml(String markdown) {
 		ImmutableRenderContext context = RenderContext.builder()
