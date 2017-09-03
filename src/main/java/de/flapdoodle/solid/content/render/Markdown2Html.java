@@ -42,7 +42,7 @@ import com.vladsch.flexmark.util.options.MutableDataSet;
 import de.flapdoodle.solid.types.Maybe;
 
 public class Markdown2Html implements MarkupRenderer {
-	
+
 	private final Parser parser;
 
 	public Markdown2Html() {
@@ -55,18 +55,18 @@ public class Markdown2Html implements MarkupRenderer {
     //options.set(HtmlRenderer.SOFT_BREAK, "<br />\n");
 //		options.set(HtmlRenderer.SOFT_BREAK, "<br />\n");
 		options.set(HtmlRenderer.ESCAPE_HTML_BLOCKS, true);
-		
+
 		this.parser = Parser.builder(options).build();
 	}
 
 	private static HtmlRenderer renderer(RenderContext renderContext) {
 		MutableDataSet options = new MutableDataSet();
 		LinkResolverFactory linkResolverFactory=new IndependentLinkResolverFactory() {
-			
+
 			@Override
 			public LinkResolver create(NodeRendererContext context) {
 				return new LinkResolver() {
-					
+
 					@Override
 					public ResolvedLink resolveLink(Node node, NodeRendererContext context, ResolvedLink link) {
 						Maybe<String> mappedUrl = renderContext.urlMapping().apply(link.getUrl());
@@ -79,13 +79,13 @@ public class Markdown2Html implements MarkupRenderer {
 			}
 		};
 		options.set(HtmlRenderer.FENCED_CODE_LANGUAGE_CLASS_PREFIX, "");
-		
+
 		HtmlRenderer renderer = HtmlRenderer.builder(options)
 				.nodeRendererFactory(o -> new CustomCoreNodeRenderer(o, renderContext))
     		.linkResolverFactory(linkResolverFactory)
     		.indentSize(2)
     		.build();
-		
+
 		return renderer;
 	}
 
@@ -94,7 +94,7 @@ public class Markdown2Html implements MarkupRenderer {
 		Document document = (Document) parser.parse(markdown);
     return renderer(context).render(document);
 	}
-	
+
 	private static class CustomCoreNodeRenderer extends CoreNodeRenderer {
 
 		private final RenderContext renderContext;
@@ -103,7 +103,7 @@ public class Markdown2Html implements MarkupRenderer {
 			super(options);
 			this.renderContext = renderContext;
 		}
-		
+
 		@Override
 		public Set<NodeRenderingHandler<?>> getNodeRenderingHandlers() {
 			return withCustomHeading(super.getNodeRenderingHandlers());

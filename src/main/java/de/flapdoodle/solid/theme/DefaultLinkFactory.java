@@ -21,7 +21,7 @@ import de.flapdoodle.solid.theme.LinkFactories.MenuItem;
 import de.flapdoodle.solid.types.Maybe;
 
 public class DefaultLinkFactory implements LinkFactories.Named {
-	
+
 	private final ImmutableMap<String, GroupedBlobs> groupedBlobsById;
 	private final PathRenderer pathRenderer;
 	private final FormatterOfProperty propertyFormatter;
@@ -31,7 +31,7 @@ public class DefaultLinkFactory implements LinkFactories.Named {
 		this.pathRenderer = pathRenderer;
 		this.propertyFormatter = propertyFormatter;
 	}
-	
+
 	@Override
 	public Maybe<LinkFactories.Blobs> byId(String id) {
 		return Maybe.ofNullable(groupedBlobsById.get(id)).map(grouped -> new DefaultBlobsLinkFactory(pathRenderer, propertyFormatter, grouped));
@@ -40,7 +40,7 @@ public class DefaultLinkFactory implements LinkFactories.Named {
 	public static LinkFactories.Named of(ImmutableMap<String,GroupedBlobs> groupedBlobsById, PathRenderer pathRenderer, FormatterOfProperty propertyFormatter) {
 		return new DefaultLinkFactory(groupedBlobsById, pathRenderer, propertyFormatter);
 	}
-	
+
 	private static class DefaultBlobsLinkFactory implements LinkFactories.Blobs {
 
 		private final PathRenderer pathRenderer;
@@ -52,7 +52,7 @@ public class DefaultLinkFactory implements LinkFactories.Named {
 			this.propertyFormatter = propertyFormatter;
 			this.grouped = grouped;
 		}
-		
+
 		@Override
 		public Maybe<LinkFactories.OneBlob> filterBy(Blob blob) {
 			ImmutableCollection<ImmutableMap<String, Object>> keys = grouped.keysOf(blob);
@@ -61,18 +61,18 @@ public class DefaultLinkFactory implements LinkFactories.Named {
 			}
 			return Maybe.absent();
 		}
-		
+
 		@Override
 		public LinkFactories.Filtered filter() {
 			return new DefaultGroupLinkFactory(pathRenderer, propertyFormatter, grouped.currentPath(), grouped.groupedBlobs().asMap());
 		}
-		
+
 		@Override
 		public LinkFactories.Menu asMenu() {
 			return new DefaultMenuLinkFactory(pathRenderer, propertyFormatter, grouped.currentPath(), Menu.of(grouped.groupedBlobs()));
 		}
 	}
-	
+
 	private static class DefaultMenuLinkFactory implements LinkFactories.Menu {
 
 		private final PathRenderer pathRenderer;
@@ -86,7 +86,7 @@ public class DefaultLinkFactory implements LinkFactories.Named {
 			this.currentPath = currentPath;
 			this.menuList = menuList;
 		}
-		
+
 		@Override
 		public ImmutableList<MenuItem> items() {
 			return menuList.stream()
@@ -101,7 +101,7 @@ public class DefaultLinkFactory implements LinkFactories.Named {
 		private final FormatterOfProperty propertyFormatter;
 		private final Menu menu;
 		private final Path currentPath;
-		
+
 		public DefaultMenuItemLinkFactory(PathRenderer pathRenderer, FormatterOfProperty propertyFormatter, Path currentPath, Menu menu) {
 			this.pathRenderer = pathRenderer;
 			this.propertyFormatter = propertyFormatter;
@@ -141,19 +141,19 @@ public class DefaultLinkFactory implements LinkFactories.Named {
 					this.currentPath = currentPath;
 					this.groupedBlobs = immutableMap;
 		}
-		
+
 		@Override
 		public LinkFactories.Filtered by(String key, Object value) {
 			ImmutableMap<ImmutableMap<String, Object>, Collection<Blob>> filteredMap = filter(groupedBlobs, key, value);
 			return new DefaultGroupLinkFactory(pathRenderer, propertyFormatter, currentPath, filteredMap);
 		}
-		
+
 		@Override
 		public LinkFactories.Filtered orderBy(String key) {
 			ImmutableMap<ImmutableMap<String, Object>, Collection<Blob>> orderedMap = order(groupedBlobs, key);
 			return new DefaultGroupLinkFactory(pathRenderer, propertyFormatter, currentPath, orderedMap);
 		}
-		
+
 		@Override
 		public Filtered reversed() {
 			return new DefaultGroupLinkFactory(pathRenderer, propertyFormatter, currentPath, reverseOrdering(groupedBlobs));
@@ -165,8 +165,8 @@ public class DefaultLinkFactory implements LinkFactories.Named {
 				.stream()
 				.sorted(Ordering.natural().onResultOf(e -> {
 					Object val = e.getKey().get(key);
-					return (val instanceof Comparable) 
-							? (Comparable) val 
+					return (val instanceof Comparable)
+							? (Comparable) val
 							: null;
 				}))
 				.forEach((e) -> {
@@ -174,7 +174,7 @@ public class DefaultLinkFactory implements LinkFactories.Named {
 				});
 			return builder.build();
 		}
-		
+
 		private static ImmutableMap<ImmutableMap<String, Object>, Collection<Blob>> filter(ImmutableMap<ImmutableMap<String, Object>, Collection<Blob>> src, String key,
 				Object value) {
 			ImmutableMap.Builder<ImmutableMap<String, Object>, Collection<Blob>> builder=ImmutableMap.builder();
@@ -185,7 +185,7 @@ public class DefaultLinkFactory implements LinkFactories.Named {
 			});
 			return builder.build();
 		}
-		
+
 		@Override
 		public ImmutableSet<Object> values(String key) {
 			return groupedBlobs.keySet().stream()
@@ -193,7 +193,7 @@ public class DefaultLinkFactory implements LinkFactories.Named {
 				.filter(o -> o!=null)
 				.collect(ImmutableSet.toImmutableSet());
 		}
-		
+
 		@Override
 		public String getLink() {
 			if (groupedBlobs.keySet().size()==1) {
@@ -214,8 +214,10 @@ public class DefaultLinkFactory implements LinkFactories.Named {
 					.reduce(0, (a,b) -> a+b);
 		}
 	}
-	
-	
+
+
+
+
 	private static class DefaultBlobLinkFactory implements LinkFactories.OneBlob {
 
 		private final PathRenderer pathRenderer;
@@ -238,7 +240,7 @@ public class DefaultLinkFactory implements LinkFactories.Named {
 			}
 			return null;
 		}
-		
+
 		@Override
 		public String getLink(String key, Object value) {
 			ImmutableList<ImmutableMap<String, Object>> matchingKeys = keys.stream()

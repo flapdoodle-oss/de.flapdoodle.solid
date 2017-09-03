@@ -29,11 +29,11 @@ import de.flapdoodle.solid.theme.Theme;
 public interface Site {
 	SiteConfig config();
 	Theme theme();
-	
+
 	ImmutableList<Blob> blobs();
 	ImmutableSet<String> ignoredFiles();
-	ImmutableList<Document> staticFiles(); 
-	
+	ImmutableList<Document> staticFiles();
+
 	public static ImmutableSite.Builder builder() {
 		return ImmutableSite.builder();
 	}
