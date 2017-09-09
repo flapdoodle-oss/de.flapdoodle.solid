@@ -18,8 +18,7 @@ package de.flapdoodle.legacy;
 
 import java.util.Optional;
 
-import com.google.common.base.Preconditions;
-
+import de.flapdoodle.checks.Preconditions;
 import de.flapdoodle.solid.types.Maybe;
 
 @Deprecated
@@ -31,10 +30,10 @@ public class Optionals {
 		Preconditions.checkArgument(value.isPresent(),message,args);
 		return value;
 	}
-	
+
 	public static <T> Maybe<T> checkPresent(Maybe<T> value, String message, Object ...args) {
 		Preconditions.checkArgument(value.isPresent(),message,args);
 		return value;
 	}
-	
+
 }

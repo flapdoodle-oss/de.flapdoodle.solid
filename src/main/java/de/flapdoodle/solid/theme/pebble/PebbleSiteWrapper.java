@@ -59,10 +59,7 @@ public abstract class PebbleSiteWrapper implements DynamicAttributeProvider {
 
 	@Auxiliary
 	public Tree tree(String id) {
-		return config().tree()
-				.flatMap(tree -> tree.find(id).asOptional())
-				.map(tree -> Tree.treeOf(tree))
-				.orElse(null);
+		return config().tree(id).orElse(null);
 	}
 
 

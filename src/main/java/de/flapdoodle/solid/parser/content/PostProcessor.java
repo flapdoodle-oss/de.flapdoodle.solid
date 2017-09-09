@@ -16,6 +16,8 @@
  */
 package de.flapdoodle.solid.parser.content;
 
+import de.flapdoodle.solid.site.SiteConfig;
+
 public interface PostProcessor {
-	Blob process(Blob src);
+	Blob process(SiteConfig config, Blob src);
 }

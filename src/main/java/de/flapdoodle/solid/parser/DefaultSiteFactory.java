@@ -54,27 +54,27 @@ public class DefaultSiteFactory implements SiteFactory {
 		this.blobParser = blobParser;
 		this.themeFactory = themeFactory;
 	}
-	
+
 	@Override
 	public Site siteOf(Path siteRoot) {
 		SiteConfig siteConfig = parse(siteRoot, parserFactory);
 		Theme theme = themeFactory.of(siteRoot.resolve("themes").resolve(siteConfig.theme()));
 		return collect(siteRoot, siteConfig, theme, blobParser);
 	}
-	
+
 	private static Site collect(Path siteRoot, SiteConfig siteConfig, Theme theme, BlobParser blobParser) {
 		Builder siteBuilder = Site.builder()
 				.config(siteConfig)
 				.theme(theme);
-		
+
 		SiteConfigPostProcessor postProcessor = SiteConfigPostProcessor.of(siteConfig.postProcessing());
-		
+
 		Try.runable(() ->	{
 			Path contentRoot = siteRoot.resolve(siteConfig.contentDirectory());
 			In.walk(contentRoot, (relativePath,content) -> {
 					Maybe<Blob> blob = blobParser.parse(contentRoot.relativize(relativePath), new String(content.data(), Charsets.UTF_8));
 					if (blob.isPresent()) {
-						siteBuilder.addBlobs(postProcessor.process(blob.get()));
+						siteBuilder.addBlobs(postProcessor.process(siteConfig, blob.get()));
 					} else {
 						siteBuilder.addIgnoredFiles(relativePath.toString());
 					}
@@ -82,31 +82,31 @@ public class DefaultSiteFactory implements SiteFactory {
 		})
 			.mapCheckedException(SomethingWentWrong::new)
 			.run();
-		
+
 		siteBuilder.addAllStaticFiles(Try.supplier(() -> {
 			Path staticContentPath = siteRoot.resolve(siteConfig.staticDirectory());
 			return Document.of(staticContentPath, path -> path.toString());
 		})
 			.onCheckedException(ex -> ImmutableList.of())
 			.get());
-		
+
 		return siteBuilder.build();
 	}
-	
+
 	private static SiteConfig parse(Path siteRoot, PropertyTreeParserFactory parserFactory) {
-		
+
 		FiletypeParserFactory filetypeParserFactory=FiletypeParserFactory.defaults(parserFactory);
-		
-		Function<? super Path, ? extends Maybe<SiteConfig>> path2Config = path -> 
+
+		Function<? super Path, ? extends Maybe<SiteConfig>> path2Config = path ->
 			PropertyTreeConfigs.propertyTreeOf(filetypeParserFactory, path)
 				.map(config -> SiteConfig.of(Filenames.filenameOf(path), config));
-		
+
 //		In.walk(siteRoot, (path,content) -> {
 //			if (Filenames.filenameOf(path).startsWith("solid.")) {
 //				return Maybe.of(value)
 //			}
 //		});
-			
+
 		List<SiteConfig> configs = Try.supplier(() -> Files.list(siteRoot)
 				.filter(p -> Filenames.filenameOf(p).startsWith("solid."))
 				.map(path2Config)
@@ -114,14 +114,14 @@ public class DefaultSiteFactory implements SiteFactory {
 				.collect(Collectors.toList()))
 			.mapCheckedException(SomethingWentWrong::new)
 			.get();
-		
+
 		if (configs.size()!=1) {
 			throw new NotASolidSite(siteRoot, filetypeParserFactory.supportedExtensions()
 					.stream()
 					.map(s -> "solid."+s)
 					.collect(Collectors.toList()));
 		}
-		
+
 		return configs.get(0);
 	}
 

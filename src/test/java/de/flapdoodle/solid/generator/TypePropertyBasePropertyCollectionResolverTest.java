@@ -19,29 +19,29 @@ public class TypePropertyBasePropertyCollectionResolverTest {
 	@Test
 	public void unknownProperty() {
 		TypePropertyBasePropertyCollectionResolver resolver = resolver(lookup(Void.class, TypeProperties.builder(Void.class).build()));
-		
+
 		PropertyTree tree=FixedPropertyTree.builder()
 				.put("foo", "bar")
 				.build();
 		ImmutableSet<?> resolved = resolver.resolve(tree, ImmutableList.of("no"));
 		assertTrue(resolved.isEmpty());
 	}
-	
+
 	@Test
 	public void unknownSubProperty() {
 		TypePropertyBasePropertyCollectionResolver resolver = resolver(lookup(Void.class, TypeProperties.builder(Void.class).build()));
-		
+
 		PropertyTree tree=FixedPropertyTree.builder()
 				.put("foo", "bar")
 				.build();
 		ImmutableSet<?> resolved = resolver.resolve(tree, ImmutableList.of("foo", "no"));
 		assertTrue(resolved.isEmpty());
 	}
-	
+
 	@Test
 	public void simpleProperty() {
 		TypePropertyBasePropertyCollectionResolver resolver = resolver(lookup(Void.class, TypeProperties.builder(Void.class).build()));
-		
+
 		PropertyTree tree=FixedPropertyTree.builder()
 				.put("foo", "bar")
 				.build();
@@ -49,11 +49,11 @@ public class TypePropertyBasePropertyCollectionResolverTest {
 		assertFalse(resolved.isEmpty());
 		assertEquals(ImmutableSet.of("bar"), resolved);
 	}
-	
+
 	@Test
 	public void secondLevelProperty() {
 		TypePropertyBasePropertyCollectionResolver resolver = resolver(lookup(Void.class, TypeProperties.builder(Void.class).build()));
-		
+
 		PropertyTree tree=FixedPropertyTree.builder()
 				.put("foo", FixedPropertyTree.builder()
 						.put("bar", "blob")
@@ -63,13 +63,13 @@ public class TypePropertyBasePropertyCollectionResolverTest {
 		assertFalse(resolved.isEmpty());
 		assertEquals(ImmutableSet.of("blob"), resolved);
 	}
-	
+
 	@Test
 	public void secondLevelAndTypeProperty() {
 		TypePropertyBasePropertyCollectionResolver resolver = resolver(lookup(String.class, TypeProperties.builder(String.class)
 				.putMap("len", s -> s.length())
 				.build()));
-		
+
 		PropertyTree tree=FixedPropertyTree.builder()
 				.put("foo", FixedPropertyTree.builder()
 						.put("bar", "blob")
@@ -79,13 +79,13 @@ public class TypePropertyBasePropertyCollectionResolverTest {
 		assertFalse(resolved.isEmpty());
 		assertEquals(ImmutableSet.of(4), resolved);
 	}
-	
+
 	@Test
 	public void multipleSecondLevelAndTypeProperty() {
 		TypePropertyBasePropertyCollectionResolver resolver = resolver(lookup(String.class, TypeProperties.builder(String.class)
 				.putMap("len", s -> s.length())
 				.build()));
-		
+
 		PropertyTree tree=FixedPropertyTree.builder()
 				.put("foo", FixedPropertyTree.builder()
 						.put("bar", "a")
@@ -102,7 +102,7 @@ public class TypePropertyBasePropertyCollectionResolverTest {
 		TypePropertyBasePropertyCollectionResolver resolver = resolver(lookup(String.class, TypeProperties.builder(String.class)
 				.putMap("len", s -> s.length())
 				.build()));
-		
+
 		PropertyTree tree=FixedPropertyTree.builder()
 				.put("foo", FixedPropertyTree.builder()
 						.put("bar", "blob")
@@ -111,10 +111,10 @@ public class TypePropertyBasePropertyCollectionResolverTest {
 		ImmutableSet<?> resolved = resolver.resolve(tree, ImmutableList.of("foo","bar","width"));
 		assertTrue(resolved.isEmpty());
 	}
-	
+
 	private static <X> TypePropertiesLookup lookup(Class<X> clazz, TypeProperties<X> properties) {
 		return new TypePropertiesLookup() {
-			
+
 			@Override
 			public <T> Maybe<TypeProperties<T>> propertiesOf(Class<T> type) {
 				if (clazz==type) {
@@ -124,7 +124,7 @@ public class TypePropertyBasePropertyCollectionResolverTest {
 			}
 		};
 	}
-	
+
 	private static TypePropertyBasePropertyCollectionResolver resolver(TypePropertiesLookup lookup) {
 		return new TypePropertyBasePropertyCollectionResolver(lookup);
 	}
