@@ -41,19 +41,19 @@ public abstract class PebbleBlobWrapper {
 	protected abstract LinkFactories.Named linkFactory();
 	@Parameter
 	protected abstract Function<String, Maybe<String>> urlMapping();
-	
+
 	@Auxiliary
 	public PropertyTree getMeta() {
 		return blob().meta();
 	}
-	
+
 	@Lazy
 	public String getAsHtml() {
 		return markupRenderer().asHtml(RenderContext.builder()
 				.urlMapping(urlMapping())
 				.build(), blob().content());
 	}
-	
+
 	@Lazy
 	public String getHtml(int incrementHeading) {
 		return markupRenderer().asHtml(RenderContext.builder()
@@ -62,16 +62,25 @@ public abstract class PebbleBlobWrapper {
 				.build(), blob().content());
 	}
 
-	@Lazy
+	@Auxiliary
 	public String getIntroHtml(int incrementHeading) {
+		return getIntroHtml(incrementHeading,"");
+	}
+
+	@Auxiliary
+	public String getIntroHtml(int incrementHeading, String afterContent) {
 		return markupRenderer().asHtml(RenderContext.builder()
 				.urlMapping(urlMapping())
 				.incrementHeading(incrementHeading)
-				.build(), introOf(blob().content()));
+				.build(), introOf(blob().content())+afterContent);
 	}
 
 	private static String introOf(String content) {
 		int idx=content.indexOf("<!--more-->");
+		if (idx!=-1) {
+			return content.substring(0, idx);
+		}
+		idx=content.indexOf("\n\n");
 		if (idx!=-1) {
 			return content.substring(0, idx);
 		}
@@ -81,8 +90,8 @@ public abstract class PebbleBlobWrapper {
 	public LinkFactories.OneBlob getLinkTo(String id) {
 		return linkFactory().byId(id).flatMap(f -> f.filterBy(blob())).orElseNull();
 	}
-	
-	
+
+
 	public static PebbleBlobWrapper of(Blob src, MarkupRendererFactory factory, LinkFactories.Named linkFactory, Function<String, Maybe<String>> urlMapping) {
 		return ImmutablePebbleBlobWrapper.of(src, factory.rendererFor(src.contentType()), linkFactory, urlMapping);
 	}
