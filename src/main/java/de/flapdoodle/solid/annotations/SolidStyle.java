@@ -21,13 +21,13 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
-import org.immutables.javaslang.encodings.JavaslangEncodingEnabled;
 import org.immutables.value.Value;
+import org.immutables.vavr.encodings.VavrEncodingEnabled;
 
 @Target({ElementType.PACKAGE, ElementType.TYPE})
 @Retention(RetentionPolicy.CLASS)
 @Value.Style(defaults = @Value.Immutable(), strictBuilder=true)
-@JavaslangEncodingEnabled
+@VavrEncodingEnabled
 public @interface SolidStyle {
 
 }

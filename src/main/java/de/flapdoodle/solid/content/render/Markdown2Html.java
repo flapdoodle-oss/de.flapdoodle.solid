@@ -32,6 +32,7 @@ import com.vladsch.flexmark.html.IndependentLinkResolverFactory;
 import com.vladsch.flexmark.html.LinkResolver;
 import com.vladsch.flexmark.html.LinkResolverFactory;
 import com.vladsch.flexmark.html.renderer.CoreNodeRenderer;
+import com.vladsch.flexmark.html.renderer.LinkResolverContext;
 import com.vladsch.flexmark.html.renderer.NodeRendererContext;
 import com.vladsch.flexmark.html.renderer.NodeRenderingHandler;
 import com.vladsch.flexmark.html.renderer.ResolvedLink;
@@ -64,14 +65,14 @@ public class Markdown2Html implements MarkupRenderer {
 		LinkResolverFactory linkResolverFactory=new IndependentLinkResolverFactory() {
 
 			@Override
-			public LinkResolver create(NodeRendererContext context) {
+			public LinkResolver create(LinkResolverContext context) {
 				return new LinkResolver() {
 
 					@Override
-					public ResolvedLink resolveLink(Node node, NodeRendererContext context, ResolvedLink link) {
+					public ResolvedLink resolveLink(Node node, LinkResolverContext context, ResolvedLink link) {
 						Maybe<String> mappedUrl = renderContext.urlMapping().apply(link.getUrl());
 						if (mappedUrl.isPresent()) {
-							return new ResolvedLink(link.getLinkType(), mappedUrl.get(), link.getTitle(), link.getStatus());
+							return new ResolvedLink(link.getLinkType(), mappedUrl.get()).withStatus(link.getStatus()).withTitle(link.getTitle());
 						}
 						return link;
 					}

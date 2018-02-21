@@ -121,7 +121,7 @@ public abstract class MetaMarkdown {
 		return VALID_META_KEYS.contains(key);
 	}
 	
-	private static Pattern INVALID_YAML_CONTENT_PATTERN=Pattern.compile(":\\s+");
+	private static final Pattern INVALID_YAML_CONTENT_PATTERN=Pattern.compile(":\\s+");
 	
 	@VisibleForTesting
 	protected static void property(StringBuilder sb, String label, String value) {
