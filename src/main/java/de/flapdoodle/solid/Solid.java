@@ -20,6 +20,8 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 
 import com.google.common.base.Preconditions;
+import com.google.inject.Guice;
+import com.google.inject.Injector;
 
 import de.flapdoodle.solid.generator.PathRenderer;
 import de.flapdoodle.solid.generator.SiteGenerator;
@@ -36,6 +38,8 @@ public class Solid {
 		
 		Path siteRoot = Paths.get(args[0]);
 		Path target = Paths.get(args[1]);
+		
+		Injector injector = Guice.createInjector();
 		
 		StaticPageGenerator.onChange(siteRoot, target)
 			.generator(SiteSpring.withPath(siteRoot), SiteGenerator.defaultGenerator(site -> PathRenderer.defaultPathRenderer(site.config().baseUrl())), new StaticHttpServerPageSink(target)
