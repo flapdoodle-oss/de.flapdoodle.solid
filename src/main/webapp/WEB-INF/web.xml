@@ -15,7 +15,22 @@
 
 		The value might be either "development" (reloading when templates change) or 
 		"deployment". If no configuration is found, "development" is the default. -->
+		
+	<listener>
+		<listener-class>de.flapdoodle.solid.config.SolidGuiceListener</listener-class>
+	</listener>
 
+	<filter>
+		<filter-name>solid-filter</filter-name>
+		<filter-class>com.google.inject.servlet.GuiceFilter</filter-class>
+	</filter>
+
+	<filter-mapping>
+		<filter-name>solid-filter</filter-name>
+		<url-pattern>/*</url-pattern>
+	</filter-mapping>
+
+<!-- 
 	<filter>
 		<filter-name>wicket.de.flapdoodle.solidwicket</filter-name>
 		<filter-class>org.apache.wicket.protocol.http.WicketFilter</filter-class>
@@ -29,4 +44,5 @@
 		<filter-name>wicket.de.flapdoodle.solidwicket</filter-name>
 		<url-pattern>/*</url-pattern>
 	</filter-mapping>
+	 -->
 </web-app>
