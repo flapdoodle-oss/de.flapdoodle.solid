@@ -28,6 +28,7 @@ import com.google.common.collect.ImmutableList;
 import de.flapdoodle.solid.exceptions.SomethingWentWrong;
 import de.flapdoodle.solid.types.ByteArray;
 import de.flapdoodle.solid.types.Maybe;
+import de.flapdoodle.solid.types.Streams;
 import de.flapdoodle.types.Try;
 
 public abstract class In {
@@ -47,7 +48,7 @@ public abstract class In {
 	}
 
 	public static void walk(Path root,BiConsumer<Path, ByteArray> consumer) throws IOException {
-		Files.walk(root)
+		Streams.autocloseThrowing(() -> Files.walk(root))
 			.forEach(path -> {
 				if (path.toFile().isFile()) {
 //					Path relativePath = root.relativize(path);
