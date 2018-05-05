@@ -49,6 +49,16 @@ public interface SiteConfig {
 	default String staticDirectory() {
 		return "static";
 	}
+	
+	@Default
+	default boolean relativeLinks() {
+		return false;
+	}
+	
+	@Default
+	default boolean enableDisqus() {
+		return true;
+	}
 
 	String theme();
 
@@ -90,6 +100,11 @@ public interface SiteConfig {
 				.filename(filename)
 				.baseUrl(map.find(String.class, "baseURL").get())
 				.theme(Optionals.checkPresent(map.find(String.class, "theme"),"theme not set in %s",filename).get());
+		
+		map.find(Boolean.class,"relativeLinks")
+			.ifPresent(v -> builder.relativeLinks(v));
+		map.find(Boolean.class,"enableDisqus")
+			.ifPresent(v -> builder.enableDisqus(v));
 
 		ImmutableSet<String> validProperties=ImmutableSet.of("title","subtitle");
 

@@ -53,6 +53,11 @@ public abstract class PebbleSiteWrapper implements DynamicAttributeProvider {
 	}
 
 	@Auxiliary
+	public boolean enableDisqus() {
+		return config().enableDisqus();
+	}
+	
+	@Auxiliary
 	public ImmutableMap<String,Formatter> getFormatters() {
 		return config().formatters().formatters();
 	}

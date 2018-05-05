@@ -24,11 +24,14 @@ import org.immutables.value.Value.Lazy;
 
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
+import com.google.j2objc.annotations.AutoreleasePool;
 
 import de.flapdoodle.solid.content.render.MarkupRendererFactory;
 import de.flapdoodle.solid.parser.content.Blob;
+import de.flapdoodle.solid.site.SiteConfig;
 import de.flapdoodle.solid.theme.Context;
 import de.flapdoodle.solid.theme.LinkFactories.Blobs;
+import de.flapdoodle.solid.theme.Links;
 import de.flapdoodle.solid.theme.Paths;
 import de.flapdoodle.solid.types.Maybe;
 
@@ -71,6 +74,17 @@ public abstract class PebbleWrapper {
 	@Lazy
 	public String getUrl() {
 		return context().paths().currentUrl();
+	}
+	
+	@Auxiliary
+	public String linkTo(String path) {
+		SiteConfig config = context().site().config();
+		return Links.renderLink(config.baseUrl(), path, getUrl(), config.relativeLinks());
+	}
+
+	@Auxiliary
+	public String linkToRoot() {
+		return context().site().config().baseUrl();
 	}
 
 	@Lazy
