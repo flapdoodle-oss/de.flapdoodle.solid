@@ -7,6 +7,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.stream.Collector;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -83,9 +84,23 @@ public class MethodResolver implements AttributeResolver {
 				return m.invoke(instance, convertAll(m.getParameterTypes(), m.isVarArgs(), argumentValues));
 			}
 			catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException e) {
-				throw new RuntimeException("call "+m+" on "+instance+" with "+Arrays.asList(argumentValues), e);
+				throw new RuntimeException("call "+m+" on "+shortDescription(instance)+" with "+shortenedArgumentValues(argumentValues), e);
 			}
 		};
+	}
+	
+	private static String shortenedArgumentValues(Object[] argumentValues) {
+		return "["+Arrays.asList(argumentValues).stream()
+			.map(MethodResolver::shortDescription)
+			.collect(Collectors.joining(" ,"))+"]";
+	}
+
+	private static String shortDescription(Object s) {
+		String sval=s!=null ? s.toString() : "null";
+		if (sval.length()>64) {
+			sval=sval.substring(0, 64)+"...";
+		}
+		return sval;
 	}
 
 	private static Object[] convertAll(Class<?>[] parameterTypes, boolean varargs, Object[] argumentValues) {

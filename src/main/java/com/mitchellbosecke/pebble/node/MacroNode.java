@@ -84,7 +84,7 @@ public class MacroNode extends AbstractRenderableNode {
 
                 try {
                     getBody().render(self, writer, context);
-                } catch (IOException e) {
+                } catch (IOException | RuntimeException e) {
                     throw new RuntimeException("Could not evaluate macro [" + name + "]", e);
                 }
 

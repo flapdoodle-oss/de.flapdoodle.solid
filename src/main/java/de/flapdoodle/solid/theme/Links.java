@@ -24,7 +24,7 @@ public class Links {
 						.relativePathTo(AbsoluteUrl.parse(destDomainAndPath._2()));
 				Preconditions.checkArgument(!result.contains("http:"),"wrong: %s (%s -> %s)",result,currentDomainAndPath, destDomainAndPath);
 				Preconditions.checkArgument(!result.contains("//"),"wrong: %s (%s -> %s)",result,currentDomainAndPath, destDomainAndPath);
-				System.out.println(" ? "+currentUrl+" --> "+path+" = "+result);
+//				System.out.println(" ? "+currentUrl+" --> "+path+" = "+result);
 				return result;
 			}
 		}

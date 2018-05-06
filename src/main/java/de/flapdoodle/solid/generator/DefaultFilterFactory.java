@@ -51,8 +51,9 @@ public class DefaultFilterFactory implements FilterFactory {
 	}
 	
 	private static boolean equals(ImmutableList<Object> expected, ImmutableList<Object> current) {
-//		System.out.println("eq: "+expected+" ? "+current);
-		return expected.equals(current);
+		boolean result = expected.equals(current);
+//		System.out.println("eq: "+expected+" ? "+current+" -> "+result);
+		return result;
 	}
 
 	private static <T> Predicate<T> matchAll(Iterable<Predicate<T>> predicates) {

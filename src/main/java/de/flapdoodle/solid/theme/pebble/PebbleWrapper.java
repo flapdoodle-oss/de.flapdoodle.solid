@@ -16,12 +16,16 @@
  */
 package de.flapdoodle.solid.theme.pebble;
 
+import java.util.Arrays;
+import java.util.List;
 import java.util.function.Function;
 
+import org.assertj.core.internal.Objects;
 import org.immutables.value.Value.Auxiliary;
 import org.immutables.value.Value.Immutable;
 import org.immutables.value.Value.Lazy;
 
+import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
 import com.google.j2objc.annotations.AutoreleasePool;
@@ -77,7 +81,16 @@ public abstract class PebbleWrapper {
 	}
 	
 	@Auxiliary
+	public void notNull(Object ...values) {
+		List<Object> all = Arrays.asList(values);
+		for (int i=0;i<values.length;i++) {
+			Preconditions.checkNotNull(values[i],"entry %s is null (%s)",i,all);
+		}
+	}
+	
+	@Auxiliary
 	public String linkTo(String path) {
+		Preconditions.checkNotNull(path,"path is null");
 		SiteConfig config = context().site().config();
 		return Links.renderLink(config.baseUrl(), path, getUrl(), config.relativeLinks());
 	}
