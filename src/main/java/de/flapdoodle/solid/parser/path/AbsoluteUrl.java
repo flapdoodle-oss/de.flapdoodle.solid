@@ -47,12 +47,14 @@ public abstract class AbsoluteUrl {
 	
 	@Auxiliary
 	public String relativePathTo(AbsoluteUrl destination) {
-		int firstDifference = firstDifference(parts(), destination.parts());
-		if (firstDifference==parts().length()-1 && firstDifference==destination.parts().length()-1) {
+		if (parts().equals(destination.parts())) {
 			return destination.parts().last().substring(1);
 		}
+		int firstDifference = firstDifference(parts(), destination.parts());
+		List<String> leftParts = destination.parts().subSequence(firstDifference);
+		List<String> fixedLeftParts = List.of(leftParts.get(0).substring(1)).appendAll(leftParts.subSequence(1));
 		String changeDirPart = Joiner.on('/').join(List.fill(parts().length()-firstDifference-1,() -> ".."));
-		return changeDirPart+destination.parts().subSequence(firstDifference).fold("", (a,b) -> a+b);
+		return changeDirPart+fixedLeftParts.fold(changeDirPart.isEmpty() ? "" : "/", (a,b) -> a+b);
 	}
 
 	public static AbsoluteUrl parse(String src) {

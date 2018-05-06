@@ -18,6 +18,7 @@ package de.flapdoodle.solid.theme.pebble;
 
 import java.io.IOException;
 import java.io.StringWriter;
+import java.lang.reflect.InvocationTargetException;
 import java.nio.file.Path;
 
 import com.google.common.collect.ImmutableMap;
@@ -76,7 +77,7 @@ public class PebbleTheme extends AbstractTheme {
 			
 			template.evaluate(writer, Maps.newLinkedHashMap(ImmutableMap.of("it",it)));
 			return writer.toString();
-		} catch (PebbleException | IOException | RuntimePebbleException px) {
+		} catch (PebbleException | IOException | RuntimePebbleException px ) {
 			throw new RuntimeException("rendering fails for "+template.getName(),px);
 		}
 	}

@@ -83,6 +83,12 @@ public abstract class PebbleWrapper {
 	}
 
 	@Auxiliary
+	public String baseLinkTo(String path) {
+		SiteConfig config = context().site().config();
+		return Links.renderLink(config.baseUrl(), config.baseUrl()+path, getUrl(), config.relativeLinks());
+	}
+	
+	@Auxiliary
 	public String linkToRoot() {
 		return context().site().config().baseUrl();
 	}

@@ -1,6 +1,7 @@
 package de.flapdoodle.solid.theme;
 
 import com.google.common.annotations.VisibleForTesting;
+import com.google.common.base.Preconditions;
 
 import de.flapdoodle.solid.parser.path.AbsoluteUrl;
 import io.vavr.Tuple;
@@ -12,19 +13,22 @@ public class Links {
 	private static final String HTTPS = "https://";
 
 	public static String renderLink(String baseUrl, String path, String currentUrl, boolean relative) {
-		String absoluteUrl = baseUrl+path;
+		Tuple2<String, String> destDomainAndPath = splitDomainPart(path);
+		if (destDomainAndPath._1().isEmpty()) {
+			destDomainAndPath = splitDomainPart(baseUrl+path);
+		}
 		if (relative) {
 			Tuple2<String, String> currentDomainAndPath = splitDomainPart(currentUrl);
-			Tuple2<String, String> destDomainAndPath = splitDomainPart(absoluteUrl);
-			if (!currentDomainAndPath._1().equals(destDomainAndPath._1())) {
-				return absoluteUrl;
+			if (currentDomainAndPath._1().equals(destDomainAndPath._1())) {
+				String result = AbsoluteUrl.parse(currentDomainAndPath._2())
+						.relativePathTo(AbsoluteUrl.parse(destDomainAndPath._2()));
+				Preconditions.checkArgument(!result.contains("http:"),"wrong: %s (%s -> %s)",result,currentDomainAndPath, destDomainAndPath);
+				Preconditions.checkArgument(!result.contains("//"),"wrong: %s (%s -> %s)",result,currentDomainAndPath, destDomainAndPath);
+				System.out.println(" ? "+currentUrl+" --> "+path+" = "+result);
+				return result;
 			}
-			String result = AbsoluteUrl.parse(currentDomainAndPath._2())
-					.relativePathTo(AbsoluteUrl.parse(destDomainAndPath._2()));
-			System.out.println(" ? "+currentUrl+" --> "+absoluteUrl+" = "+result);
-			return result;
 		}
-		return absoluteUrl;
+		return destDomainAndPath._1()+destDomainAndPath._2();
 	}
 
 	@VisibleForTesting

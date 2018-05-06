@@ -1,4 +1,4 @@
-baseURL = "http://www.foo.de/blog"
+baseURL = "http://www.foo.de/blog/"
 title = "Sample Blog"
 subtitle = "Es musste mal gesagt werden..."
 theme = "wpPB"
@@ -10,35 +10,35 @@ relativeURLs = true
 
 [urls]
 	[urls.home]
-		path = "/:page/"
+		path = ":page/"
 		pageSize = 10
 		filter = "posts"
 		
 	[urls.pages]
-		path = "/pages/:pathTitle/"
+		path = "pages/:pathTitle/"
 		filter = "pages"
 		
 	[urls.posts]
-		path = "/:year/:month/:day/:pathTitle/"
+		path = ":year/:month/:day/:pathTitle/"
 		filter = "posts"
 		
 	[urls.daily]
-		path = "/:year/:month/:day/:page/"
+		path = ":year/:month/:day/:page/"
 		pageSize = 4		
 		filter = "posts"
 
 	[urls.monthly]
-		path = "/:year/:month/:page/"
+		path = ":year/:month/:page/"
 		pageSize = 4		
 		filter = "posts"
 	
 	[urls.year]
-		path = "/:year/:page/"
+		path = ":year/:page/"
 		pageSize = 10		
 		filter = "posts"
 
 	[urls.tags]
-		path = "/tag/:pathTags/"
+		path = "tag/:pathTags/"
 		pageSize = 10		
 		filter = "posts"
 

@@ -23,6 +23,7 @@ import org.immutables.value.Value.Auxiliary;
 import org.immutables.value.Value.Default;
 import org.immutables.value.Value.Style;
 
+import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.ImmutableSet;
@@ -96,9 +97,13 @@ public interface SiteConfig {
 	}
 
 	public static SiteConfig of(String filename, PropertyTree map) {
+		String baseUrl = map.find(String.class, "baseURL").get();
+		
+		Preconditions.checkArgument(baseUrl.endsWith("/"),"baseUrl does not end with '/' -> %s",baseUrl);
+		
 		Builder builder = builder()
 				.filename(filename)
-				.baseUrl(map.find(String.class, "baseURL").get())
+				.baseUrl(baseUrl)
 				.theme(Optionals.checkPresent(map.find(String.class, "theme"),"theme not set in %s",filename).get());
 		
 		map.find(Boolean.class,"relativeLinks")

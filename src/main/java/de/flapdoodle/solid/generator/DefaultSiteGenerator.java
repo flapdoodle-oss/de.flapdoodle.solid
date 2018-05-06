@@ -199,7 +199,7 @@ public class DefaultSiteGenerator implements SiteGenerator {
 
 	private Iterable<? extends Document> applyBaseUrl(String baseUrl, ImmutableList<Document> src) {
 		return src.stream()
-			.map(d -> ImmutableDocument.copyOf(d).withPath(baseUrl+"/"+d.path()))
+			.map(d -> ImmutableDocument.copyOf(d).withPath(baseUrl+d.path()))
 			.collect(ImmutableList.toImmutableList());
 	}
 

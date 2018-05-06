@@ -105,4 +105,16 @@ public class AbsoluteUrlTest {
 				.describedAs("from %s to %s", current.parts(), destination.parts())
 				.isEqualTo("../../1/2/3/");
 	}
+
+	@Test
+	public void sample() {
+		AbsoluteUrl current = AbsoluteUrl.parse("/blog/");
+		AbsoluteUrl destination = AbsoluteUrl.parse("/blog/css/all.css");
+
+		String result = current.relativePathTo(destination);
+
+		assertThat(result)
+				.describedAs("from %s to %s", current.parts(), destination.parts())
+				.isEqualTo("css/all.css");
+	}
 }
