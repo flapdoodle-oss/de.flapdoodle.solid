@@ -20,7 +20,6 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.function.Function;
 
-import org.assertj.core.internal.Objects;
 import org.immutables.value.Value.Auxiliary;
 import org.immutables.value.Value.Immutable;
 import org.immutables.value.Value.Lazy;
