@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright (C) 2017
  *   Michael Mosmann <michael@mosmann.de>
  *
