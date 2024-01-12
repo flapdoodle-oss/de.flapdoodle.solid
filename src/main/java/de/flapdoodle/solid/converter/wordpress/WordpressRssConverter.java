@@ -69,7 +69,7 @@ public class WordpressRssConverter {
 				Try.runable(() -> {
 					Files.write(filePath, asBytes(d.content()), StandardOpenOption.CREATE, StandardOpenOption.TRUNCATE_EXISTING);
 				})
-				.mapCheckedException(RuntimeException::new)
+				.mapToUncheckedException(RuntimeException::new)
 				.run();
 			});
 		}

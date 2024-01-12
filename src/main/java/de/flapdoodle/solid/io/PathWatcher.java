@@ -190,7 +190,7 @@ public class PathWatcher {
 
 		public Running(Path directory, long duration, TimeUnit unit, Function<Multimap<String, Path>, Boolean> eventListener) {
 			Try.supplier(() -> new PathWatcher(directory))
-				.mapCheckedException(SomethingWentWrong::new)
+				.mapToUncheckedException(SomethingWentWrong::new)
 				.get().processEvents(duration, unit, eventListener);
 		}
 	}

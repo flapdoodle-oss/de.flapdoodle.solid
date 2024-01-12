@@ -31,7 +31,7 @@ public abstract class PropertyTreeConfigs {
 	public static Maybe<PropertyTree> propertyTreeOf(FiletypeParserFactory filetypeParserFactory, Path path) {
 		 return filetypeParserFactory.parserFor(Filenames.extensionOf(path))
 			.map(p -> Try.supplier(() -> p.parse(In.read(path)))
-					.mapCheckedException(SomethingWentWrong::new)
+					.mapToUncheckedException(SomethingWentWrong::new)
 					.get());
 	}
 }

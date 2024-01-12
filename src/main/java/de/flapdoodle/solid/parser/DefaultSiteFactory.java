@@ -80,14 +80,14 @@ public class DefaultSiteFactory implements SiteFactory {
 					}
 				});
 		})
-			.mapCheckedException(SomethingWentWrong::new)
+			.mapToUncheckedException(SomethingWentWrong::new)
 			.run();
 
 		siteBuilder.addAllStaticFiles(Try.supplier(() -> {
 			Path staticContentPath = siteRoot.resolve(siteConfig.staticDirectory());
 			return Document.of(staticContentPath, path -> path.toString());
 		})
-			.onCheckedException(ex -> ImmutableList.of())
+			.fallbackTo(ex -> ImmutableList.of())
 			.get());
 
 		return siteBuilder.build();
@@ -112,7 +112,7 @@ public class DefaultSiteFactory implements SiteFactory {
 				.map(path2Config)
 				.flatMap(Maybe::asStream)
 				.collect(Collectors.toList()))
-			.mapCheckedException(SomethingWentWrong::new)
+			.mapToUncheckedException(SomethingWentWrong::new)
 			.get();
 
 		if (configs.size()!=1) {

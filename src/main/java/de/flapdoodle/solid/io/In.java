@@ -53,7 +53,7 @@ public abstract class In {
 				if (path.toFile().isFile()) {
 //					Path relativePath = root.relativize(path);
 					ByteArray content = Try.supplier(() -> ByteArray.fromArray(Files.readAllBytes(path)))
-						.mapCheckedException(SomethingWentWrong::new)
+						.mapToUncheckedException(SomethingWentWrong::new)
 						.get();
 					
 					consumer.accept(path, content);
@@ -63,7 +63,7 @@ public abstract class In {
 	
 	public static String mimeTypeOf(Path path) {
 		return Try.supplier(() -> Files.probeContentType(path))
-				.mapCheckedException(RuntimeException::new)
+				.mapToUncheckedException(RuntimeException::new)
 				.get();
 	}
 }

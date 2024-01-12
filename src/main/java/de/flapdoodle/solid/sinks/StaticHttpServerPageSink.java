@@ -51,7 +51,7 @@ public class StaticHttpServerPageSink implements PageSink {
 		String baseUrl = siteConfig.baseUrl();
 		
 		documents.forEach(doc -> Try.consumer((Document d) -> write(baseUrl, d, exportDirectory))
-				.mapCheckedException(SomethingWentWrong::new)
+				.mapToUncheckedException(SomethingWentWrong::new)
 				.accept(doc));
 	}
 

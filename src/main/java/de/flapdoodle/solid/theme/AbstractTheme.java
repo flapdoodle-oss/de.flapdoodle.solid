@@ -44,7 +44,7 @@ public abstract class AbstractTheme implements Theme {
 			Path staticContentPath = rootDir.resolve("static");
 			return Document.of(staticContentPath, path -> path.toString());
 		})
-			.onCheckedException(ex -> ImmutableList.of())
+			.fallbackTo(ex -> ImmutableList.of())
 			.get();
 	}
 

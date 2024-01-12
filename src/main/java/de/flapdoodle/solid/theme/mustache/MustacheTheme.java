@@ -73,7 +73,7 @@ public class MustacheTheme extends AbstractTheme {
 	@Override
 	public Renderer rendererFor(String templateName) {
 		Template template = Try.supplier(() -> compiler.compile(new FileReader(rootDir.resolve(templateName+".mustache").toFile())))
-			.mapCheckedException(SomethingWentWrong::new)
+			.mapToUncheckedException(SomethingWentWrong::new)
 			.get();
 		
 		return rendererOf(template, templateName);

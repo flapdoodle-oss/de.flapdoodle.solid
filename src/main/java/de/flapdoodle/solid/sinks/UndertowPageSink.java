@@ -144,7 +144,7 @@ public class UndertowPageSink implements PageSink {
 	@VisibleForTesting
 	protected static Pair<String, String> hostAndBasePath(String baseUrl) {
 		URL asUrl = Try.supplier(() -> new URL(baseUrl))
-			.mapCheckedException(RuntimeException::new)
+			.mapToUncheckedException(RuntimeException::new)
 			.get();
 		
 		String basePath = asUrl.getPath();

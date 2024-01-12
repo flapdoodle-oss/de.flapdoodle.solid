@@ -71,7 +71,7 @@ public class Html2Markdown {
 				.readLines().stream()
 				.map(s -> s.indexOf('<')==-1 ? "<p>"+s+"</p>" : s)
 				.collect(Collectors.joining("\n")))
-			.mapCheckedException(RuntimeException::new)
+			.mapToUncheckedException(RuntimeException::new)
 			.get();
 //		System.out.println("----------------------------");
 //		System.out.println(src);

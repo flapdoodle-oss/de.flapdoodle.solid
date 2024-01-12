@@ -54,7 +54,7 @@ public class DefaultThemeFactory implements ThemeFactory {
 				.map(path2Config)
 				.flatMap(Maybe::asStream)
 				.collect(ImmutableList.toImmutableList()))
-				.mapCheckedException(RuntimeException::new)
+				.mapToUncheckedException(RuntimeException::new)
 				.get();
 
 		if (configs.size() != 1) {

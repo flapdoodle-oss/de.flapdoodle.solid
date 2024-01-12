@@ -55,7 +55,7 @@ public class PathWatcherTest {
 						java.nio.file.Files.write(tempDir.toPath().resolve("test"+run+"b"), "".getBytes(Charsets.UTF_8), StandardOpenOption.CREATE_NEW);
 						Thread.sleep(100);
 					})
-					.mapCheckedException(RuntimeException::new)
+					.mapToUncheckedException(RuntimeException::new)
 					.run();
 			}
 		});

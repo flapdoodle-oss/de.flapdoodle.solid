@@ -172,7 +172,7 @@ public class PebbleThemeTest {
 				template.evaluate(result, context);
 				return result.toString();
 			})
-			.mapCheckedException(RuntimeException::new)
+			.mapToUncheckedException(RuntimeException::new)
 			.get();
 	}
 	
