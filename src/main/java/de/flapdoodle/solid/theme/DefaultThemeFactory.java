@@ -16,24 +16,21 @@
  */
 package de.flapdoodle.solid.theme;
 
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.util.function.Function;
-import java.util.stream.Collectors;
-
 import com.google.common.collect.ImmutableList;
-
 import de.flapdoodle.solid.content.render.MarkupRendererFactory;
 import de.flapdoodle.solid.exceptions.NotASolidSite;
 import de.flapdoodle.solid.io.Filenames;
 import de.flapdoodle.solid.parser.PropertyTreeConfigs;
 import de.flapdoodle.solid.parser.types.FiletypeParserFactory;
-import de.flapdoodle.solid.theme.mustache.MustacheTheme;
 import de.flapdoodle.solid.theme.pebble.PebbleTheme;
-import de.flapdoodle.solid.theme.stringtemplate.StringtemplateTheme;
 import de.flapdoodle.solid.types.Maybe;
 import de.flapdoodle.solid.types.tree.PropertyTree;
 import de.flapdoodle.types.Try;
+
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 
 public class DefaultThemeFactory implements ThemeFactory {
 
@@ -66,12 +63,6 @@ public class DefaultThemeFactory implements ThemeFactory {
 		
 		PropertyTree config = configs.get(0);
 		Maybe<String> engine = config.find(String.class, "engine");
-		if (engine.isPresent() && engine.get().equals("mustache")) {
-			return new MustacheTheme(themeDirectory, config, markupRendererFactory);
-		}
-		if (engine.isPresent() && engine.get().equals("st")) {
-			return new StringtemplateTheme(themeDirectory, config, markupRendererFactory);
-		}
 		if (engine.isPresent() && engine.get().equals("pebble")) {
 			return new PebbleTheme(themeDirectory, config, markupRendererFactory);
 		}
