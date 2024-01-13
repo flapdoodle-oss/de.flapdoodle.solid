@@ -55,7 +55,7 @@
 
         <immutables.version>2.10.0</immutables.version>
         <guice.version>4.2.3</guice.version>
-        <flexmark.version>0.32.4</flexmark.version>
+        <flexmark.version>0.62.2</flexmark.version>
         <!-- allowed values: R7, 1.0, 1.5, 2.0 or none -->
         <wtp.version>none</wtp.version>
         <!-- eclipse apt switch -->
@@ -648,14 +648,18 @@
         </dependency>
         <dependency>
             <groupId>com.vladsch.flexmark</groupId>
-            <artifactId>flexmark-formatter</artifactId>
+            <artifactId>flexmark-html2md-converter</artifactId>
             <version>${flexmark.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>com.vladsch.flexmark</groupId>
-            <artifactId>flexmark-html-parser</artifactId>
-            <version>${flexmark.version}</version>
-        </dependency>
+        </dependency><!--        <dependency>-->
+<!--            <groupId>com.vladsch.flexmark</groupId>-->
+<!--            <artifactId>flexmark-formatter</artifactId>-->
+<!--            <version>${flexmark.version}</version>-->
+<!--        </dependency>-->
+<!--        <dependency>-->
+<!--            <groupId>com.vladsch.flexmark</groupId>-->
+<!--            <artifactId>flexmark-html-parser</artifactId>-->
+<!--            <version>${flexmark.version}</version>-->
+<!--        </dependency>-->
 
 <!--        &lt;!&ndash; https://mvnrepository.com/artifact/com.samskivert/jmustache &ndash;&gt;-->
 <!--        <dependency>-->

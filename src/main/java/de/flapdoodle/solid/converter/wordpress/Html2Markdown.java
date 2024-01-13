@@ -16,32 +16,36 @@
  */
 package de.flapdoodle.solid.converter.wordpress;
 
-import java.lang.reflect.Constructor;
-import java.lang.reflect.InvocationTargetException;
-import java.util.Optional;
-import java.util.regex.Pattern;
-import java.util.stream.Collectors;
-
 import com.google.common.annotations.VisibleForTesting;
 import com.google.common.io.CharSource;
-import com.vladsch.flexmark.convert.html.FlexmarkHtmlParser;
-import com.vladsch.flexmark.util.html.FormattingAppendable;
-import com.vladsch.flexmark.util.html.FormattingAppendableImpl;
-import com.vladsch.flexmark.util.options.MutableDataSet;
-
+import com.vladsch.flexmark.html2md.converter.FlexmarkHtmlConverter;
+import com.vladsch.flexmark.util.data.MutableDataSet;
+import com.vladsch.flexmark.util.sequence.LineAppendable;
+import com.vladsch.flexmark.util.sequence.LineAppendableImpl;
 import de.flapdoodle.solid.converter.segments.Matcher;
 import de.flapdoodle.solid.converter.segments.Replacement;
 import de.flapdoodle.solid.converter.segments.Segments;
 import de.flapdoodle.types.Try;
 
+import java.lang.reflect.InvocationTargetException;
+import java.util.Optional;
+import java.util.regex.Pattern;
+import java.util.stream.Collectors;
+
 public class Html2Markdown {
 
-	private final FlexmarkHtmlParser instance;
+	private final FlexmarkHtmlConverter instance;
 
 	private Html2Markdown() throws NoSuchMethodException, SecurityException, InstantiationException, IllegalAccessException, IllegalArgumentException, InvocationTargetException {
-		Constructor<FlexmarkHtmlParser> constructor = (Constructor<FlexmarkHtmlParser>) FlexmarkHtmlParser.class.getDeclaredConstructors()[0];
-		constructor.setAccessible(true);
-		this.instance = constructor.newInstance(new MutableDataSet());
+		MutableDataSet dataHolder=new MutableDataSet();
+		dataHolder.set(FlexmarkHtmlConverter.MAX_TRAILING_BLANK_LINES, 3);
+		dataHolder.set(FlexmarkHtmlConverter.BR_AS_EXTRA_BLANK_LINES, false);
+//		dataHolder.set(FlexmarkHtmlConverter.DUMP_HTML_TREE, true);
+		this.instance = FlexmarkHtmlConverter.builder(dataHolder).build();
+
+//		Constructor<FlexmarkHtmlParser> constructor = (Constructor<FlexmarkHtmlParser>) FlexmarkHtmlConverter.class.getDeclaredConstructors()[0];
+//		constructor.setAccessible(true);
+//		this.instance = constructor.newInstance(new MutableDataSet());
 	}
 	
 	public static Html2Markdown newInstance() {
@@ -82,10 +86,13 @@ public class Html2Markdown {
 	}
 	
 	private String asMarkdown(String src) {
-		FormattingAppendableImpl out = new FormattingAppendableImpl(FormattingAppendable.SUPPRESS_TRAILING_WHITESPACE | FormattingAppendable.COLLAPSE_WHITESPACE);
-    instance.parse(out, src);
-    int maxBlankLines=3;
-		return out.getText(maxBlankLines);
+//		FormattingAppendableImpl out = new FormattingAppendableImpl(FormattingAppendable.SUPPRESS_TRAILING_WHITESPACE | FormattingAppendable.COLLAPSE_WHITESPACE);
+//    instance.parse(out, src);
+//    int maxBlankLines=3;
+//		return out.getText(maxBlankLines);
+		LineAppendableImpl appendable = new LineAppendableImpl(LineAppendable.F_COLLAPSE_WHITESPACE | LineAppendable.F_TRIM_TRAILING_WHITESPACE);
+		instance.convert(src, appendable);
+		return appendable.toString(3);
 	}
 	
 	private static class CodeTagMatcher implements Matcher {

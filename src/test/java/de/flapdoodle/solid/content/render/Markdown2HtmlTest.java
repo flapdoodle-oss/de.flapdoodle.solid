@@ -47,12 +47,11 @@ public class Markdown2HtmlTest {
 
 		assertEquals("<ul>\n" + 
 				"  <li>\n" + 
-				"  <div>\n" + 
+				"    <div>\n" +
 				"    <a href=\"http://www.chinesisch-lernen.org/\">Chinesisch-Lernen.org &#8211; Chinesisch lernen und China entdecken</a>\n" + 
 				"  </div>\n" + 
 				"  </li>\n" + 
-				"</ul>\n" + 
-				"", html);
+				"</ul>\n", html);
 	}
 
 	@Test

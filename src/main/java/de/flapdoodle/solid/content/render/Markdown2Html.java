@@ -22,23 +22,18 @@ import java.util.stream.Collectors;
 
 import com.google.common.collect.Sets;
 import com.vladsch.flexmark.ast.BlockQuote;
-import com.vladsch.flexmark.ast.Document;
+import com.vladsch.flexmark.html.renderer.*;
+import com.vladsch.flexmark.util.ast.Document;
 import com.vladsch.flexmark.ast.Heading;
-import com.vladsch.flexmark.ast.Node;
-import com.vladsch.flexmark.html.CustomNodeRenderer;
 import com.vladsch.flexmark.html.HtmlRenderer;
 import com.vladsch.flexmark.html.HtmlWriter;
 import com.vladsch.flexmark.html.IndependentLinkResolverFactory;
 import com.vladsch.flexmark.html.LinkResolver;
 import com.vladsch.flexmark.html.LinkResolverFactory;
-import com.vladsch.flexmark.html.renderer.CoreNodeRenderer;
-import com.vladsch.flexmark.html.renderer.LinkResolverContext;
-import com.vladsch.flexmark.html.renderer.NodeRendererContext;
-import com.vladsch.flexmark.html.renderer.NodeRenderingHandler;
-import com.vladsch.flexmark.html.renderer.ResolvedLink;
 import com.vladsch.flexmark.parser.Parser;
-import com.vladsch.flexmark.util.options.DataHolder;
-import com.vladsch.flexmark.util.options.MutableDataSet;
+import com.vladsch.flexmark.util.ast.Node;
+import com.vladsch.flexmark.util.data.DataHolder;
+import com.vladsch.flexmark.util.data.MutableDataSet;
 
 import de.flapdoodle.solid.types.Maybe;
 
@@ -65,11 +60,11 @@ public class Markdown2Html implements MarkupRenderer {
 		LinkResolverFactory linkResolverFactory=new IndependentLinkResolverFactory() {
 
 			@Override
-			public LinkResolver create(LinkResolverContext context) {
+			public LinkResolver apply(LinkResolverBasicContext context) {
 				return new LinkResolver() {
 
 					@Override
-					public ResolvedLink resolveLink(Node node, LinkResolverContext context, ResolvedLink link) {
+					public ResolvedLink resolveLink(Node node, LinkResolverBasicContext context, ResolvedLink link) {
 						Maybe<String> mappedUrl = renderContext.urlMapping().apply(link.getUrl());
 						if (mappedUrl.isPresent()) {
 							return new ResolvedLink(link.getLinkType(), mappedUrl.get()).withStatus(link.getStatus()).withTitle(link.getTitle());
@@ -115,13 +110,13 @@ public class Markdown2Html implements MarkupRenderer {
 				.filter(h -> !(h.getNodeType() == Heading.class))
 				.collect(Collectors.toSet());
 			LinkedHashSet<NodeRenderingHandler<?>> ret = Sets.newLinkedHashSet(withoutHeadline);
-			ret.add(new NodeRenderingHandler<Heading>(Heading.class, new CustomNodeRenderer<Heading>() {
+			ret.add(new NodeRenderingHandler<Heading>(Heading.class, new NodeRenderingHandler.CustomNodeRenderer<>() {
                     @Override
                     public void render(Heading node, NodeRendererContext context, HtmlWriter html) {
                     	CustomCoreNodeRenderer.this.renderHeading(node, context, html);
                     }
                 }));
-			ret.add(new NodeRenderingHandler<BlockQuote>(BlockQuote.class, new CustomNodeRenderer<BlockQuote>() {
+			ret.add(new NodeRenderingHandler<BlockQuote>(BlockQuote.class, new NodeRenderingHandler.CustomNodeRenderer<BlockQuote>() {
                     @Override
                     public void render(BlockQuote node, NodeRendererContext context, HtmlWriter html) {
                     	CustomCoreNodeRenderer.this.renderBlockQuote(node, context, html);
