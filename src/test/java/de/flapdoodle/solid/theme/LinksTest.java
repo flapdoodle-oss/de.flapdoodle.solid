@@ -16,20 +16,19 @@
  */
 package de.flapdoodle.solid.theme;
 
-import static org.junit.Assert.assertEquals;
-
+import de.flapdoodle.types.Pair;
 import org.junit.Test;
 
-import io.vavr.Tuple;
+import static org.junit.Assert.assertEquals;
 
 public class LinksTest {
 
 	@Test
 	public void stripDomainPart() {
-		assertEquals(Tuple.of("http://foo.bar", "/"), Links.splitDomainPart("http://foo.bar/"));
-		assertEquals(Tuple.of("http://foo.bar", "/bar"), Links.splitDomainPart("http://foo.bar/bar"));
-		assertEquals(Tuple.of("http://foo.bar", "/baz/nix"), Links.splitDomainPart("http://foo.bar/baz/nix"));
-		assertEquals(Tuple.of("http://foo.bar", "/"), Links.splitDomainPart("http://foo.bar"));
-		assertEquals(Tuple.of("", "/blub"), Links.splitDomainPart("/blub"));
+		assertEquals(Pair.of("http://foo.bar", "/"), Links.splitDomainPart("http://foo.bar/"));
+		assertEquals(Pair.of("http://foo.bar", "/bar"), Links.splitDomainPart("http://foo.bar/bar"));
+		assertEquals(Pair.of("http://foo.bar", "/baz/nix"), Links.splitDomainPart("http://foo.bar/baz/nix"));
+		assertEquals(Pair.of("http://foo.bar", "/"), Links.splitDomainPart("http://foo.bar"));
+		assertEquals(Pair.of("", "/blub"), Links.splitDomainPart("/blub"));
 	}
 }

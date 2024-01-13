@@ -25,9 +25,11 @@ import com.google.common.base.Preconditions;
 import com.google.common.base.Strings;
 
 import io.vavr.collection.List;
+import org.immutables.vavr.encodings.VavrEncodingEnabled;
 
 // /foo/bar/stuff
 @Immutable
+@VavrEncodingEnabled
 public abstract class AbsoluteUrl {
 	public abstract List<String> parts();
 	
