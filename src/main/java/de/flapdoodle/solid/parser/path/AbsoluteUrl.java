@@ -16,20 +16,20 @@
  */
 package de.flapdoodle.solid.parser.path;
 
+import com.google.common.collect.ImmutableList;
 import org.immutables.value.Value.Auxiliary;
 import org.immutables.value.Value.Check;
 import org.immutables.value.Value.Immutable;
 
 import com.google.common.base.Joiner;
 import com.google.common.base.Preconditions;
-import com.google.common.base.Strings;
 
-import io.vavr.collection.List;
-import org.immutables.vavr.encodings.VavrEncodingEnabled;
+import java.util.Collections;
+import java.util.List;
+import java.util.Objects;
 
-// /foo/bar/stuff
+// /foo/bar/stuff -->  [/foo,/bar,/stuff]
 @Immutable
-@VavrEncodingEnabled
 public abstract class AbsoluteUrl {
 	public abstract List<String> parts();
 	
@@ -44,19 +44,22 @@ public abstract class AbsoluteUrl {
 	
 	@Auxiliary
 	public boolean endsWithSlash() {
-		return parts().last().equals("/");
+		return last(parts()).equals("/");
 	}
-	
+
 	@Auxiliary
 	public String relativePathTo(AbsoluteUrl destination) {
 		if (parts().equals(destination.parts())) {
-			return destination.parts().last().substring(1);
+			return last(destination.parts()).substring(1);
 		}
 		int firstDifference = firstDifference(parts(), destination.parts());
-		List<String> leftParts = destination.parts().subSequence(firstDifference);
-		List<String> fixedLeftParts = List.of(leftParts.get(0).substring(1)).appendAll(leftParts.subSequence(1));
-		String changeDirPart = Joiner.on('/').join(List.fill(parts().length()-firstDifference-1,() -> ".."));
-		return changeDirPart+fixedLeftParts.fold(changeDirPart.isEmpty() ? "" : "/", (a,b) -> a+b);
+		List<String> leftParts = destination.parts().subList(firstDifference, destination.parts().size());
+		java.util.List<String> fixedLeftParts = ImmutableList.<String>builder()
+			.add(leftParts.get(0).substring(1))
+			.addAll(leftParts.subList(1, leftParts.size()))
+			.build();
+		String changeDirPart = Joiner.on('/').join(Collections.nCopies(parts().size()-firstDifference-1,".."));
+		return changeDirPart+fixedLeftParts.stream().reduce(changeDirPart.isEmpty() ? "" : "/", (a,b) -> a+b);
 	}
 
 	public static AbsoluteUrl parse(String src) {
@@ -77,15 +80,21 @@ public abstract class AbsoluteUrl {
 		
 		return builder.build();
 	}
-	
-	private static <T> int firstDifference(List<T> a, List<T> b) {
-		int len=Math.min(a.length(), b.length());
+
+	private static <T> int firstDifference(java.util.List<T> a, java.util.List<T> b) {
+		int len=Math.min(a.size(), b.size());
 		Preconditions.checkArgument(len>0,"both list must contain at least one element");
 		for (int i=0;i<len;i++) {
-			if (!a.get(i).equals(b.get(i))) {
+			if (!Objects.equals(a.get(i), b.get(i))) {
 				return i;
 			}
 		}
 		return len;
 	}
+
+	private static <T> T last(java.util.List<T> list) {
+		Preconditions.checkArgument(!list.isEmpty(),"list is empty");
+		return list.get(list.size()-1);
+	}
+
 }

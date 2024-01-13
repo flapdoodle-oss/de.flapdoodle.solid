@@ -562,33 +562,33 @@
             <scope>provided</scope>
         </dependency>
 
-        <dependency>
-            <groupId>org.immutables.vavr</groupId>
-            <artifactId>vavr</artifactId>
-            <version>0.5.0</version>
-            <type>pom</type>
-        </dependency>
-        <dependency>
-            <groupId>org.immutables.vavr</groupId>
-            <artifactId>vavr-encodings</artifactId>
-            <version>0.5.0</version>
-            <scope>provided</scope>
-            <exclusions>
-                <exclusion>
-                    <groupId>org.immutables</groupId>
-                    <artifactId>value</artifactId>
-                </exclusion>
-                <exclusion>
-                    <groupId>io.vavr</groupId>
-                    <artifactId>vavr</artifactId>
-                </exclusion>
-            </exclusions>
-        </dependency>
-        <dependency>
-            <groupId>io.vavr</groupId>
-            <artifactId>vavr</artifactId>
-            <version>0.9.3</version>
-        </dependency>
+<!--        <dependency>-->
+<!--            <groupId>org.immutables.vavr</groupId>-->
+<!--            <artifactId>vavr</artifactId>-->
+<!--            <version>0.5.0</version>-->
+<!--            <type>pom</type>-->
+<!--        </dependency>-->
+<!--        <dependency>-->
+<!--            <groupId>org.immutables.vavr</groupId>-->
+<!--            <artifactId>vavr-encodings</artifactId>-->
+<!--            <version>0.5.0</version>-->
+<!--            <scope>provided</scope>-->
+<!--            <exclusions>-->
+<!--                <exclusion>-->
+<!--                    <groupId>org.immutables</groupId>-->
+<!--                    <artifactId>value</artifactId>-->
+<!--                </exclusion>-->
+<!--                <exclusion>-->
+<!--                    <groupId>io.vavr</groupId>-->
+<!--                    <artifactId>vavr</artifactId>-->
+<!--                </exclusion>-->
+<!--            </exclusions>-->
+<!--        </dependency>-->
+<!--        <dependency>-->
+<!--            <groupId>io.vavr</groupId>-->
+<!--            <artifactId>vavr</artifactId>-->
+<!--            <version>0.9.3</version>-->
+<!--        </dependency>-->
 
         <dependency>
             <groupId>de.flapdoodle.java8</groupId>
