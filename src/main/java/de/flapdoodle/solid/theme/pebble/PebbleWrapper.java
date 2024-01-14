@@ -16,19 +16,9 @@
  */
 package de.flapdoodle.solid.theme.pebble;
 
-import java.util.Arrays;
-import java.util.List;
-import java.util.function.Function;
-
-import org.immutables.value.Value.Auxiliary;
-import org.immutables.value.Value.Immutable;
-import org.immutables.value.Value.Lazy;
-
 import com.google.common.base.Preconditions;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
-import com.google.j2objc.annotations.AutoreleasePool;
-
 import de.flapdoodle.solid.content.render.MarkupRendererFactory;
 import de.flapdoodle.solid.parser.content.Blob;
 import de.flapdoodle.solid.site.SiteConfig;
@@ -37,6 +27,13 @@ import de.flapdoodle.solid.theme.LinkFactories.Blobs;
 import de.flapdoodle.solid.theme.Links;
 import de.flapdoodle.solid.theme.Paths;
 import de.flapdoodle.solid.types.Maybe;
+import org.immutables.value.Value.Auxiliary;
+import org.immutables.value.Value.Immutable;
+import org.immutables.value.Value.Lazy;
+
+import java.util.Arrays;
+import java.util.List;
+import java.util.function.Function;
 
 @Immutable
 public abstract class PebbleWrapper {

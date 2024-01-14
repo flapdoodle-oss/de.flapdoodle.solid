@@ -42,7 +42,11 @@ public class PebbleTheme extends AbstractTheme {
 		this.engine = new PebbleEngine.Builder()
 			.loader(new TemplateLoader(rootDir))
 			.autoEscaping(false)
-			.extension(new CustomPebbleAttributeResolver().asExtension())
+			.extension(
+				new CustomPebbleAttributeResolver().asExtension(),
+				new Delegate2DynamicAttributeResolver().asExtension(),
+				new MethodResolver().asExtension()
+			)
 			.build();
 	}
 

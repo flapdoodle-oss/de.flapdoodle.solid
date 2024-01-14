@@ -16,24 +16,21 @@
  */
 package de.flapdoodle.solid.theme.pebble;
 
-import java.io.IOException;
-import java.io.StringWriter;
-import java.lang.reflect.InvocationTargetException;
-import java.nio.file.Path;
-
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.Maps;
 import com.mitchellbosecke.pebble.PebbleEngine;
 import com.mitchellbosecke.pebble.error.PebbleException;
-import com.mitchellbosecke.pebble.error.RuntimePebbleException;
 import com.mitchellbosecke.pebble.template.PebbleTemplate;
-
 import de.flapdoodle.solid.content.render.MarkupRendererFactory;
 import de.flapdoodle.solid.generator.Text;
 import de.flapdoodle.solid.theme.AbstractTheme;
 import de.flapdoodle.solid.theme.Renderer;
 import de.flapdoodle.solid.theme.Renderer.Renderable;
 import de.flapdoodle.solid.types.tree.PropertyTree;
+
+import java.io.IOException;
+import java.io.StringWriter;
+import java.nio.file.Path;
 
 public class PebbleTheme extends AbstractTheme {
 

@@ -37,7 +37,9 @@ public class CustomPebbleAttributeResolver implements AttributeResolver {
 	@Override
 	public ResolvedAttribute resolve(Object instance, Object attribute, Object[] argumentValues, ArgumentsNode args, EvaluationContextImpl context,
 		String filename, int lineNumber) {
-		return unwrapResolved(resolve(instance, attribute)).orElseThrow(() -> new AttributeNotFoundException(new RuntimeException("Instance: "+instance), "not found", attribute.toString(),lineNumber,filename));
+//		return unwrapResolved(resolve(instance, attribute)).orElseThrow(() -> new AttributeNotFoundException(new RuntimeException("Instance: "+instance), "not found", attribute.toString(),lineNumber,filename));
+		return unwrapResolved(resolve(instance, attribute))
+			.orElse(null);
 	}
 
 	private static Optional<ResolvedAttribute> unwrapResolved(Optional<ResolvedAttribute> resolved) {

@@ -17,7 +17,6 @@
 package de.flapdoodle.solid.theme.pebble2;
 
 import com.google.common.collect.ImmutableMap;
-import com.mitchellbosecke.pebble.extension.DynamicAttributeProvider;
 import de.flapdoodle.solid.formatter.Formatter;
 import de.flapdoodle.solid.parser.Tree;
 import de.flapdoodle.solid.site.SiteConfig;
@@ -27,7 +26,7 @@ import org.immutables.value.Value.Immutable;
 import org.immutables.value.Value.Parameter;
 
 @Immutable
-public abstract class PebbleSiteWrapper implements DynamicAttributeProvider {
+public abstract class PebbleSiteWrapper implements DynamicAttributeResolver {
 	@Parameter
 	protected abstract SiteConfig config();
 
