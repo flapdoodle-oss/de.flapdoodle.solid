@@ -45,13 +45,14 @@
     </scm>
 
     <properties>
-        <wicket.version>9.7.0</wicket.version>
-        <jetty9.version>9.2.19.v20160908</jetty9.version>
+        <wicket.version>9.16.0</wicket.version>
+        <jetty9.version>9.4.53.v20231009</jetty9.version>
+        <slf4j.version>2.0.9</slf4j.version>
         <log4j.version>2.17.1</log4j.version>
         <junit.version>4.13.1</junit.version>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <maven.compiler.source>1.8</maven.compiler.source>
-        <maven.compiler.target>1.8</maven.compiler.target>
+        <maven.compiler.source>11</maven.compiler.source>
+        <maven.compiler.target>11</maven.compiler.target>
 
         <immutables.version>2.10.0</immutables.version>
         <guice.version>4.2.3</guice.version>
@@ -376,7 +377,7 @@
                 <configuration>
                     <toolchains>
                         <jdk>
-                            <version>[1.8,)</version>
+                            <version>[11,)</version>
                         </jdk>
                     </toolchains>
                 </configuration>
@@ -498,6 +499,11 @@
         </dependency>
         <dependency>
             <groupId>org.apache.wicket</groupId>
+            <artifactId>wicket-native-websocket-javax</artifactId>
+            <version>${wicket.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.wicket</groupId>
             <artifactId>wicket-guice</artifactId>
             <version>${wicket.version}</version>
         </dependency>
@@ -511,23 +517,46 @@
 
         <!-- LOGGING DEPENDENCIES - LOG4J -->
         <dependency>
-            <groupId>org.apache.logging.log4j</groupId>
-            <artifactId>log4j-slf4j-impl</artifactId>
-            <version>${log4j.version}</version>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-simple</artifactId>
+            <version>${slf4j.version}</version>
         </dependency>
-        <dependency>
-            <groupId>org.apache.logging.log4j</groupId>
-            <artifactId>log4j-core</artifactId>
-            <version>${log4j.version}</version>
-        </dependency>
+<!--        <dependency>-->
+<!--            <groupId>org.apache.logging.log4j</groupId>-->
+<!--            <artifactId>log4j-slf4j-impl</artifactId>-->
+<!--            <version>${log4j.version}</version>-->
+<!--        </dependency>-->
+<!--        <dependency>-->
+<!--            <groupId>org.apache.logging.log4j</groupId>-->
+<!--            <artifactId>log4j-core</artifactId>-->
+<!--            <version>${log4j.version}</version>-->
+<!--        </dependency>-->
 
         <!--  JETTY DEPENDENCIES FOR TESTING  -->
         <dependency>
-            <groupId>org.eclipse.jetty.aggregate</groupId>
-            <artifactId>jetty-all</artifactId>
+            <groupId>org.eclipse.jetty</groupId>
+            <artifactId>jetty-server</artifactId>
             <version>${jetty9.version}</version>
             <scope>test</scope>
         </dependency>
+        <dependency>
+            <groupId>org.eclipse.jetty</groupId>
+            <artifactId>jetty-webapp</artifactId>
+            <version>${jetty9.version}</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.eclipse.jetty</groupId>
+            <artifactId>jetty-jmx</artifactId>
+            <version>${jetty9.version}</version>
+            <scope>test</scope>
+        </dependency>
+<!--        <dependency>-->
+<!--            <groupId>org.eclipse.jetty.websocket</groupId>-->
+<!--            <artifactId>javax-websocket-server-impl</artifactId>-->
+<!--            <version>${jetty9.version}</version>-->
+<!--            <scope>test</scope>-->
+<!--        </dependency>-->
         <!--
             <dependency>
                 <groupId>junit</groupId>
@@ -698,12 +727,12 @@
             <artifactId>coverity-escapers</artifactId>
             <version>1.1.1</version>
         </dependency>
-        <dependency>
-            <groupId>org.slf4j</groupId>
-            <artifactId>slf4j-api</artifactId>
-            <version>1.7.33</version>
-            <scope>compile</scope>
-        </dependency>
+<!--        <dependency>-->
+<!--            <groupId>org.slf4j</groupId>-->
+<!--            <artifactId>slf4j-api</artifactId>-->
+<!--            <version>1.7.33</version>-->
+<!--            <scope>compile</scope>-->
+<!--        </dependency>-->
         <dependency>
             <groupId>io.pebbletemplates</groupId>
             <artifactId>pebble</artifactId>
@@ -714,9 +743,9 @@
         <dependency>
             <groupId>javax.servlet</groupId>
             <artifactId>javax.servlet-api</artifactId>
-            <version>4.0.0-b01</version>
-            <scope>provided</scope>
-            <optional>true</optional>
+            <version>4.0.1</version>
+<!--            <scope>provided</scope>-->
+<!--            <optional>true</optional>-->
         </dependency>
         <dependency>
             <groupId>org.hamcrest</groupId>
