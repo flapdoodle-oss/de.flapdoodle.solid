@@ -16,14 +16,13 @@
  */
 package de.flapdoodle.solid.parser.regex;
 
-import static org.junit.Assert.assertEquals;
+import com.google.common.collect.Lists;
+import org.junit.jupiter.api.Test;
 
 import java.util.List;
 import java.util.regex.Pattern;
 
-import org.junit.Test;
-
-import com.google.common.collect.Lists;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class PatternsTest {
 

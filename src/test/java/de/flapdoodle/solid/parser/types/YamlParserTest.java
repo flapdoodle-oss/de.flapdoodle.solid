@@ -16,13 +16,12 @@
  */
 package de.flapdoodle.solid.parser.types;
 
-import java.io.IOException;
-
-import org.junit.Test;
-import org.yaml.snakeyaml.Yaml;
-
 import com.google.common.base.Charsets;
 import com.google.common.io.Resources;
+import org.junit.jupiter.api.Test;
+import org.yaml.snakeyaml.Yaml;
+
+import java.io.IOException;
 
 public class YamlParserTest {
 	@Test

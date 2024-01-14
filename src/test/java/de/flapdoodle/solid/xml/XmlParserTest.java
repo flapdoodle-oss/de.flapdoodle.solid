@@ -16,17 +16,16 @@
  */
 package de.flapdoodle.solid.xml;
 
+import com.google.common.collect.ImmutableList;
+import com.google.common.io.Resources;
+import org.dom4j.DocumentException;
+import org.junit.jupiter.api.Disabled;
+import org.junit.jupiter.api.Test;
+
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.Reader;
 import java.io.StringReader;
-
-import org.dom4j.DocumentException;
-import org.junit.Ignore;
-import org.junit.Test;
-
-import com.google.common.collect.ImmutableList;
-import com.google.common.io.Resources;
 
 public class XmlParserTest {
 
@@ -45,7 +44,7 @@ public class XmlParserTest {
 	}
 	
 	@Test
-	@Ignore
+	@Disabled
 	public void sampleWordpress() throws DocumentException, IOException {
 		try (Reader reader = new InputStreamReader(Resources.asByteSource(Resources.getResource(getClass(), "wordpress-sample-rss.xml")).openBufferedStream())) {
 			XmlParser.of(reader)
@@ -58,7 +57,7 @@ public class XmlParserTest {
 	}
 	
 	@Test
-	@Ignore
+	@Disabled
 	public void sampleApi() throws DocumentException, IOException {
 		XmlParser xmlParser = XmlParser.of(new StringReader("<foo><bar x=\"2\"></bar></foo>"));
 		

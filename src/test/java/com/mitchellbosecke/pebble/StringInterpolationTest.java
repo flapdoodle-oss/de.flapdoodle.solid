@@ -3,8 +3,7 @@ package com.mitchellbosecke.pebble;
 import com.mitchellbosecke.pebble.error.PebbleException;
 import com.mitchellbosecke.pebble.error.RuntimePebbleException;
 import com.mitchellbosecke.pebble.loader.StringLoader;
-
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
 import java.io.StringWriter;
@@ -12,7 +11,8 @@ import java.io.Writer;
 import java.util.HashMap;
 import java.util.Map;
 
-import static org.junit.Assert.assertEquals;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class StringInterpolationTest {
 
@@ -30,11 +30,11 @@ public class StringInterpolationTest {
         assertEquals("1 plus 2 equals 3", evaluate(src));
     }
 
-    @Test(expected = RuntimePebbleException.class)
+    @Test
     public void testUnclosedInterpolation() throws Exception {
         String src = "{{ \" #{ 1 +\" }}";
 
-        evaluate(src);
+        assertThatThrownBy(() -> evaluate(src)).isInstanceOf(RuntimePebbleException.class);
     }
 
     @Test

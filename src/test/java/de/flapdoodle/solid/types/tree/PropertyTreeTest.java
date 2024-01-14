@@ -16,10 +16,12 @@
  */
 package de.flapdoodle.solid.types.tree;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
+import org.assertj.core.api.Assertions;
+import org.junit.jupiter.api.Test;
 
-import org.junit.Test;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 
 public class PropertyTreeTest {
 
@@ -98,12 +100,13 @@ public class PropertyTreeTest {
 		assertFalse(tree.find(String.class, "simple").isPresent());
 	}
 	
-	@Test(expected = IllegalArgumentException.class)
+	@Test
 	public void emptyPathIsInvalid() {
 		PropertyTree tree = FixedPropertyTree.builder()
 				.put("simple", 19)
 				.build();
-		
-		tree.find(String.class);
+
+		assertThatThrownBy(() ->	tree.find(String.class))
+			.isInstanceOf(IllegalArgumentException.class);
 	}
 }

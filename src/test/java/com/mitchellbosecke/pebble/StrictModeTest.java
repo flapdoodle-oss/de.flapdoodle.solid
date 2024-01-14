@@ -3,15 +3,16 @@ package com.mitchellbosecke.pebble;
 import com.mitchellbosecke.pebble.error.PebbleException;
 import com.mitchellbosecke.pebble.error.RootAttributeNotFoundException;
 import com.mitchellbosecke.pebble.template.PebbleTemplate;
-
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
 import java.io.StringWriter;
 import java.io.Writer;
 import java.util.HashMap;
 import java.util.Map;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.fail;
 
 /**
  * Tests if strict mode works in any case.
@@ -39,10 +40,10 @@ public class StrictModeTest extends AbstractTest {
 
         try {
             template.evaluate(writer, context);
-            Assert.fail("Exception " + RootAttributeNotFoundException.class.getCanonicalName() + " is expected.");
+            fail("Exception " + RootAttributeNotFoundException.class.getCanonicalName() + " is expected.");
         } catch (RootAttributeNotFoundException e) {
-            Assert.assertEquals(e.getFileName(), "templates/template.strictModeComplexExpression.peb");
-            Assert.assertEquals(e.getLineNumber(), (Integer) 2);
+            assertEquals(e.getFileName(), "templates/template.strictModeComplexExpression.peb");
+            assertEquals(e.getLineNumber(), (Integer) 2);
         }
     }
 
@@ -62,10 +63,10 @@ public class StrictModeTest extends AbstractTest {
 
         try {
             template.evaluate(writer, context);
-            Assert.fail("Exception " + RootAttributeNotFoundException.class.getCanonicalName() + " is expected.");
+            fail("Exception " + RootAttributeNotFoundException.class.getCanonicalName() + " is expected.");
         } catch (RootAttributeNotFoundException e) {
-            Assert.assertEquals("templates/template.strictModeSimpleExpression.peb", e.getFileName());
-            Assert.assertEquals((Integer) 2, e.getLineNumber());
+            assertEquals("templates/template.strictModeSimpleExpression.peb", e.getFileName());
+            assertEquals((Integer) 2, e.getLineNumber());
         }
     }
 

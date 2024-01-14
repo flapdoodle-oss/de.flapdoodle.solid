@@ -1,11 +1,11 @@
 package com.mitchellbosecke.pebble.extension;
 
+import org.junit.jupiter.api.Disabled;
+
 import java.util.HashMap;
 import java.util.Map;
 
-import org.junit.Ignore;
-
-@Ignore
+@Disabled
 public class TestingExtension extends AbstractExtension {
 
     private InvocationCountingFunction invocationCountingFunction = new InvocationCountingFunction();

@@ -12,7 +12,7 @@ import com.mitchellbosecke.pebble.error.PebbleException;
 import com.mitchellbosecke.pebble.error.RootAttributeNotFoundException;
 import com.mitchellbosecke.pebble.loader.StringLoader;
 import com.mitchellbosecke.pebble.template.PebbleTemplate;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
 import java.io.StringWriter;
@@ -21,7 +21,8 @@ import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
 
-import static org.junit.Assert.assertEquals;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class ContextTest extends AbstractTest {
 
@@ -67,13 +68,13 @@ public class ContextTest extends AbstractTest {
         assertEquals("", writer.toString());
     }
 
-    @Test(expected = RootAttributeNotFoundException.class)
+    @Test
     public void testMissingContextVariableWithStrictVariables() throws PebbleException, IOException {
         PebbleEngine pebble = new PebbleEngine.Builder().loader(new StringLoader()).strictVariables(true).build();
 
         PebbleTemplate template = pebble.getTemplate("{{ foo }}");
         Writer writer = new StringWriter();
-        template.evaluate(writer);
+        assertThatThrownBy(() -> template.evaluate(writer)).isInstanceOf(RootAttributeNotFoundException.class);
     }
 
     @Test

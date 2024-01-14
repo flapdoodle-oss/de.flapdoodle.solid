@@ -16,17 +16,15 @@
  */
 package de.flapdoodle.solid.parser.types;
 
-import static org.junit.Assert.assertEquals;
+import com.google.common.base.Charsets;
+import com.google.common.io.Resources;
+import de.flapdoodle.solid.parser.meta.Toml;
+import de.flapdoodle.solid.types.maps.GroupedPropertyMap;
+import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
 
-import org.junit.Test;
-
-import com.google.common.base.Charsets;
-import com.google.common.io.Resources;
-
-import de.flapdoodle.solid.parser.meta.Toml;
-import de.flapdoodle.solid.types.maps.GroupedPropertyMap;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class Toml2GroupedPropertyMapTest {
 	@Test

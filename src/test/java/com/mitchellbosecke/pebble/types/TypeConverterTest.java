@@ -1,14 +1,11 @@
 package com.mitchellbosecke.pebble.types;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
+import com.mitchellbosecke.pebble.types.TypeConverter.Converted;
+import org.junit.jupiter.api.Test;
 
 import java.util.Optional;
 
-import org.junit.Test;
-
-import com.mitchellbosecke.pebble.types.TypeConverter.Converted;
+import static org.junit.jupiter.api.Assertions.*;
 
 public class TypeConverterTest {
 

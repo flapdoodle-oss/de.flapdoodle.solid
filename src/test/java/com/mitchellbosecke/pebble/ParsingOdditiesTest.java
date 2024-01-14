@@ -8,8 +8,12 @@
  ******************************************************************************/
 package com.mitchellbosecke.pebble;
 
-import static org.hamcrest.core.IsInstanceOf.instanceOf;
-import static org.junit.Assert.assertEquals;
+import com.mitchellbosecke.pebble.error.ParserException;
+import com.mitchellbosecke.pebble.error.PebbleException;
+import com.mitchellbosecke.pebble.error.RuntimePebbleException;
+import com.mitchellbosecke.pebble.loader.StringLoader;
+import com.mitchellbosecke.pebble.template.PebbleTemplate;
+import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
 import java.io.StringWriter;
@@ -22,20 +26,14 @@ import java.util.HashMap;
 import java.util.Locale;
 import java.util.Map;
 
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.rules.ExpectedException;
-
-import com.mitchellbosecke.pebble.error.ParserException;
-import com.mitchellbosecke.pebble.error.PebbleException;
-import com.mitchellbosecke.pebble.error.RuntimePebbleException;
-import com.mitchellbosecke.pebble.loader.StringLoader;
-import com.mitchellbosecke.pebble.template.PebbleTemplate;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.hamcrest.core.IsInstanceOf.instanceOf;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class ParsingOdditiesTest extends AbstractTest {
 
-    @Rule
-    public final ExpectedException thrown = ExpectedException.none();
+//    @Rule
+//    public final ExpectedException thrown = ExpectedException.none();
 
     @Test
     public void testEscapeCharactersText() throws PebbleException, IOException {
@@ -84,11 +82,13 @@ public class ParsingOdditiesTest extends AbstractTest {
 
         String source = "{{ stringDate | date(existingFormat='yyyy-MMMM-d', 'yyyy/MMMM/d') }}";
 
-        thrown.expect(RuntimePebbleException.class);
-        thrown.expectCause(instanceOf(ParserException.class));
+//        thrown.expect(RuntimePebbleException.class);
+//        thrown.expectCause(instanceOf(ParserException.class));
 
         //Act + Assert
-        pebble.getTemplate(source);
+        assertThatThrownBy(() -> pebble.getTemplate(source))
+          .isInstanceOf(RuntimePebbleException.class)
+          .hasCauseInstanceOf(ParserException.class);
     }
 
     @Test
@@ -129,7 +129,7 @@ public class ParsingOdditiesTest extends AbstractTest {
         }
     }
 
-    @Test(expected = PebbleException.class)
+    @Test
     public void testIncorrectlyNamedArgument() throws PebbleException, IOException {
         PebbleEngine pebble = new PebbleEngine.Builder().loader(new StringLoader()).strictVariables(false).build();
 
@@ -137,8 +137,7 @@ public class ParsingOdditiesTest extends AbstractTest {
                 .getTemplate("{{ 'This is a test of the abbreviate filter' | abbreviate(WRONG=16) }}");
 
         Writer writer = new StringWriter();
-        template.evaluate(writer);
-        assertEquals("This is a tes...", writer.toString());
+        assertThatThrownBy(() -> template.evaluate(writer)).isInstanceOf(PebbleException.class);
     }
 
     @Test
@@ -159,11 +158,13 @@ public class ParsingOdditiesTest extends AbstractTest {
 
         String source = "{{'test\"}}";
 
-        thrown.expect(RuntimePebbleException.class);
-        thrown.expectCause(instanceOf(ParserException.class));
+//        thrown.expect(RuntimePebbleException.class);
+//        thrown.expectCause(instanceOf(ParserException.class));
 
         //Act + Assert
-        pebble.getTemplate(source);
+        assertThatThrownBy(() -> pebble.getTemplate(source))
+          .isInstanceOf(RuntimePebbleException.class)
+          .hasCauseInstanceOf(ParserException.class);
     }
 
     @Test

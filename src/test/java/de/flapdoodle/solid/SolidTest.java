@@ -16,10 +16,10 @@
  */
 package de.flapdoodle.solid;
 
+import org.junit.jupiter.api.Test;
+
 import java.nio.file.Path;
 import java.nio.file.Paths;
-
-import org.junit.Test;
 
 public class SolidTest {
 

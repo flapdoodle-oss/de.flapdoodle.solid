@@ -1,10 +1,10 @@
 package com.mitchellbosecke.pebble.macro;
 
-import java.util.HashMap;
-import java.util.Map;
-
 import com.mitchellbosecke.pebble.extension.AbstractExtension;
 import com.mitchellbosecke.pebble.extension.Filter;
+
+import java.util.HashMap;
+import java.util.Map;
 
 public class PebbleExtension extends AbstractExtension{
   @Override

@@ -1,14 +1,13 @@
 package com.mitchellbosecke.pebble.attributes;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
+import com.mitchellbosecke.pebble.error.PebbleException;
+import org.junit.jupiter.api.Test;
 
 import java.util.Arrays;
 import java.util.Optional;
 
-import org.junit.Test;
-
-import com.mitchellbosecke.pebble.error.PebbleException;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class MethodResolverTest {
 

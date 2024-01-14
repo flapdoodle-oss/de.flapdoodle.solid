@@ -13,7 +13,7 @@ import com.mitchellbosecke.pebble.error.PebbleException;
 import com.mitchellbosecke.pebble.loader.Loader;
 import com.mitchellbosecke.pebble.loader.StringLoader;
 import com.mitchellbosecke.pebble.template.PebbleTemplate;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
 import java.io.Reader;
@@ -29,8 +29,8 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.Semaphore;
 import java.util.concurrent.atomic.AtomicInteger;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.fail;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.fail;
 
 public class ConcurrencyTest extends AbstractTest {
 
@@ -419,7 +419,6 @@ public class ConcurrencyTest extends AbstractTest {
 
         executor.shutdown();
 
-        assertEquals("Expection the result of multiple threads and single thread execution to match.",
-            singleThreadResult.toString(), multipleThreadResult.toString());
+        assertEquals(singleThreadResult.toString(), multipleThreadResult.toString(), "Expection the result of multiple threads and single thread execution to match.");
     }
 }

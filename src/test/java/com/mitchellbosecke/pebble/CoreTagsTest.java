@@ -15,7 +15,8 @@ import com.mitchellbosecke.pebble.error.PebbleException;
 import com.mitchellbosecke.pebble.error.RuntimePebbleException;
 import com.mitchellbosecke.pebble.loader.StringLoader;
 import com.mitchellbosecke.pebble.template.PebbleTemplate;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.Timeout;
 
 import java.io.IOException;
 import java.io.StringWriter;
@@ -23,9 +24,8 @@ import java.io.Writer;
 import java.util.*;
 import java.util.concurrent.Executors;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.junit.jupiter.api.Assertions.*;
 
 public class CoreTagsTest extends AbstractTest {
 
@@ -88,7 +88,7 @@ public class CoreTagsTest extends AbstractTest {
         assertEquals("no", writer.toString());
     }
 
-    @Test(expected = PebbleException.class)
+    @Test
     public void testExceptionWithIfStatement() throws PebbleException, IOException {
         PebbleEngine pebble = new PebbleEngine.Builder().loader(new StringLoader()).strictVariables(false).build();
 
@@ -99,8 +99,7 @@ public class CoreTagsTest extends AbstractTest {
         context.put("yes", true);
 
         Writer writer = new StringWriter();
-        template.evaluate(writer, context);
-        assertEquals("no", writer.toString());
+        assertThatThrownBy(() -> template.evaluate(writer, context)).isInstanceOf(PebbleException.class);
     }
 
     /**
@@ -223,7 +222,7 @@ public class CoreTagsTest extends AbstractTest {
         assertEquals("012345", writer.toString());
     }
 
-    @Test(expected = PebbleException.class)
+    @Test
     public void testForSequenceNumberException() throws PebbleException, IOException {
         PebbleEngine pebble = new PebbleEngine.Builder().loader(new StringLoader()).strictVariables(false).build();
 
@@ -232,7 +231,7 @@ public class CoreTagsTest extends AbstractTest {
         Map<String, Object> context = new HashMap<>();
 
         Writer writer = new StringWriter();
-        template.evaluate(writer, context);
+        assertThatThrownBy(() -> template.evaluate(writer, context)).isInstanceOf(PebbleException.class);
     }
 
     @Test
@@ -463,19 +462,12 @@ public class CoreTagsTest extends AbstractTest {
         assertEquals("true", writer.toString());
     }
 
-    @Test(expected = RuntimePebbleException.class)
+    @Test
     public void testCacheWithNoName() throws PebbleException, IOException {
         PebbleEngine pebble = new PebbleEngine.Builder().loader(new StringLoader()).strictVariables(false).build();
 
         String source = "{% cache %}{% if foobar %}true{% else %}false{% endif %}{% endcache %}";
-        PebbleTemplate template = pebble.getTemplate(source);
-
-        Map<String, Object> context = new HashMap<>();
-        context.put("foobar", true);
-
-        Writer writer = new StringWriter();
-        template.evaluate(writer, context);
-        assertEquals("true", writer.toString());
+        assertThatThrownBy(() -> pebble.getTemplate(source)).isInstanceOf(RuntimePebbleException.class);
     }
 
     public static class SimpleObjectA {
@@ -610,13 +602,13 @@ public class CoreTagsTest extends AbstractTest {
         assertEquals("admin footer", writer.toString());
     }
 
-    @Test(expected = PebbleException.class)
+    @Test
     public void testNonExistingMacroOrFunction() throws PebbleException, IOException {
         PebbleEngine pebble = new PebbleEngine.Builder().loader(new StringLoader()).strictVariables(false).build();
         PebbleTemplate template = pebble.getTemplate("{{ nonExisting('test') }}");
 
         Writer writer = new StringWriter();
-        template.evaluate(writer);
+        assertThatThrownBy(() -> template.evaluate(writer)).isInstanceOf(PebbleException.class);
     }
 
     @Test
@@ -747,7 +739,8 @@ public class CoreTagsTest extends AbstractTest {
         assertEquals("{{ foo }}{{ bar }}", writer.toString());
     }
 
-    @Test(timeout = 300)
+    @Test
+    @Timeout(300)
     public void testParallel() throws PebbleException, IOException {
         PebbleEngine pebble = new PebbleEngine.Builder().loader(new StringLoader()).strictVariables(false)
                 .executorService(Executors.newCachedThreadPool()).build();
@@ -794,7 +787,8 @@ public class CoreTagsTest extends AbstractTest {
      * @throws PebbleException
      * @throws IOException
      */
-    @Test(timeout = 500)
+    @Test
+    @Timeout(500)
     public void testNestedParallel() throws PebbleException, IOException {
         PebbleEngine pebble = new PebbleEngine.Builder().loader(new StringLoader()).strictVariables(false)
                 .executorService(Executors.newCachedThreadPool()).build();
@@ -815,7 +809,8 @@ public class CoreTagsTest extends AbstractTest {
         assertEquals("fourth first fourth first", writer.toString());
     }
 
-    @Test(timeout = 300)
+    @Test
+    @Timeout(300)
     public void testIncludeWithinParallelTag() throws PebbleException, IOException {
 
         PebbleEngine pebble = new PebbleEngine.Builder().strictVariables(true)

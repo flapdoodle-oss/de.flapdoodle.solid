@@ -16,11 +16,11 @@
  */
 package de.flapdoodle.solid.types;
 
-import static org.junit.Assert.assertNotNull;
-
-import org.junit.Test;
-
 import de.flapdoodle.solid.types.OneOf.OneOfFactory;
+import org.junit.jupiter.api.Test;
+
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 public class OneOfTest {
 
@@ -30,8 +30,9 @@ public class OneOfTest {
 		assertNotNull(oneOf);
 	}
 	
-	@Test(expected = IllegalArgumentException.class)
+	@Test
 	public void canNotCreateFactoryForDependendClasses() {
-		OneOf.type(Number.class,String.class, Double.class);
+		assertThatThrownBy(() ->OneOf.type(Number.class,String.class, Double.class))
+			.isInstanceOf(IllegalArgumentException.class);
 	}
 }

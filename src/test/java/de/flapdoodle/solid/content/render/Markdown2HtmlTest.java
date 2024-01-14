@@ -16,12 +16,11 @@
  */
 package de.flapdoodle.solid.content.render;
 
-import static org.junit.Assert.assertEquals;
-
-import org.junit.Ignore;
-import org.junit.Test;
-
 import de.flapdoodle.solid.types.Maybe;
+import org.junit.jupiter.api.Disabled;
+import org.junit.jupiter.api.Test;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class Markdown2HtmlTest {
 
@@ -97,7 +96,7 @@ public class Markdown2HtmlTest {
 	}
 	
 	@Test
-	@Ignore
+	@Disabled
 	public void blockQuoteEscaping() {
 		String html = asHtml("Da gab es ..." + 
 				"\n" + 

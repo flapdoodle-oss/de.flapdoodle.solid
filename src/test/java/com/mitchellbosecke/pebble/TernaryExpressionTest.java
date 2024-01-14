@@ -13,9 +13,7 @@ import com.mitchellbosecke.pebble.error.PebbleException;
 import com.mitchellbosecke.pebble.error.RuntimePebbleException;
 import com.mitchellbosecke.pebble.loader.StringLoader;
 import com.mitchellbosecke.pebble.template.PebbleTemplate;
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.rules.ExpectedException;
+import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
 import java.io.StringWriter;
@@ -23,13 +21,10 @@ import java.io.Writer;
 import java.util.HashMap;
 import java.util.Map;
 
-import static org.hamcrest.core.IsInstanceOf.instanceOf;
-import static org.junit.Assert.assertEquals;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class TernaryExpressionTest extends AbstractTest {
-
-    @Rule
-    public final ExpectedException thrown = ExpectedException.none();
 
     @Test
     public void testTernaryFail1() throws PebbleException, IOException {
@@ -38,11 +33,13 @@ public class TernaryExpressionTest extends AbstractTest {
 
         String source = "{{ 1 > 1 ? 'true' }}";
 
-        thrown.expect(RuntimePebbleException.class);
-        thrown.expectCause(instanceOf(ParserException.class));
+//        thrown.expect(RuntimePebbleException.class);
+//        thrown.expectCause(instanceOf(ParserException.class));
 
         //Act + Assert
-        pebble.getTemplate(source);
+        assertThatThrownBy(() -> pebble.getTemplate(source))
+          .isInstanceOf(RuntimePebbleException.class)
+          .hasCauseInstanceOf(ParserException.class);
     }
 
     @Test
@@ -52,11 +49,13 @@ public class TernaryExpressionTest extends AbstractTest {
 
         String source = "{{ 1 > 1 ? : 'true' }}";
 
-        thrown.expect(RuntimePebbleException.class);
-        thrown.expectCause(instanceOf(ParserException.class));
+//        thrown.expect(RuntimePebbleException.class);
+//        thrown.expectCause(instanceOf(ParserException.class));
 
         //Act + Assert
-        pebble.getTemplate(source);
+        assertThatThrownBy(() -> pebble.getTemplate(source))
+          .isInstanceOf(RuntimePebbleException.class)
+          .hasCauseInstanceOf(ParserException.class);
     }
 
     @Test
@@ -66,11 +65,13 @@ public class TernaryExpressionTest extends AbstractTest {
 
         String source = "{{ 1 > 1 ? 'true' : }}";
 
-        thrown.expect(RuntimePebbleException.class);
-        thrown.expectCause(instanceOf(ParserException.class));
+//        thrown.expect(RuntimePebbleException.class);
+//        thrown.expectCause(instanceOf(ParserException.class));
 
         //Act + Assert
-        pebble.getTemplate(source);
+        assertThatThrownBy(() -> pebble.getTemplate(source))
+          .isInstanceOf(RuntimePebbleException.class)
+          .hasCauseInstanceOf(ParserException.class);
     }
 
     @Test
@@ -80,11 +81,13 @@ public class TernaryExpressionTest extends AbstractTest {
 
         String source = "{{ 1 > 1 ? : }}";
 
-        thrown.expect(RuntimePebbleException.class);
-        thrown.expectCause(instanceOf(ParserException.class));
+//        thrown.expect(RuntimePebbleException.class);
+//        thrown.expectCause(instanceOf(ParserException.class));
 
         //Act + Assert
-        pebble.getTemplate(source);
+        assertThatThrownBy(() -> pebble.getTemplate(source))
+          .isInstanceOf(RuntimePebbleException.class)
+          .hasCauseInstanceOf(ParserException.class);
     }
 
     @Test
@@ -94,11 +97,13 @@ public class TernaryExpressionTest extends AbstractTest {
 
         String source = "{{ 1 > 1 ? : ? 'true' : 'false' }}";
 
-        thrown.expect(RuntimePebbleException.class);
-        thrown.expectCause(instanceOf(ParserException.class));
+//        thrown.expect(RuntimePebbleException.class);
+//        thrown.expectCause(instanceOf(ParserException.class));
 
         //Act + Assert
-        pebble.getTemplate(source);
+        assertThatThrownBy(() -> pebble.getTemplate(source))
+          .isInstanceOf(RuntimePebbleException.class)
+          .hasCauseInstanceOf(ParserException.class);
     }
 
     @Test
@@ -108,11 +113,13 @@ public class TernaryExpressionTest extends AbstractTest {
 
         String source = "{{ 1 > 1 ? true ? 'true' : 'false' }}";
 
-        thrown.expect(RuntimePebbleException.class);
-        thrown.expectCause(instanceOf(ParserException.class));
+//        thrown.expect(RuntimePebbleException.class);
+//        thrown.expectCause(instanceOf(ParserException.class));
 
         //Act + Assert
-        pebble.getTemplate(source);
+        assertThatThrownBy(() -> pebble.getTemplate(source))
+          .isInstanceOf(RuntimePebbleException.class)
+          .hasCauseInstanceOf(ParserException.class);
     }
 
     @Test
@@ -122,11 +129,13 @@ public class TernaryExpressionTest extends AbstractTest {
 
         String source = "{{ 1 > 1 ? : false ? 'true' : 'false' }}";
 
-        thrown.expect(RuntimePebbleException.class);
-        thrown.expectCause(instanceOf(ParserException.class));
+//        thrown.expect(RuntimePebbleException.class);
+//        thrown.expectCause(instanceOf(ParserException.class));
 
         //Act + Assert
-        pebble.getTemplate(source);
+        assertThatThrownBy(() -> pebble.getTemplate(source))
+          .isInstanceOf(RuntimePebbleException.class)
+          .hasCauseInstanceOf(ParserException.class);
     }
 
     @Test
@@ -136,11 +145,13 @@ public class TernaryExpressionTest extends AbstractTest {
 
         String source = "{{ 1 > 1 ? 2 > 2 ? 'true' : 'false' }}";
 
-        thrown.expect(RuntimePebbleException.class);
-        thrown.expectCause(instanceOf(ParserException.class));
+//        thrown.expect(RuntimePebbleException.class);
+//        thrown.expectCause(instanceOf(ParserException.class));
 
         //Act + Assert
-        pebble.getTemplate(source);
+        assertThatThrownBy(() -> pebble.getTemplate(source))
+          .isInstanceOf(RuntimePebbleException.class)
+          .hasCauseInstanceOf(ParserException.class);
     }
 
     @Test
@@ -150,11 +161,13 @@ public class TernaryExpressionTest extends AbstractTest {
 
         String source = "{{ 1 > 1 ? 2 > 2 ? : 'false' : 'false' }}";
 
-        thrown.expect(RuntimePebbleException.class);
-        thrown.expectCause(instanceOf(ParserException.class));
+//        thrown.expect(RuntimePebbleException.class);
+//        thrown.expectCause(instanceOf(ParserException.class));
 
         //Act + Assert
-        pebble.getTemplate(source);
+        assertThatThrownBy(() -> pebble.getTemplate(source))
+          .isInstanceOf(RuntimePebbleException.class)
+          .hasCauseInstanceOf(ParserException.class);
     }
 
     @Test
@@ -164,11 +177,13 @@ public class TernaryExpressionTest extends AbstractTest {
 
         String source = "{{ 1 > 1 ? 2 > 2 ? : : 'false' }}";
 
-        thrown.expect(RuntimePebbleException.class);
-        thrown.expectCause(instanceOf(ParserException.class));
+//        thrown.expect(RuntimePebbleException.class);
+//        thrown.expectCause(instanceOf(ParserException.class));
 
         //Act + Assert
-        pebble.getTemplate(source);
+        assertThatThrownBy(() -> pebble.getTemplate(source))
+          .isInstanceOf(RuntimePebbleException.class)
+          .hasCauseInstanceOf(ParserException.class);
     }
 
     @Test
@@ -178,11 +193,13 @@ public class TernaryExpressionTest extends AbstractTest {
 
         String source = "{{ 1 > 1 ? 'true' : 3 > 3 ? 'false' }}";
 
-        thrown.expect(RuntimePebbleException.class);
-        thrown.expectCause(instanceOf(ParserException.class));
+//        thrown.expect(RuntimePebbleException.class);
+//        thrown.expectCause(instanceOf(ParserException.class));
 
         //Act + Assert
-        pebble.getTemplate(source);
+        assertThatThrownBy(() -> pebble.getTemplate(source))
+          .isInstanceOf(RuntimePebbleException.class)
+          .hasCauseInstanceOf(ParserException.class);
     }
 
     @Test
@@ -192,11 +209,13 @@ public class TernaryExpressionTest extends AbstractTest {
 
         String source = "{{ 1 > 1 ? 'true' : 3 > 3 ? : 'false' }}";
 
-        thrown.expect(RuntimePebbleException.class);
-        thrown.expectCause(instanceOf(ParserException.class));
+//        thrown.expect(RuntimePebbleException.class);
+//        thrown.expectCause(instanceOf(ParserException.class));
 
         //Act + Assert
-        pebble.getTemplate(source);
+        assertThatThrownBy(() -> pebble.getTemplate(source))
+          .isInstanceOf(RuntimePebbleException.class)
+          .hasCauseInstanceOf(ParserException.class);
     }
 
     @Test
@@ -206,11 +225,13 @@ public class TernaryExpressionTest extends AbstractTest {
 
         String source = "{{ 1 > 1 ? 'true' : 3 > 3 ? : }}";
 
-        thrown.expect(RuntimePebbleException.class);
-        thrown.expectCause(instanceOf(ParserException.class));
+//        thrown.expect(RuntimePebbleException.class);
+//        thrown.expectCause(instanceOf(ParserException.class));
 
         //Act + Assert
-        pebble.getTemplate(source);
+        assertThatThrownBy(() -> pebble.getTemplate(source))
+          .isInstanceOf(RuntimePebbleException.class)
+          .hasCauseInstanceOf(ParserException.class);
     }
 
     @Test

@@ -16,16 +16,14 @@
  */
 package de.flapdoodle.solid.generator;
 
-import static org.junit.Assert.assertEquals;
-
-import org.junit.Test;
-
 import com.google.common.collect.ImmutableMap;
-
 import de.flapdoodle.solid.formatter.DefaultObjectFormatter;
 import de.flapdoodle.solid.generator.PathRenderer.FormatterOfProperty;
 import de.flapdoodle.solid.parser.path.Path;
 import de.flapdoodle.solid.types.Maybe;
+import org.junit.jupiter.api.Test;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class DefaultPathRendererTest {
 

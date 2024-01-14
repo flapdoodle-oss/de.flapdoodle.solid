@@ -13,9 +13,7 @@ import com.mitchellbosecke.pebble.error.PebbleException;
 import com.mitchellbosecke.pebble.error.RuntimePebbleException;
 import com.mitchellbosecke.pebble.loader.StringLoader;
 import com.mitchellbosecke.pebble.template.PebbleTemplate;
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.rules.ExpectedException;
+import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
 import java.io.StringWriter;
@@ -23,15 +21,14 @@ import java.io.Writer;
 import java.util.HashMap;
 import java.util.Map;
 
-import static org.hamcrest.core.IsInstanceOf.instanceOf;
-import static org.hamcrest.core.StringStartsWith.startsWith;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.fail;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.fail;
 
 public class ArraySyntaxTest extends AbstractTest {
 
-    @Rule
-    public final ExpectedException thrown = ExpectedException.none();
+//    @Rule
+//    public final ExpectedException thrown = ExpectedException.none();
 
     @Test
     public void testArraySyntax() throws PebbleException, IOException {
@@ -102,11 +99,13 @@ public class ArraySyntaxTest extends AbstractTest {
 
         String source = "{{ [,] }}";
 
-        thrown.expect(RuntimePebbleException.class);
-        thrown.expectCause(instanceOf(ParserException.class));
+//        thrown.expect(RuntimePebbleException.class);
+//        thrown.expectCause(instanceOf(ParserException.class));
 
         //Act + Assert
-        pebble.getTemplate(source);
+        assertThatThrownBy(() -> pebble.getTemplate(source))
+          .isInstanceOf(RuntimePebbleException.class)
+          .hasCauseInstanceOf(ParserException.class);
     }
 
     @SuppressWarnings("serial")
@@ -461,11 +460,13 @@ public class ArraySyntaxTest extends AbstractTest {
 
         Writer writer = new StringWriter();
 
-        thrown.expect(PebbleException.class);
-        thrown.expectMessage(startsWith("Could not perform addition"));
+//        thrown.expect(PebbleException.class);
+//        thrown.expectMessage(startsWith("Could not perform addition"));
 
         //Act + Assert
-        template.evaluate(writer, new HashMap<>());
+        assertThatThrownBy(() -> template.evaluate(writer, new HashMap<>()))
+          .isInstanceOf(PebbleException.class)
+          .hasMessageStartingWith("Could not perform addition");
     }
 
     @Test
@@ -504,11 +505,13 @@ public class ArraySyntaxTest extends AbstractTest {
 
         Writer writer = new StringWriter();
 
-        thrown.expect(PebbleException.class);
-        thrown.expectMessage(startsWith("Could not perform subtraction"));
+//        thrown.expect(PebbleException.class);
+//        thrown.expectMessage(startsWith("Could not perform subtraction"));
 
         //Act + Assert
-        template.evaluate(writer, new HashMap<>());
+        assertThatThrownBy(() -> template.evaluate(writer, new HashMap<>()))
+          .isInstanceOf(PebbleException.class)
+          .hasMessageStartingWith("Could not perform subtraction");
     }
 
     @Test

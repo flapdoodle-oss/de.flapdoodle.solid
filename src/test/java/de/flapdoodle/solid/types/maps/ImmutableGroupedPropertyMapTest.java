@@ -16,15 +16,14 @@
  */
 package de.flapdoodle.solid.types.maps;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-
-import org.junit.Test;
-
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.ImmutableSet;
+import org.assertj.core.api.Assertions;
+import org.junit.jupiter.api.Test;
 
-import de.flapdoodle.solid.types.maps.ImmutableGroupedPropertyMap;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 
 public class ImmutableGroupedPropertyMapTest {
 
@@ -54,20 +53,20 @@ public class ImmutableGroupedPropertyMapTest {
 		assertEquals(ImmutableMap.of("foo","bar","bar","foo"), properties);
 	}
 	
-	@Test(expected = IllegalArgumentException.class)
+	@Test
 	public void overwriteMustFail() {
-		ImmutableGroupedPropertyMap.builder()
+		assertThatThrownBy(() -> ImmutableGroupedPropertyMap.builder()
 			.put("foo", "bar")
 			.put("foo", "blob")
-			.build();
+			.build()).isInstanceOf(IllegalArgumentException.class);
 	}
 	
-	@Test(expected = IllegalArgumentException.class)
+	@Test
 	public void overwriteMustFailInGroup() {
-		ImmutableGroupedPropertyMap.builder()
+		assertThatThrownBy(() -> ImmutableGroupedPropertyMap.builder()
 			.put("foo","sub", "bar")
 			.put("foo","sub", "blob")
-			.build();
+			.build()).isInstanceOf(IllegalArgumentException.class);
 	}
 	
 	@Test

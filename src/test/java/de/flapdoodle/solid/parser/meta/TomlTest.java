@@ -16,16 +16,14 @@
  */
 package de.flapdoodle.solid.parser.meta;
 
-import java.io.IOException;
-import java.util.Map;
-
-import org.junit.Test;
-
 import com.google.common.base.Charsets;
 import com.google.common.io.Resources;
-
 import de.flapdoodle.solid.parser.types.Toml2GroupedPropertyMap;
 import de.flapdoodle.solid.types.maps.GroupedPropertyMap;
+import org.junit.jupiter.api.Test;
+
+import java.io.IOException;
+import java.util.Map;
 
 public class TomlTest {
 

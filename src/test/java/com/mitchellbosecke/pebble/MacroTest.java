@@ -5,7 +5,7 @@ import com.mitchellbosecke.pebble.extension.InvocationCountingFunction;
 import com.mitchellbosecke.pebble.extension.TestingExtension;
 import com.mitchellbosecke.pebble.loader.StringLoader;
 import com.mitchellbosecke.pebble.template.PebbleTemplate;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
 import java.io.StringWriter;
@@ -13,7 +13,8 @@ import java.io.Writer;
 import java.util.HashMap;
 import java.util.Map;
 
-import static org.junit.Assert.assertEquals;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 /**
  * Created by mitch_000 on 2016-11-13.
@@ -49,16 +50,11 @@ public class MacroTest extends AbstractTest {
         assertEquals("success", writer.toString());
     }
 
-    @Test(expected = RuntimeException.class)
+    @Test
     public void testMacrosWithSameName() throws PebbleException, IOException {
         PebbleEngine pebble = new PebbleEngine.Builder().loader(new StringLoader()).strictVariables(false).build();
-        PebbleTemplate template = pebble.getTemplate(
-                "{{ test() }}{% macro test(one) %}ONE{% endmacro %}{% macro test(one,two) %}TWO{% endmacro %}");
-
-        Writer writer = new StringWriter();
-        template.evaluate(writer);
-        assertEquals("	<input name=\"company\" value=\"google\" type=\"text\" />" + LINE_SEPARATOR,
-                writer.toString());
+        assertThatThrownBy(() -> pebble.getTemplate(
+                "{{ test() }}{% macro test(one) %}ONE{% endmacro %}{% macro test(one,two) %}TWO{% endmacro %}"));
     }
 
     @Test

@@ -16,13 +16,12 @@
  */
 package de.flapdoodle.solid.types;
 
-import static org.junit.Assert.assertEquals;
-
-import org.junit.Test;
-
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableMap;
 import com.google.common.collect.ImmutableMultimap;
+import org.junit.jupiter.api.Test;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class MultimapsTest {
 

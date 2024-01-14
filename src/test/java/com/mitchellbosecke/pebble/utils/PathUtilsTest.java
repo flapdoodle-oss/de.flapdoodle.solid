@@ -1,7 +1,8 @@
 package com.mitchellbosecke.pebble.utils;
 
-import org.junit.Assert;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 /**
  * Tests {@link PathUtils}.
@@ -20,12 +21,12 @@ public class PathUtilsTest {
      */
     @Test
     public void testRelativePathResolutionUnixStyle() {
-        Assert.assertEquals("test/test/sample.peb", PathUtils.resolveRelativePath("./sample.peb", "test/test/", FORWARD_SLASH));
-        Assert.assertEquals("test/test/sample.peb",
+        assertEquals("test/test/sample.peb", PathUtils.resolveRelativePath("./sample.peb", "test/test/", FORWARD_SLASH));
+        assertEquals("test/test/sample.peb",
                 PathUtils.resolveRelativePath("./sample.peb", "test/test/other.peb", FORWARD_SLASH));
-        Assert.assertEquals("test/sample.peb", PathUtils.resolveRelativePath("../sample.peb", "test/test/", FORWARD_SLASH));
-        Assert.assertEquals("test/sample.peb", PathUtils.resolveRelativePath("../sample.peb", "test/test/other.peb", FORWARD_SLASH));
-        Assert.assertEquals(null, PathUtils.resolveRelativePath("test/sample.peb", "test/test/other.peb", FORWARD_SLASH));
+        assertEquals("test/sample.peb", PathUtils.resolveRelativePath("../sample.peb", "test/test/", FORWARD_SLASH));
+        assertEquals("test/sample.peb", PathUtils.resolveRelativePath("../sample.peb", "test/test/other.peb", FORWARD_SLASH));
+        assertEquals(null, PathUtils.resolveRelativePath("test/sample.peb", "test/test/other.peb", FORWARD_SLASH));
 
     }
 
@@ -35,35 +36,35 @@ public class PathUtilsTest {
      */
     @Test
     public void testRelativePathResolutionWindowsStyle() {
-        Assert.assertEquals("test\\test\\sample.peb", PathUtils.resolveRelativePath(".\\sample.peb", "test\\test\\", BACKWARD_SLASH));
-        Assert.assertEquals("test\\test\\sample.peb",
+        assertEquals("test\\test\\sample.peb", PathUtils.resolveRelativePath(".\\sample.peb", "test\\test\\", BACKWARD_SLASH));
+        assertEquals("test\\test\\sample.peb",
                 PathUtils.resolveRelativePath(".\\sample.peb", "test\\test\\other.peb", BACKWARD_SLASH));
-        Assert.assertEquals("test\\sample.peb", PathUtils.resolveRelativePath("..\\sample.peb", "test\\test\\", BACKWARD_SLASH));
-        Assert.assertEquals("test\\sample.peb",
+        assertEquals("test\\sample.peb", PathUtils.resolveRelativePath("..\\sample.peb", "test\\test\\", BACKWARD_SLASH));
+        assertEquals("test\\sample.peb",
                 PathUtils.resolveRelativePath("..\\sample.peb", "test\\test\\other.peb", BACKWARD_SLASH));
-        Assert.assertEquals(null, PathUtils.resolveRelativePath("test\\sample.peb", "test\\test\\other.peb", BACKWARD_SLASH));
+        assertEquals(null, PathUtils.resolveRelativePath("test\\sample.peb", "test\\test\\other.peb", BACKWARD_SLASH));
 
     }
 
 
     @Test
     public void testRelativePathResolutionMixedStyle1() {
-        Assert.assertEquals("test/test/sample.peb", PathUtils.resolveRelativePath(".\\sample.peb", "test/test/", FORWARD_SLASH));
-        Assert.assertEquals("test/test/sample.peb",
+        assertEquals("test/test/sample.peb", PathUtils.resolveRelativePath(".\\sample.peb", "test/test/", FORWARD_SLASH));
+        assertEquals("test/test/sample.peb",
                 PathUtils.resolveRelativePath(".\\sample.peb", "test/test/other.peb", FORWARD_SLASH));
-        Assert.assertEquals("test/sample.peb", PathUtils.resolveRelativePath("..\\sample.peb", "test/test/", FORWARD_SLASH));
-        Assert.assertEquals("test/sample.peb", PathUtils.resolveRelativePath("..\\sample.peb", "test/test/other.peb", FORWARD_SLASH));
-        Assert.assertEquals(null, PathUtils.resolveRelativePath("test\\sample.peb", "test/test/other.peb", FORWARD_SLASH));
+        assertEquals("test/sample.peb", PathUtils.resolveRelativePath("..\\sample.peb", "test/test/", FORWARD_SLASH));
+        assertEquals("test/sample.peb", PathUtils.resolveRelativePath("..\\sample.peb", "test/test/other.peb", FORWARD_SLASH));
+        assertEquals(null, PathUtils.resolveRelativePath("test\\sample.peb", "test/test/other.peb", FORWARD_SLASH));
     }
 
     @Test
     public void testRelativePathResolutionMixedStyle2() {
-        Assert.assertEquals("test\\test\\sample.peb", PathUtils.resolveRelativePath("./sample.peb", "test\\test\\", BACKWARD_SLASH));
-        Assert.assertEquals("test\\test\\sample.peb",
+        assertEquals("test\\test\\sample.peb", PathUtils.resolveRelativePath("./sample.peb", "test\\test\\", BACKWARD_SLASH));
+        assertEquals("test\\test\\sample.peb",
                 PathUtils.resolveRelativePath("./sample.peb", "test\\test\\other.peb", BACKWARD_SLASH));
-        Assert.assertEquals("test\\sample.peb", PathUtils.resolveRelativePath("../sample.peb", "test\\test\\", BACKWARD_SLASH));
-        Assert.assertEquals("test\\sample.peb",
+        assertEquals("test\\sample.peb", PathUtils.resolveRelativePath("../sample.peb", "test\\test\\", BACKWARD_SLASH));
+        assertEquals("test\\sample.peb",
                 PathUtils.resolveRelativePath("../sample.peb", "test\\test\\other.peb", BACKWARD_SLASH));
-        Assert.assertEquals(null, PathUtils.resolveRelativePath("test/sample.peb", "test\\test\\other.peb", BACKWARD_SLASH));
+        assertEquals(null, PathUtils.resolveRelativePath("test/sample.peb", "test\\test\\other.peb", BACKWARD_SLASH));
     }
 }

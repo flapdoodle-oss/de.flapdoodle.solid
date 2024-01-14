@@ -16,11 +16,10 @@
  */
 package de.flapdoodle.solid.sinks;
 
-import static org.junit.Assert.assertEquals;
-
-import org.junit.Test;
-
 import de.flapdoodle.solid.types.Pair;
+import org.junit.jupiter.api.Test;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class UndertowPageSinkTest {
 

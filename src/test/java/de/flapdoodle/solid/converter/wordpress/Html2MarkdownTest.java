@@ -16,17 +16,16 @@
  */
 package de.flapdoodle.solid.converter.wordpress;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
+import de.flapdoodle.solid.converter.segments.Replacement;
+import org.jsoup.Jsoup;
+import org.jsoup.nodes.Document;
+import org.junit.jupiter.api.Disabled;
+import org.junit.jupiter.api.Test;
 
 import java.util.Optional;
 
-import org.jsoup.Jsoup;
-import org.jsoup.nodes.Document;
-import org.junit.Ignore;
-import org.junit.Test;
-
-import de.flapdoodle.solid.converter.segments.Replacement;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class Html2MarkdownTest {
 
@@ -82,7 +81,7 @@ public class Html2MarkdownTest {
 	}
 	
 	@Test
-	@Ignore
+	@Disabled
 	public void sample2() {
 		String src="Mit Wicket ist es sehr einfach, Webanwendungen zu schreiben. Wenn man dem Wicket-Pfad folgt und keine besonderen Wünsche hat. Im folgenden besteht der Wunsch darin, den Zustand einer Seite in Seitenparametern abzulegen. Wenn durch einen Link, also eine Aktion, die der Nutzer wählen kann, nur ein Parameter verändert wird, sollen natürlich alle anderen Parameter unverändert weitergereicht werden.\n" + 
 				"\n" + 

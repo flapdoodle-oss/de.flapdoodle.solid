@@ -16,15 +16,14 @@
  */
 package de.flapdoodle.solid.formatter;
 
-import static org.junit.Assert.assertEquals;
+import de.flapdoodle.solid.types.Maybe;
+import de.flapdoodle.solid.types.dates.Dates;
+import org.junit.jupiter.api.Test;
 
 import java.time.LocalDateTime;
 import java.util.Date;
 
-import org.junit.Test;
-
-import de.flapdoodle.solid.types.Maybe;
-import de.flapdoodle.solid.types.dates.Dates;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class StringFormatFormatterTest {
 

@@ -16,19 +16,18 @@
  */
 package de.flapdoodle.solid.types.reflection;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
-
-import org.junit.Test;
-
 import com.google.common.collect.ImmutableSet;
+import org.junit.jupiter.api.Test;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class InspectorTest {
 
 	@Test
 	public void propertyOfStringIsEmpty() {
 		ImmutableSet<String> result = Inspector.propertyNamesOf(String.class);
-		assertTrue(""+result, result.isEmpty());
+		assertTrue(result.isEmpty(), ""+result);
 	}
 	
 	@Test

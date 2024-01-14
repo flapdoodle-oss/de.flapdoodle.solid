@@ -1,6 +1,10 @@
 package com.mitchellbosecke.pebble.extension.escaper;
 
-import static org.junit.Assert.assertEquals;
+import com.mitchellbosecke.pebble.PebbleEngine;
+import com.mitchellbosecke.pebble.error.PebbleException;
+import com.mitchellbosecke.pebble.loader.StringLoader;
+import com.mitchellbosecke.pebble.template.PebbleTemplate;
+import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
 import java.io.StringWriter;
@@ -8,12 +12,7 @@ import java.io.Writer;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.junit.Test;
-
-import com.mitchellbosecke.pebble.PebbleEngine;
-import com.mitchellbosecke.pebble.error.PebbleException;
-import com.mitchellbosecke.pebble.loader.StringLoader;
-import com.mitchellbosecke.pebble.template.PebbleTemplate;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class RawFilterTest {
 	@Test

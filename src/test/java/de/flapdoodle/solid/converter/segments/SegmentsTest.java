@@ -16,11 +16,11 @@
  */
 package de.flapdoodle.solid.converter.segments;
 
-import static org.junit.Assert.assertEquals;
+import org.junit.jupiter.api.Test;
 
 import java.util.Optional;
 
-import org.junit.Test;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class SegmentsTest {
 

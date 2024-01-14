@@ -16,20 +16,16 @@
  */
 package de.flapdoodle.solid.generator;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
-
-import org.junit.Test;
-
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.ImmutableSet;
-
 import de.flapdoodle.solid.types.Maybe;
 import de.flapdoodle.solid.types.properties.TypeProperties;
 import de.flapdoodle.solid.types.properties.TypePropertiesLookup;
 import de.flapdoodle.solid.types.tree.FixedPropertyTree;
 import de.flapdoodle.solid.types.tree.PropertyTree;
+import org.junit.jupiter.api.Test;
+
+import static org.junit.jupiter.api.Assertions.*;
 
 public class TypePropertyBasePropertyCollectionResolverTest {
 	@Test

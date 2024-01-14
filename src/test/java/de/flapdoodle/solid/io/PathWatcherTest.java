@@ -16,6 +16,12 @@
  */
 package de.flapdoodle.solid.io;
 
+import com.google.common.base.Charsets;
+import com.google.common.io.Files;
+import de.flapdoodle.types.Try;
+import org.junit.jupiter.api.Disabled;
+import org.junit.jupiter.api.Test;
+
 import java.io.File;
 import java.nio.file.StandardOpenOption;
 import java.util.concurrent.ExecutionException;
@@ -25,18 +31,10 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 
-import org.junit.Ignore;
-import org.junit.Test;
-
-import com.google.common.base.Charsets;
-import com.google.common.io.Files;
-
-import de.flapdoodle.types.Try;
-
 public class PathWatcherTest {
 
 	@Test
-	@Ignore
+	@Disabled
 	public void watcherMustNotify() throws InterruptedException, ExecutionException {
 		File tempDir = Files.createTempDir();
 		

@@ -14,7 +14,7 @@ import com.mitchellbosecke.pebble.extension.core.LengthFilter;
 import com.mitchellbosecke.pebble.extension.core.ReplaceFilter;
 import com.mitchellbosecke.pebble.loader.StringLoader;
 import com.mitchellbosecke.pebble.template.PebbleTemplate;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
 import java.io.StringWriter;
@@ -22,14 +22,11 @@ import java.io.Writer;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.time.LocalTime;
-import java.time.ZoneId;
-import java.time.ZonedDateTime;
+import java.time.*;
 import java.util.*;
 
-import static org.junit.Assert.assertEquals;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class CoreFiltersTest extends AbstractTest {
 
@@ -824,7 +821,7 @@ public class CoreFiltersTest extends AbstractTest {
         assertEquals("Alex", writer.toString());
     }
 
-    @Test(expected = IllegalArgumentException.class)
+    @Test
     public void testSliceWithInvalidFirstArg() throws PebbleException, IOException {
         PebbleEngine pebble = new PebbleEngine.Builder().loader(new StringLoader()).strictVariables(false).build();
 
@@ -834,7 +831,7 @@ public class CoreFiltersTest extends AbstractTest {
         context.put("name", "Alex");
 
         Writer writer = new StringWriter();
-        template.evaluate(writer, context);
+        assertThatThrownBy(() -> template.evaluate(writer, context)).isInstanceOf(IllegalArgumentException.class);
     }
 
     @Test
@@ -852,7 +849,7 @@ public class CoreFiltersTest extends AbstractTest {
         assertEquals("cd", writer.toString());
     }
 
-    @Test(expected = PebbleException.class)
+    @Test
     public void testSliceWithInvalidSecondArg() throws PebbleException, IOException {
         PebbleEngine pebble = new PebbleEngine.Builder().loader(new StringLoader()).strictVariables(false).build();
 
@@ -862,10 +859,10 @@ public class CoreFiltersTest extends AbstractTest {
         context.put("name", "Alex");
 
         Writer writer = new StringWriter();
-        template.evaluate(writer, context);
+        assertThatThrownBy(() -> template.evaluate(writer, context)).isInstanceOf(PebbleException.class);
     }
 
-    @Test(expected = PebbleException.class)
+    @Test
     public void testSliceWithInvalidSecondArg2() throws PebbleException, IOException {
         PebbleEngine pebble = new PebbleEngine.Builder().loader(new StringLoader()).strictVariables(false).build();
 
@@ -875,7 +872,7 @@ public class CoreFiltersTest extends AbstractTest {
         context.put("name", "Alex");
 
         Writer writer = new StringWriter();
-        template.evaluate(writer, context);
+        assertThatThrownBy(() -> template.evaluate(writer, context)).isInstanceOf(PebbleException.class);
     }
 
     @Test
@@ -993,7 +990,7 @@ public class CoreFiltersTest extends AbstractTest {
         assertEquals("2", writer.toString());
     }
 
-    @Test(expected = PebbleException.class)
+    @Test
     public void testSliceWithInvalidInputType() throws PebbleException, IOException {
         PebbleEngine pebble = new PebbleEngine.Builder().loader(new StringLoader()).strictVariables(false).build();
 
@@ -1003,7 +1000,7 @@ public class CoreFiltersTest extends AbstractTest {
         context.put("names", Long.valueOf(1));
 
         Writer writer = new StringWriter();
-        template.evaluate(writer, context);
+        assertThatThrownBy(() -> template.evaluate(writer, context)).isInstanceOf(PebbleException.class);
     }
 
     /**
@@ -1076,7 +1073,7 @@ public class CoreFiltersTest extends AbstractTest {
         assertEquals("{one=1, two=2} two [1,2] 2 [1,2]", writer.toString());
     }
 
-    @Test(expected = UnsupportedOperationException.class)
+    @Test
     public void testMergeMapWithStringAndFail() throws PebbleException, IOException {
         PebbleEngine pebble = new PebbleEngine.Builder().loader(new StringLoader()).strictVariables(false).build();
 
@@ -1085,10 +1082,10 @@ public class CoreFiltersTest extends AbstractTest {
         Map<String, Object> context = new HashMap<>();
 
         Writer writer = new StringWriter();
-        template.evaluate(writer, context);
+        assertThatThrownBy(() -> template.evaluate(writer, context)).isInstanceOf(UnsupportedOperationException.class);
     }
 
-    @Test(expected = PebbleException.class)
+    @Test
     public void testMergeListWithStringAndFail() throws PebbleException, IOException {
         PebbleEngine pebble = new PebbleEngine.Builder().loader(new StringLoader()).strictVariables(false).build();
 
@@ -1097,10 +1094,10 @@ public class CoreFiltersTest extends AbstractTest {
         Map<String, Object> context = new HashMap<>();
 
         Writer writer = new StringWriter();
-        template.evaluate(writer, context);
+        assertThatThrownBy(() -> template.evaluate(writer, context)).isInstanceOf(PebbleException.class);
     }
 
-    @Test(expected = PebbleException.class)
+    @Test
     public void testMergeDifferentArraysAndFail() throws PebbleException, IOException {
         PebbleEngine pebble = new PebbleEngine.Builder().loader(new StringLoader()).strictVariables(false).build();
 
@@ -1111,7 +1108,7 @@ public class CoreFiltersTest extends AbstractTest {
         context.put("arr2", new String[] {"2"});
 
         Writer writer = new StringWriter();
-        template.evaluate(writer, context);
+        assertThatThrownBy(() -> template.evaluate(writer, context)).isInstanceOf(PebbleException.class);
     }
 
 }

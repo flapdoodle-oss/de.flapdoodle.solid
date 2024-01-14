@@ -16,20 +16,24 @@
  */
 package de.flapdoodle.solid.parser.path;
 
-import static org.assertj.core.api.Assertions.assertThat;
+import org.assertj.core.api.Assertions;
+import org.junit.jupiter.api.Test;
 
-import org.junit.Test;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 public class AbsoluteUrlTest {
 
-	@Test(expected = IllegalArgumentException.class)
+	@Test
 	public void emptyPathMustFail() {
-		AbsoluteUrl.parse("");
+		assertThatThrownBy(() ->	AbsoluteUrl.parse(""))
+			.isInstanceOf(IllegalArgumentException.class);
 	}
 
-	@Test(expected = IllegalArgumentException.class)
+	@Test
 	public void notAbsoluteMustFail() {
-		AbsoluteUrl.parse("foo");
+		assertThatThrownBy(() ->	AbsoluteUrl.parse("foo"))
+			.isInstanceOf(IllegalArgumentException.class);
 	}
 
 	@Test

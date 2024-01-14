@@ -16,18 +16,16 @@
  */
 package de.flapdoodle.solid.converter.wordpress;
 
+import com.google.common.collect.ImmutableList;
+import com.google.common.io.Resources;
+import de.flapdoodle.solid.generator.Document;
+import de.flapdoodle.solid.xml.XmlParser;
+import org.dom4j.DocumentException;
+import org.junit.jupiter.api.Test;
+
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.Reader;
-
-import org.dom4j.DocumentException;
-import org.junit.Test;
-
-import com.google.common.collect.ImmutableList;
-import com.google.common.io.Resources;
-
-import de.flapdoodle.solid.generator.Document;
-import de.flapdoodle.solid.xml.XmlParser;
 
 public class WordpressRssConverterTest {
 

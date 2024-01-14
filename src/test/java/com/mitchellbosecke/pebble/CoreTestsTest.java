@@ -11,8 +11,7 @@ package com.mitchellbosecke.pebble;
 import com.mitchellbosecke.pebble.error.PebbleException;
 import com.mitchellbosecke.pebble.loader.StringLoader;
 import com.mitchellbosecke.pebble.template.PebbleTemplate;
-
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
 import java.io.StringWriter;
@@ -22,7 +21,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import static org.junit.Assert.assertEquals;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class CoreTestsTest extends AbstractTest {
 
@@ -59,7 +59,7 @@ public class CoreTestsTest extends AbstractTest {
         assertEquals("yes", writer.toString());
     }
 
-    @Test(expected = PebbleException.class)
+    @Test
     public void testNullEven() throws PebbleException, IOException {
         PebbleEngine pebble = new PebbleEngine.Builder().loader(new StringLoader()).strictVariables(false).build();
 
@@ -67,7 +67,7 @@ public class CoreTestsTest extends AbstractTest {
         PebbleTemplate template = pebble.getTemplate(source);
 
         Writer writer = new StringWriter();
-        template.evaluate(writer);
+        assertThatThrownBy(() -> template.evaluate(writer)).isInstanceOf(PebbleException.class);
     }
 
     @Test
@@ -103,7 +103,7 @@ public class CoreTestsTest extends AbstractTest {
         assertEquals("yes", writer.toString());
     }
 
-    @Test(expected = PebbleException.class)
+    @Test
     public void testNullOdd() throws PebbleException, IOException {
         PebbleEngine pebble = new PebbleEngine.Builder().loader(new StringLoader()).strictVariables(false).build();
 
@@ -111,7 +111,7 @@ public class CoreTestsTest extends AbstractTest {
         PebbleTemplate template = pebble.getTemplate(source);
 
         Writer writer = new StringWriter();
-        template.evaluate(writer);
+        assertThatThrownBy(() -> template.evaluate(writer)).isInstanceOf(PebbleException.class);
     }
 
     @Test

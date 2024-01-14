@@ -14,9 +14,7 @@ import com.mitchellbosecke.pebble.error.RuntimePebbleException;
 import com.mitchellbosecke.pebble.extension.TestingExtension;
 import com.mitchellbosecke.pebble.loader.StringLoader;
 import com.mitchellbosecke.pebble.template.PebbleTemplate;
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.rules.ExpectedException;
+import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
 import java.io.StringWriter;
@@ -24,14 +22,14 @@ import java.io.Writer;
 import java.util.HashMap;
 import java.util.Map;
 
-import static org.hamcrest.core.IsInstanceOf.instanceOf;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class MapSyntaxTest extends AbstractTest {
 
-    @Rule
-    public final ExpectedException thrown = ExpectedException.none();
+//    @Rule
+//    public final ExpectedException thrown = ExpectedException.none();
 
     @Test
     public void testMapSyntax() throws PebbleException, IOException {
@@ -103,11 +101,13 @@ public class MapSyntaxTest extends AbstractTest {
 
         String source = "{{ {,} }}";
 
-        thrown.expect(RuntimePebbleException.class);
-        thrown.expectCause(instanceOf(ParserException.class));
+//        thrown.expect(RuntimePebbleException.class);
+//        thrown.expectCause(instanceOf(ParserException.class));
 
         //Act + Assert
-        pebble.getTemplate(source);
+        assertThatThrownBy(() -> pebble.getTemplate(source))
+          .isInstanceOf(RuntimePebbleException.class)
+          .hasCauseInstanceOf(ParserException.class);
     }
 
     @Test
@@ -117,11 +117,13 @@ public class MapSyntaxTest extends AbstractTest {
 
         String source = "{{ {'key'} }}";
 
-        thrown.expect(RuntimePebbleException.class);
-        thrown.expectCause(instanceOf(ParserException.class));
+//        thrown.expect(RuntimePebbleException.class);
+//        thrown.expectCause(instanceOf(ParserException.class));
 
         //Act + Assert
-        pebble.getTemplate(source);
+        assertThatThrownBy(() -> pebble.getTemplate(source))
+          .isInstanceOf(RuntimePebbleException.class)
+          .hasCauseInstanceOf(ParserException.class);
     }
 
     @Test
@@ -131,11 +133,13 @@ public class MapSyntaxTest extends AbstractTest {
 
         String source = "{{ {'key':} }}";
 
-        thrown.expect(RuntimePebbleException.class);
-        thrown.expectCause(instanceOf(ParserException.class));
+//        thrown.expect(RuntimePebbleException.class);
+//        thrown.expectCause(instanceOf(ParserException.class));
 
         //Act + Assert
-        pebble.getTemplate(source);
+        assertThatThrownBy(() -> pebble.getTemplate(source))
+          .isInstanceOf(RuntimePebbleException.class)
+          .hasCauseInstanceOf(ParserException.class);
     }
 
     @Test
@@ -145,11 +149,13 @@ public class MapSyntaxTest extends AbstractTest {
 
         String source = "{{ {:'value'} }}";
 
-        thrown.expect(RuntimePebbleException.class);
-        thrown.expectCause(instanceOf(ParserException.class));
+//        thrown.expect(RuntimePebbleException.class);
+//        thrown.expectCause(instanceOf(ParserException.class));
 
         //Act + Assert
-        pebble.getTemplate(source);
+        assertThatThrownBy(() -> pebble.getTemplate(source))
+          .isInstanceOf(RuntimePebbleException.class)
+          .hasCauseInstanceOf(ParserException.class);
     }
 
     @Test
@@ -159,11 +165,13 @@ public class MapSyntaxTest extends AbstractTest {
 
         String source = "{{ {'key':'value',} }}";
 
-        thrown.expect(RuntimePebbleException.class);
-        thrown.expectCause(instanceOf(ParserException.class));
+//        thrown.expect(RuntimePebbleException.class);
+//        thrown.expectCause(instanceOf(ParserException.class));
 
         //Act + Assert
-        pebble.getTemplate(source);
+        assertThatThrownBy(() -> pebble.getTemplate(source))
+          .isInstanceOf(RuntimePebbleException.class)
+          .hasCauseInstanceOf(ParserException.class);
     }
 
     @SuppressWarnings("serial")
@@ -316,7 +324,7 @@ public class MapSyntaxTest extends AbstractTest {
     }
 
     // no operator overloading for maps
-    @Test(expected = PebbleException.class)
+    @Test
     public void testAdditionOverloading() throws PebbleException, IOException {
         PebbleEngine pebble = new PebbleEngine.Builder().loader(new StringLoader()).strictVariables(false).build();
 
@@ -324,10 +332,12 @@ public class MapSyntaxTest extends AbstractTest {
         PebbleTemplate template = pebble.getTemplate(source);
 
         Writer writer = new StringWriter();
-        template.evaluate(writer, new HashMap<String, Object>());
+        assertThatThrownBy(() -> template.evaluate(writer, new HashMap<String, Object>()))
+          .isInstanceOf(PebbleException.class);
+
     }
 
-    @Test(expected = PebbleException.class)
+    @Test
     public void testSubtractionOverloading() throws PebbleException, IOException {
         PebbleEngine pebble = new PebbleEngine.Builder().loader(new StringLoader()).strictVariables(false).build();
 
@@ -335,7 +345,8 @@ public class MapSyntaxTest extends AbstractTest {
         PebbleTemplate template = pebble.getTemplate(source);
 
         Writer writer = new StringWriter();
-        template.evaluate(writer, new HashMap<String, Object>());
+        assertThatThrownBy(() -> template.evaluate(writer, new HashMap<String, Object>()))
+          .isInstanceOf(PebbleException.class);
     }
 
     @Test

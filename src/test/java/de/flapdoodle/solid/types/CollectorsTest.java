@@ -16,15 +16,14 @@
  */
 package de.flapdoodle.solid.types;
 
-import static org.junit.Assert.assertEquals;
-
-import java.util.stream.Stream;
-
-import org.junit.Test;
-
 import com.google.common.collect.ImmutableCollection;
 import com.google.common.collect.ImmutableMultimap;
 import com.google.common.collect.ImmutableSet;
+import org.junit.jupiter.api.Test;
+
+import java.util.stream.Stream;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class CollectorsTest {
 

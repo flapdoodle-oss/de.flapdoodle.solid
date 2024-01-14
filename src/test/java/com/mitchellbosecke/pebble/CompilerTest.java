@@ -11,7 +11,8 @@ package com.mitchellbosecke.pebble;
 import com.mitchellbosecke.pebble.error.PebbleException;
 import com.mitchellbosecke.pebble.loader.StringLoader;
 import com.mitchellbosecke.pebble.template.PebbleTemplate;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.Timeout;
 
 import java.io.IOException;
 import java.io.StringWriter;
@@ -19,7 +20,7 @@ import java.io.Writer;
 import java.util.HashMap;
 import java.util.Map;
 
-import static org.junit.Assert.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class CompilerTest extends AbstractTest {
 
@@ -42,7 +43,8 @@ public class CompilerTest extends AbstractTest {
      * @throws PebbleException
      * @throws IOException
      */
-    @Test(timeout = 3000)
+    @Test
+    @Timeout(3000)
     public void testCompilationMutexIsAlwaysReleased() throws PebbleException, IOException {
         PebbleEngine pebble = new PebbleEngine.Builder().strictVariables(false).build();
         try {

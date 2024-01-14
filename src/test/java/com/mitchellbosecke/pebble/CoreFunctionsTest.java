@@ -13,7 +13,7 @@ package com.mitchellbosecke.pebble;
 import com.mitchellbosecke.pebble.error.PebbleException;
 import com.mitchellbosecke.pebble.loader.StringLoader;
 import com.mitchellbosecke.pebble.template.PebbleTemplate;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
 import java.io.StringWriter;
@@ -21,7 +21,8 @@ import java.io.Writer;
 import java.util.HashMap;
 import java.util.Map;
 
-import static org.junit.Assert.assertEquals;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class CoreFunctionsTest extends AbstractTest {
 
@@ -163,7 +164,7 @@ public class CoreFunctionsTest extends AbstractTest {
         assertEquals("1086420", writer.toString());
     }
 
-    @Test(expected = PebbleException.class)
+    @Test
     public void testRangeFunctionIncrement0() throws PebbleException, IOException {
         PebbleEngine pebble = new PebbleEngine.Builder().loader(new StringLoader()).strictVariables(false).build();
 
@@ -173,7 +174,7 @@ public class CoreFunctionsTest extends AbstractTest {
         Map<String, Object> context = new HashMap<>();
 
         Writer writer = new StringWriter();
-        template.evaluate(writer, context);
+        assertThatThrownBy(() -> template.evaluate(writer, context)).isInstanceOf(PebbleException.class);
     }
 
     @Test
@@ -218,7 +219,7 @@ public class CoreFunctionsTest extends AbstractTest {
         assertEquals("fdb", writer.toString());
     }
 
-    @Test(expected = PebbleException.class)
+    @Test
     public void testRangeFunctionCharIncrement0() throws PebbleException, IOException {
         PebbleEngine pebble = new PebbleEngine.Builder().loader(new StringLoader()).strictVariables(false).build();
 
@@ -228,7 +229,7 @@ public class CoreFunctionsTest extends AbstractTest {
         Map<String, Object> context = new HashMap<>();
 
         Writer writer = new StringWriter();
-        template.evaluate(writer, context);
+        assertThatThrownBy(() -> template.evaluate(writer, context)).isInstanceOf(PebbleException.class);
     }
 
     @Test

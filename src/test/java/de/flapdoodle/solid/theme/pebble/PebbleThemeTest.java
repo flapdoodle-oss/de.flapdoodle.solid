@@ -16,17 +16,6 @@
  */
 package de.flapdoodle.solid.theme.pebble;
 
-import static org.junit.Assert.assertEquals;
-
-import java.io.IOException;
-import java.io.Reader;
-import java.io.StringReader;
-import java.io.StringWriter;
-import java.util.Locale;
-import java.util.Map;
-
-import org.junit.Test;
-
 import com.google.common.collect.ImmutableMap;
 import com.mitchellbosecke.pebble.PebbleEngine;
 import com.mitchellbosecke.pebble.error.LoaderException;
@@ -35,10 +24,19 @@ import com.mitchellbosecke.pebble.extension.DynamicAttributeProvider;
 import com.mitchellbosecke.pebble.loader.ClasspathLoader;
 import com.mitchellbosecke.pebble.loader.Loader;
 import com.mitchellbosecke.pebble.template.PebbleTemplate;
-
 import de.flapdoodle.solid.types.tree.FixedPropertyTree;
 import de.flapdoodle.solid.types.tree.PropertyTree;
 import de.flapdoodle.types.Try;
+import org.junit.jupiter.api.Test;
+
+import java.io.IOException;
+import java.io.Reader;
+import java.io.StringReader;
+import java.io.StringWriter;
+import java.util.Locale;
+import java.util.Map;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class PebbleThemeTest {
 

@@ -16,14 +16,6 @@
  */
 package de.flapdoodle.solid.parser;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-
-import java.nio.file.Path;
-import java.nio.file.Paths;
-
-import org.junit.Test;
-
 import de.flapdoodle.solid.content.render.MarkupRendererFactory;
 import de.flapdoodle.solid.parser.content.BlobParser;
 import de.flapdoodle.solid.parser.content.DefaultBlobParser;
@@ -31,6 +23,13 @@ import de.flapdoodle.solid.parser.content.Site;
 import de.flapdoodle.solid.parser.types.FiletypeParserFactory;
 import de.flapdoodle.solid.parser.types.PropertyTreeParserFactory;
 import de.flapdoodle.solid.theme.ThemeFactory;
+import org.junit.jupiter.api.Test;
+
+import java.nio.file.Path;
+import java.nio.file.Paths;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 public class SiteFactoryTest {
 

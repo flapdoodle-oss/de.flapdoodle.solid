@@ -8,26 +8,21 @@
  ******************************************************************************/
 package com.mitchellbosecke.pebble;
 
-import static org.junit.Assert.assertEquals;
-
-import java.io.IOException;
-import java.io.StringWriter;
-import java.io.Writer;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
-import org.junit.Test;
-
 import com.mitchellbosecke.pebble.error.AttributeNotFoundException;
 import com.mitchellbosecke.pebble.error.PebbleException;
 import com.mitchellbosecke.pebble.error.RootAttributeNotFoundException;
 import com.mitchellbosecke.pebble.extension.DynamicAttributeProvider;
 import com.mitchellbosecke.pebble.loader.StringLoader;
 import com.mitchellbosecke.pebble.template.PebbleTemplate;
+import org.junit.jupiter.api.Test;
+
+import java.io.IOException;
+import java.io.StringWriter;
+import java.io.Writer;
+import java.util.*;
+
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class GetAttributeTest extends AbstractTest {
 
@@ -228,14 +223,14 @@ public class GetAttributeTest extends AbstractTest {
         assertEquals("hello Steve. My name is Steve.", writer.toString());
     }
 
-    @Test(expected = RootAttributeNotFoundException.class)
+    @Test
     public void testAttributeOfNullObjectWithStrictVariables() throws PebbleException, IOException {
         PebbleEngine pebble = new PebbleEngine.Builder().loader(new StringLoader()).strictVariables(true).build();
 
         PebbleTemplate template = pebble.getTemplate("hello {{ object.name }}");
 
         Writer writer = new StringWriter();
-        template.evaluate(writer);
+        assertThatThrownBy(() -> template.evaluate(writer)).isInstanceOf(RootAttributeNotFoundException.class);
     }
 
     @Test
@@ -265,7 +260,7 @@ public class GetAttributeTest extends AbstractTest {
         assertEquals("hello ", writer.toString());
     }
 
-    @Test(expected = AttributeNotFoundException.class)
+    @Test
     public void testNonExistingAttributeWithStrictVariables() throws PebbleException, IOException {
         PebbleEngine pebble = new PebbleEngine.Builder().loader(new StringLoader()).strictVariables(true).build();
 
@@ -274,7 +269,7 @@ public class GetAttributeTest extends AbstractTest {
         context.put("object", new Object());
 
         Writer writer = new StringWriter();
-        template.evaluate(writer, context);
+        assertThatThrownBy(() -> template.evaluate(writer, context)).isInstanceOf(AttributeNotFoundException.class);
         assertEquals("hello ", writer.toString());
     }
 
@@ -365,7 +360,7 @@ public class GetAttributeTest extends AbstractTest {
      * @throws PebbleException
      * @throws IOException
      */
-    @Test(expected = AttributeNotFoundException.class)
+    @Test
     public void testListNonExistingIndexAttributeWithStrictMode() throws PebbleException, IOException {
         PebbleEngine pebble = new PebbleEngine.Builder().loader(new StringLoader()).strictVariables(true).build();
 
@@ -375,8 +370,7 @@ public class GetAttributeTest extends AbstractTest {
         context.put("arr", data);
 
         Writer writer = new StringWriter();
-        template.evaluate(writer, context);
-        assertEquals("Two", writer.toString());
+        assertThatThrownBy(() -> template.evaluate(writer, context)).isInstanceOf(AttributeNotFoundException.class);
     }
 
     /**

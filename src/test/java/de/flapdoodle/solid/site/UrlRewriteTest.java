@@ -16,15 +16,14 @@
  */
 package de.flapdoodle.solid.site;
 
-import static org.junit.Assert.assertEquals;
+import de.flapdoodle.solid.site.UrlRewrite.UrlRegex;
+import de.flapdoodle.solid.types.Maybe;
+import org.junit.jupiter.api.Test;
 
 import java.util.function.Function;
 import java.util.regex.Pattern;
 
-import org.junit.Test;
-
-import de.flapdoodle.solid.site.UrlRewrite.UrlRegex;
-import de.flapdoodle.solid.types.Maybe;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class UrlRewriteTest {
 

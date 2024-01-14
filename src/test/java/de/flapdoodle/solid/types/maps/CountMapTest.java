@@ -16,12 +16,11 @@
  */
 package de.flapdoodle.solid.types.maps;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
-
-import org.junit.Test;
-
 import com.google.common.collect.ImmutableMap;
+import org.junit.jupiter.api.Test;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class CountMapTest {
 
