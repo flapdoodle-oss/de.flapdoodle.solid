@@ -66,6 +66,9 @@ public class DefaultThemeFactory implements ThemeFactory {
 		if (engine.isPresent() && engine.get().equals("pebble")) {
 			return new PebbleTheme(themeDirectory, config, markupRendererFactory);
 		}
+		if (engine.isPresent() && engine.get().equals("pebble2")) {
+			return new de.flapdoodle.solid.theme.pebble2.PebbleTheme(themeDirectory, config, markupRendererFactory);
+		}
 
 		throw new RuntimeException("theme engine not supported: "+config.prettyPrinted());
 	}
