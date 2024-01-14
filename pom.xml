@@ -56,7 +56,7 @@
 
         <immutables.version>2.10.0</immutables.version>
         <guice.version>4.2.3</guice.version>
-        <flexmark.version>0.62.2</flexmark.version>
+        <flexmark.version>0.64.8</flexmark.version>
         <!-- allowed values: R7, 1.0, 1.5, 2.0 or none -->
         <wtp.version>none</wtp.version>
         <!-- eclipse apt switch -->
@@ -321,7 +321,7 @@
                 <version>3.2.0</version>
                 <configuration>
                     <!-- Default configuration for all reports -->
-                    <aggregate>true</aggregate>
+<!--                    <aggregate>true</aggregate>-->
                 </configuration>
                 <executions>
                     <execution>
